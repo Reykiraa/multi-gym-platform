@@ -1,0 +1,12 @@
+## [2023-10-25] - Phase 1: Setup & Autentikasi
+- **Fitur Selesai:** Registrasi User, Login terpusat (3 Roles), dan Endpoint Get Current User. Pengkondisian tabel `users` untuk sistem kredit dan otorisasi.
+- **File Dibuat/Dimodifikasi:** 
+  - `database/migrations/0001_01_01_000000_create_users_table.php`
+  - `app/Models/User.php`
+  - `app/Http/Controllers/AuthController.php`
+  - `routes/api.php`
+- **Keputusan Arsitektur & Keamanan:** Menggunakan integrasi native `HasApiTokens` (Sanctum) untuk stateless token API. Hashing password dienkapsulasi menggunakan `casts()` di tingkat Model untuk menghindari hashing redundan di Controller. Atribut sensitif disembunyikan menggunakan array `$hidden`.
+- **Catatan Integrasi Frontend:** Endpoint siap dikonsumsi. 
+  - `POST /api/auth/register` (Payload butuh `name`, `email`, `password`, `role`).
+  - `POST /api/auth/login` (Mengembalikan `token` dan object `user`).
+  - `GET /api/user` (Wajib Header `Authorization: Bearer <token>`).
