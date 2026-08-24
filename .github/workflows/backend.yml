@@ -1,0 +1,44 @@
+```yaml
+name: Backend CI/CD
+
+on:
+  push:
+    branches: [ "main" ]
+    paths:
+      - 'backend/**'
+  pull_request:
+    branches: [ "main" ]
+    paths:
+      - 'backend/**'
+
+jobs:
+  test-php:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./backend
+
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Setup PHP
+      uses: shivammathur/setup-php@v2
+      with:
+        php-version: '8.3'
+        tools: composer, phpunit
+        
+    - name: Install Dependencies
+      run: composer install --prefer-dist --no-progress --no-suggest
+      
+    - name: Run Code Style Check (Laravel Pint)
+      run: ./vendor/bin/pint --test
+      
+    - name: Run Tests (Pest / PHPUnit)
+      env:
+        DB_CONNECTION: sqlite
+        DB_DATABASE: :memory:
+      run: php artisan test
+      
+    # Note: Deployment ke Railway akan di-handle otomatis oleh platform Railway 
+    # saat push terdeteksi di branch main pada folder /backend.
+```
