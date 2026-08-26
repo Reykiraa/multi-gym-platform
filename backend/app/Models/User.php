@@ -60,4 +60,12 @@ class User extends Authenticatable
     {
         return $this->hasMany(Gym::class, 'mitra_id');
     }
+
+    /**
+     * Get the transactions for the user.
+     */
+    public function transactions(): HasMany
+    {
+        return $this->hasMany(Transaction::class);
+    }
 }

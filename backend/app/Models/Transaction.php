@@ -7,9 +7,8 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\HasMany;
 
-class Gym extends Model
+class Transaction extends Model
 {
     use HasFactory;
 
@@ -19,11 +18,12 @@ class Gym extends Model
      * @var array<int, string>
      */
     protected $fillable = [
-        'mitra_id',
-        'name',
-        'location',
-        'facilities',
-        'credit_price',
+        'user_id',
+        'gym_id',
+        'amount',
+        'pin_code',
+        'status',
+        'expires_at',
     ];
 
     /**
@@ -34,23 +34,23 @@ class Gym extends Model
     protected function casts(): array
     {
         return [
-            'facilities' => 'array',
+            'expires_at' => 'datetime',
         ];
     }
 
     /**
-     * Get the mitra (user) that owns the gym.
+     * Get the user that owns the transaction.
      */
-    public function mitra(): BelongsTo
+    public function user(): BelongsTo
     {
-        return $this->belongsTo(User::class, 'mitra_id');
+        return $this->belongsTo(User::class);
     }
 
     /**
-     * Get the transactions associated with the gym.
+     * Get the gym that the transaction is for.
      */
-    public function transactions(): HasMany
+    public function gym(): BelongsTo
     {
-        return $this->hasMany(Transaction::class);
+        return $this->belongsTo(Gym::class);
     }
 }

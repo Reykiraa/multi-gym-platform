@@ -23,3 +23,25 @@
 - **Catatan Integrasi Frontend:** 
   - `GET /api/gyms` terbuka untuk semua role terautentikasi (gunakan untuk menampilkan daftar Gym di sisi User).
   - Endpoint `POST, PUT, DELETE /api/gyms` akan mengembalikan `403 Unauthorized` jika role bukan admin.
+
+## [2026-08-26] - Phase 3 & 4: Core Ledger Transaksi, Histori, & Top-up MVP
+- **Fitur Selesai:** 
+  - Algoritma *Check-in* (Generate PIN Otomatis & Time-To-Live).
+  - Algoritma Validasi Mitra (Pemotongan Kredit ACID Compliant).
+  - Role-based Transaction History (`GET /api/transactions`).
+  - Fitur Top-up Saldo Manual oleh Admin (`POST /api/users/{id}/topup`).
+  - Konfigurasi CI/CD GitHub Actions (`backend.yml`) untuk PHPUnit.
+- **File Dibuat/Dimodifikasi:** 
+  - `database/migrations/[timestamp]_create_transactions_table.php`
+  - `app/Models/Transaction.php` (serta update relasi di `User.php` dan `Gym.php`)
+  - `app/Http/Controllers/TransactionController.php`
+  - `app/Http/Controllers/WalletController.php`
+  - `routes/api.php`
+  - `.github/workflows/backend.yml`
+- **Keputusan Arsitektur & Keamanan:** 
+  - Menerapkan `DB::transaction()` untuk mengunci alur pemotongan saldo dan update status, mencegah *race condition* jika validasi ditekan dua kali.
+  - Memaksa format ISO-8601 pada data waktu `expires_at` untuk mengatasi deviasi zona waktu di sisi klien (Frontend).
+  - Otorisasi ketat memastikan Mitra tidak bisa memvalidasi PIN dari Gym yang tidak dikelolanya.
+- **Catatan Integrasi Frontend:** 
+  - `POST /api/transactions/checkin` mengembalikan `expires_at` dalam format ISO-8601 (String). Siap digunakan oleh `Date()` di Javascript.
+  - Skenario End-to-End API Backend kini sudah beroperasi 100%.
