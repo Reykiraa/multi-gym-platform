@@ -1,39 +1,26 @@
 import React from 'react';
-import { useQuery } from '@tanstack/react-query';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { Settings, CreditCard, Bell, Shield, LogOut, ChevronRight } from 'lucide-react';
 import Navbar from '../../components/shared/Navbar';
 import Card from '../../components/ui/Card';
 import Button from '../../components/ui/Button';
 import Badge from '../../components/ui/Badge';
-import { type User } from '../../types';
-
-const fetchUser = async (): Promise<User> => {
-  return {
-    id: 1,
-    name: "Budi Santoso",
-    email: "budi@email.com",
-    role: "user",
-    credit_balance: 50
-  };
-};
+import { useAuthStore } from '../../store/authStore';
 
 const Profile: React.FC = () => {
   const navigate = useNavigate();
-  const { data: user, isLoading } = useQuery({
-    queryKey: ['user'],
-    queryFn: fetchUser,
-  });
+  const { user, logout } = useAuthStore();
 
   const handleLogout = () => {
+    logout();
     navigate('/login');
   };
 
   const menuItems = [
-    { icon: <Settings size={20} />, label: "Edit Profile" },
-    { icon: <CreditCard size={20} />, label: "Payment Methods" },
-    { icon: <Bell size={20} />, label: "Notifications" },
-    { icon: <Shield size={20} />, label: "Security" },
+    { icon: <Settings size={20} />, label: "Edit Profile", path: "/user/profile/edit" },
+    { icon: <CreditCard size={20} />, label: "Payment Methods", path: "/user/profile/payment" },
+    { icon: <Bell size={20} />, label: "Notifications", path: "/user/profile/notifications" },
+    { icon: <Shield size={20} />, label: "Security", path: "/user/profile/security" },
   ];
 
   return (
@@ -43,10 +30,10 @@ const Profile: React.FC = () => {
       <main className="flex-grow container mx-auto max-w-xl px-4 py-6">
         {/* Header Profile */}
         <div className="flex flex-col items-center justify-center mb-8">
-          <div className="w-24 h-24 bg-gradient-to-tr from-yellow-500 to-amber-700 rounded-full mb-4 shadow-xl border-4 border-zinc-900 flex items-center justify-center text-3xl font-bold text-white">
-            {isLoading ? '...' : user?.name.charAt(0)}
+          <div className="w-24 h-24 bg-gradient-to-tr from-yellow-500 to-amber-700 rounded-full mb-4 shadow-xl border-4 border-zinc-900 flex items-center justify-center text-3xl font-bold text-white uppercase">
+            {user?.name ? user.name.charAt(0) : '?'}
           </div>
-          <h1 className="text-2xl font-bold text-white mb-1">{isLoading ? 'Memuat...' : user?.name}</h1>
+          <h1 className="text-2xl font-bold text-white mb-1">{user?.name}</h1>
           <p className="text-zinc-400 text-sm mb-3">{user?.email}</p>
           <Badge variant="warning" className="px-4 py-1 font-bold tracking-wider">
             GOLD MEMBER
@@ -69,17 +56,19 @@ const Profile: React.FC = () => {
         <div className="flex flex-col gap-3 mb-8">
           <h2 className="text-lg font-bold text-white mb-2 px-2">Akun Saya</h2>
           {menuItems.map((item, idx) => (
-            <Card key={idx} noPadding className="hover:bg-zinc-800/50 transition-colors cursor-pointer group">
-              <div className="flex items-center justify-between p-4">
-                <div className="flex items-center gap-3 text-zinc-300 group-hover:text-white transition-colors">
-                  <div className="text-zinc-500 group-hover:text-yellow-500 transition-colors">
-                    {item.icon}
+            <Link key={idx} to={item.path}>
+              <Card noPadding className="hover:bg-zinc-800/50 transition-colors cursor-pointer group">
+                <div className="flex items-center justify-between p-4">
+                  <div className="flex items-center gap-3 text-zinc-300 group-hover:text-white transition-colors">
+                    <div className="text-zinc-500 group-hover:text-yellow-500 transition-colors">
+                      {item.icon}
+                    </div>
+                    <span className="font-medium">{item.label}</span>
                   </div>
-                  <span className="font-medium">{item.label}</span>
+                  <ChevronRight size={20} className="text-zinc-600 group-hover:text-zinc-400" />
                 </div>
-                <ChevronRight size={20} className="text-zinc-600 group-hover:text-zinc-400" />
-              </div>
-            </Card>
+              </Card>
+            </Link>
           ))}
         </div>
 
