@@ -23,6 +23,10 @@ const fetchGym = async (id: number): Promise<Gym> => {
 const checkIn = async (gymId: number): Promise<{ message: string, transaction: Transaction }> => {
   return new Promise((resolve) => {
     setTimeout(() => {
+      // Mock expiration time to 5 minutes from now to test countdown
+      const futureDate = new Date();
+      futureDate.setMinutes(futureDate.getMinutes() + 5);
+
       resolve({
         message: "Check-in pending",
         transaction: {
@@ -30,7 +34,7 @@ const checkIn = async (gymId: number): Promise<{ message: string, transaction: T
           amount: 5,
           pin_code: "8492",
           status: "pending",
-          expires_at: "2026-08-26T14:00:00Z"
+          expires_at: futureDate.toISOString()
         }
       });
     }, 1000);
@@ -72,7 +76,7 @@ const GymDetail: React.FC = () => {
 
       {transaction ? (
         <div className="container mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 flex-grow flex items-center justify-center">
-          <PinDisplay pinCode={transaction.pin_code} />
+          <PinDisplay pinCode={transaction.pin_code} expiresAt={transaction.expires_at} />
         </div>
       ) : (
         <main className="flex-grow container mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-6">
