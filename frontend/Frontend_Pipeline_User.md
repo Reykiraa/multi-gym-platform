@@ -28,4 +28,5 @@ Membangun antarmuka untuk target pengguna utama (Busy Professionals) agar dapat 
 ### Fase 4: Timer & Dompet (Hari 10-12)
 - [ ] Tambahkan logika Countdown Timer pada UI PIN (menghitung mundur hingga `expires_at`).
 - [ ] Buat Halaman `WalletHistory.tsx` untuk melihat sisa saldo (`credit_balance`) dan riwayat transaksi.
+- [ ] Integrasikan endpoint GET /api/transactions pada WalletHistory.tsx untuk menampilkan daftar mutasi kredit user.
 - [ ] Pastikan UI responsif (Mobile-first).
