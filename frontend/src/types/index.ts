@@ -21,3 +21,11 @@ export interface Transaction {
   status: string;
   expires_at: string;
 }
+
+export interface TransactionHistory {
+  id: number;
+  type: "deduction" | "topup";
+  gym_name: string;
+  amount: number;
+  created_at: string;
+}
