@@ -1,31 +1,23 @@
 import React from 'react';
-import { useQuery } from '@tanstack/react-query';
 import { Link, useLocation } from 'react-router-dom';
 import { Home, Wallet, User as UserIcon } from 'lucide-react';
 import Badge from '../ui/Badge';
-import { type User } from '../../types';
-
-const fetchUser = async (): Promise<User> => {
-  return {
-    id: 1,
-    name: "Budi",
-    email: "budi@email.com",
-    role: "user",
-    credit_balance: 50
-  };
-};
+import { useAuthStore } from '../../store/authStore';
 
 const Navbar: React.FC = () => {
   const location = useLocation();
-  const { data: user, isLoading } = useQuery({
-    queryKey: ['user'],
-    queryFn: fetchUser,
-  });
+  const { user } = useAuthStore();
 
   const getMenuClass = (path: string) => {
     return location.pathname.includes(path) 
       ? 'text-yellow-500 flex flex-col items-center gap-1' 
       : 'text-zinc-500 hover:text-zinc-300 transition-colors flex flex-col items-center gap-1';
+  };
+
+  const getDesktopMenuClass = (path: string) => {
+    return location.pathname.includes(path)
+      ? 'text-yellow-500'
+      : 'text-zinc-400 hover:text-white transition-colors';
   };
 
   return (
@@ -40,19 +32,19 @@ const Navbar: React.FC = () => {
           {/* Desktop Menu */}
           <div className="hidden md:flex items-center gap-8">
             <div className="flex gap-6 text-sm font-medium">
-              <Link to="/user/gyms" className={location.pathname.includes('gym') ? 'text-yellow-500' : 'text-zinc-400 hover:text-white'}>Explore</Link>
-              <Link to="/user/wallet" className="text-zinc-400 hover:text-white">Wallet</Link>
-              <Link to="/user/profile" className="text-zinc-400 hover:text-white">Profile</Link>
+              <Link to="/user/gyms" className={getDesktopMenuClass('/user/gym')}>Explore</Link>
+              <Link to="/user/wallet" className={getDesktopMenuClass('/user/wallet')}>Wallet</Link>
+              <Link to="/user/profile" className={getDesktopMenuClass('/user/profile')}>Profile</Link>
             </div>
             <Badge variant="warning" className="text-sm px-3 py-1.5">
-              {isLoading ? 'Memuat...' : `Saldo: ${user?.credit_balance ?? 0}`}
+              Saldo: {user?.credit_balance ?? 0}
             </Badge>
           </div>
 
-          {/* Mobile Balance (Optional: Can keep it in top nav for mobile too) */}
+          {/* Mobile Balance */}
           <div className="md:hidden">
             <Badge variant="warning" className="text-xs px-2 py-1">
-              {isLoading ? '...' : `${user?.credit_balance ?? 0} CR`}
+              {user?.credit_balance ?? 0} CR
             </Badge>
           </div>
         </div>
