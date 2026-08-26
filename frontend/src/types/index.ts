@@ -13,3 +13,11 @@ export interface Gym {
   facilities: string[];
   credit_price: number;
 }
+
+export interface Transaction {
+  id: number;
+  amount: number;
+  pin_code: string;
+  status: string;
+  expires_at: string;
+}

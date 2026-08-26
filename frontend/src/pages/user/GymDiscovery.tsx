@@ -6,7 +6,6 @@ import GymCard from '../../components/cards/GymCard';
 import { type Gym } from '../../types';
 
 const fetchGyms = async (): Promise<Gym[]> => {
-  // Mock API call
   return [
     {
       id: 1,
@@ -28,6 +27,13 @@ const fetchGyms = async (): Promise<Gym[]> => {
       location: "Surabaya",
       facilities: ["Yoga", "Pilates", "Shower"],
       credit_price: 4
+    },
+    {
+      id: 4,
+      name: "Flex Space",
+      location: "Bali",
+      facilities: ["Crossfit", "Pool", "Cafe"],
+      credit_price: 10
     }
   ];
 };
@@ -46,31 +52,32 @@ const GymDiscovery: React.FC = () => {
   );
 
   return (
-    <div className="flex flex-col min-h-screen">
+    <div className="flex flex-col min-h-screen pb-16 md:pb-0"> {/* padding bottom for mobile nav */}
       <Navbar />
       
-      <main className="flex-grow">
-        <div className="mb-6">
-          <h1 className="text-3xl font-extrabold text-white uppercase tracking-tight mb-4">
+      <main className="flex-grow container mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-6">
+        <div className="mb-8 md:mb-10 max-w-2xl">
+          <h1 className="text-3xl md:text-5xl font-extrabold text-white uppercase tracking-tight mb-6">
             Stay Fit,<br />Anywhere.
           </h1>
           <Input 
             placeholder="Cari nama gym atau lokasi..." 
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
+            className="md:text-lg"
           />
         </div>
 
         {isLoading ? (
-          <div className="text-center text-zinc-500 py-10">Memuat data gym...</div>
+          <div className="text-center text-zinc-500 py-20">Memuat data gym...</div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 pb-8">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
             {filteredGyms.length > 0 ? (
               filteredGyms.map(gym => (
                 <GymCard key={gym.id} gym={gym} />
               ))
             ) : (
-              <div className="col-span-full text-center text-zinc-500 py-10">
+              <div className="col-span-full text-center text-zinc-500 py-20 bg-zinc-900/50 rounded-2xl border border-zinc-800 border-dashed">
                 Gym tidak ditemukan.
               </div>
             )}
