@@ -10,24 +10,24 @@ Bertanggung jawab atas arsitektur dasar frontend (routing, state management), si
 ## 2. To-Do List & Pipeline Kerja
 
 ### Fase 1: Core Architecture & Auth (Hari 1-3)
-- [ ] Inisialisasi project React + Vite di folder `/frontend`.
-- [ ] Setup Tailwind CSS dan konfigurasi linting (ESLint/Prettier).
-- [ ] Setup routing menggunakan TanStack Router. Buat layout terpisah untuk Guest, Admin, Mitra, dan User.
-- [ ] Setup `authStore.ts` menggunakan Zustand untuk menyimpan Token dan Data User.
-- [ ] Buat halaman `Login.tsx` dan `Register.tsx` (gunakan React Hook Form + Zod).
-- [ ] Integrasikan endpoint `POST /api/auth/login`.
+- [x] Inisialisasi project React + Vite di folder `/frontend`.
+- [x] Setup Tailwind CSS dan konfigurasi linting (ESLint/Prettier).
+- [x] Setup routing menggunakan TanStack Router. Buat layout terpisah untuk Guest, Admin, Mitra, dan User.
+- [x] Setup `authStore.ts` menggunakan Zustand untuk menyimpan Token dan Data User.
+- [x] Buat halaman `Login.tsx` dan `Register.tsx` (gunakan React Hook Form + Zod).
+- [x] Integrasikan endpoint `POST /api/auth/login`.
 
 ### Fase 2: Admin Dashboard (Hari 4-6)
-- [ ] Buat Halaman `AdminDashboard.tsx`.
-- [ ] Buat tabel CRUD untuk manajemen Mitra Gym.
-- [ ] Integrasikan form tambah/edit Gym dengan endpoint `POST/PUT /api/gyms`.
+- [x] Buat Halaman `AdminDashboard.tsx`.
+- [x] Buat tabel CRUD untuk manajemen Mitra Gym.
+- [x] Integrasikan form tambah/edit Gym dengan endpoint `POST/PUT /api/gyms`.
 
 ### Fase 3: Mitra Dashboard & Validasi (Hari 7-9)
-- [ ] Buat Halaman `MitraDashboard.tsx`.
-- [ ] Buat komponen form input PIN yang besar dan mudah diketik oleh resepsionis.
-- [ ] Integrasikan endpoint `POST /api/transactions/validate`.
+- [x] Buat Halaman `MitraDashboard.tsx`.
+- [x] Buat komponen form input PIN yang besar dan mudah diketik oleh resepsionis.
+- [x] Integrasikan endpoint `POST /api/transactions/validate`.
 
 ### Fase 4: Notifikasi & Finalisasi (Hari 10-12)
-- [ ] Tambahkan sistem Global Toast Notification (Sukses, Gagal, Error Jaringan).
-- [ ] Pastikan Protected Routes berfungsi (User tidak bisa akses halaman Admin, dsb).
-- [ ] Setup GitHub Actions `frontend.yml` untuk auto-build dan testing.
+- [x] Tambahkan sistem Global Toast Notification (Sukses, Gagal, Error Jaringan).
+- [x] Pastikan Protected Routes berfungsi (User tidak bisa akses halaman Admin, dsb).
+- [x] Setup GitHub Actions `frontend.yml` untuk auto-build dan testing.
