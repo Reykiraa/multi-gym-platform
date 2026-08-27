@@ -43,3 +43,13 @@
 - **File Dibuat/Dimodifikasi:** `src/store/authStore.ts`, `src/pages/user/Profile.tsx`, `src/components/shared/Navbar.tsx`, `src/pages/user/profile/EditProfile.tsx`, `src/pages/user/profile/Security.tsx`, `src/pages/user/profile/PaymentMethods.tsx`.
 - **Mock Data & State Status:** Migrasi manajemen *mock data auth* dari statis menjadi reaktif menggunakan Zustand. Validasi form menggunakan React Hook Form (RHF) dan Zod.
 - **Catatan Integrasi Backend:** Form submission saat ini hanya memanipulasi *client state*. Siap disambungkan dengan endpoint `PUT /api/user` (jika ada) oleh tim backend nantinya.
+
+## [2026-08-27] - Phase 6: Live API Integration (API Wiring)
+- **Fitur Selesai:** 
+  - Konfigurasi HTTP Client menggunakan Axios dengan *Request Interceptor* untuk *Bearer Token*.
+  - Integrasi otentikasi *live* (Login & Register) terhubung ke server Laravel.
+  - Penggantian seluruh data mock dengan *Live Fetching* (TanStack Query + Axios) untuk Katalog Gym dan Riwayat Transaksi.
+  - Integrasi Live Mutation untuk proses *Check-in* (termasuk konsumsi waktu kedaluwarsa ISO8601 dari backend untuk timer PIN).
+- **File Dibuat/Dimodifikasi:** `.env.local`, `src/lib/axios.ts`, `src/store/authStore.ts`, `src/pages/auth/Login.tsx`, `src/pages/auth/Register.tsx`, `src/pages/user/GymDiscovery.tsx`, `src/pages/user/WalletHistory.tsx`, `src/pages/user/GymDetail.tsx`.
+- **Mock Data & State Status:** MOCK DATA RESMI DIHAPUS. Aplikasi 100% mengonsumsi RESTful API asli dari *backend*.
+- **Catatan Integrasi Backend:** *Endpoint* tersambung sempurna tanpa *route collision*. (Catatan teknis ke depan: Perlu mengimplementasikan `persist` middleware pada Zustand agar sesi login bertahan saat *page refresh*).
