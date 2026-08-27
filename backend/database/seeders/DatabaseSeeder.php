@@ -15,11 +15,34 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        // User::factory(10)->create();
+        // 1. Akun Admin
+        User::updateOrCreate(
+            ['email' => 'admin@gymnox.com'],
+            [
+                'name' => 'Super Admin',
+                'password' => 'password123', // Akan di-hash otomatis oleh model
+                'role' => 'admin',
+            ]
+        );
 
-        User::factory()->create([
-            'name' => 'Test User',
-            'email' => 'test@example.com',
-        ]);
+        // 2. Akun Mitra (Resepsionis Gym)
+        User::updateOrCreate(
+            ['email' => 'mitra@gymnox.com'],
+            [
+                'name' => 'Resepsionis Elite Fitness',
+                'password' => 'password123',
+                'role' => 'mitra',
+            ]
+        );
+
+        // 3. Akun User (Member Reguler)
+        User::updateOrCreate(
+            ['email' => 'user@gymnox.com'],
+            [
+                'name' => 'Member Budi',
+                'password' => 'password123',
+                'role' => 'user',
+            ]
+        );
     }
 }
