@@ -7,38 +7,16 @@ import CheckInConfirmModal from '../../components/modals/CheckInConfirmModal';
 import PinDisplay from '../../components/ui/PinDisplay';
 import Navbar from '../../components/shared/Navbar';
 import { type Gym, type Transaction } from '../../types';
+import apiClient from '../../lib/axios';
 
-// Mock function for fetching a single gym
 const fetchGym = async (id: number): Promise<Gym> => {
-  return {
-    id,
-    name: "Iron Works Elite",
-    location: "Jakarta Selatan",
-    facilities: ["Free Weights", "Cardio", "Sauna", "Locker Room", "Pool"],
-    credit_price: 5
-  };
+  const response = await apiClient.get(`/gyms/${id}`);
+  return response.data;
 };
 
-// Mock function for check-in transaction
 const checkIn = async (gymId: number): Promise<{ message: string, transaction: Transaction }> => {
-  return new Promise((resolve) => {
-    setTimeout(() => {
-      // Mock expiration time to 5 minutes from now to test countdown
-      const futureDate = new Date();
-      futureDate.setMinutes(futureDate.getMinutes() + 5);
-
-      resolve({
-        message: "Check-in pending",
-        transaction: {
-          id: 101,
-          amount: 5,
-          pin_code: "8492",
-          status: "pending",
-          expires_at: futureDate.toISOString()
-        }
-      });
-    }, 1000);
-  });
+  const response = await apiClient.post('/transactions/checkin', { gym_id: gymId });
+  return response.data;
 };
 
 const GymDetail: React.FC = () => {
