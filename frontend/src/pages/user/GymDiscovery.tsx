@@ -4,38 +4,11 @@ import Navbar from '../../components/shared/Navbar';
 import Input from '../../components/ui/Input';
 import GymCard from '../../components/cards/GymCard';
 import { type Gym } from '../../types';
+import apiClient from '../../lib/axios';
 
 const fetchGyms = async (): Promise<Gym[]> => {
-  return [
-    {
-      id: 1,
-      name: "Iron Works Elite",
-      location: "Jakarta Selatan",
-      facilities: ["Free Weights", "Cardio", "Sauna"],
-      credit_price: 8
-    },
-    {
-      id: 2,
-      name: "The Foundry",
-      location: "Bandung",
-      facilities: ["Crossfit", "Locker Room", "Cafe"],
-      credit_price: 6
-    },
-    {
-      id: 3,
-      name: "Apex Studio",
-      location: "Surabaya",
-      facilities: ["Yoga", "Pilates", "Shower"],
-      credit_price: 4
-    },
-    {
-      id: 4,
-      name: "Flex Space",
-      location: "Bali",
-      facilities: ["Crossfit", "Pool", "Cafe"],
-      credit_price: 10
-    }
-  ];
+  const response = await apiClient.get('/gyms');
+  return response.data;
 };
 
 const GymDiscovery: React.FC = () => {

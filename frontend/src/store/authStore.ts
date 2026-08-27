@@ -1,7 +1,7 @@
 // src/store/authStore.ts
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
-import type { AuthUser, Role } from '../types/auth';
+import type { AuthUser } from '../types/auth';
 
 /**
  * Extended user profile used by FE1 user-facing pages (Profile, Wallet, etc.).
@@ -20,14 +20,8 @@ interface AuthState {
   /** Derived flag — true when both user and token are present. */
   isAuthenticated: boolean;
 
-  /**
-   * Authenticates a user via mock logic (1-second simulated delay).
-   * Role assignment rules:
-   *  - email contains 'admin'  → role: 'admin'
-   *  - email contains 'mitra'  → role: 'mitra'
-   *  - otherwise               → role: 'user'
-   */
-  login: (email: string, password: string) => Promise<void>;
+  /** Sets the authenticated user and token */
+  setAuth: (user: UserProfile, token: string) => void;
 
   /** Partially updates the authenticated user's mutable profile fields. */
   updateUser: (data: Partial<UserProfile>) => void;
@@ -35,20 +29,6 @@ interface AuthState {
   /** Clears all auth state (user, token, isAuthenticated). */
   logout: () => void;
 }
-
-/** Mock token issued on every successful login. */
-const MOCK_TOKEN = 'mock-token-123';
-
-/**
- * Derives the role from the email string for mock auth purposes.
- * Priority: admin > mitra > user.
- */
-const deriveRoleFromEmail = (email: string): Role => {
-  const lower = email.toLowerCase();
-  if (lower.includes('admin')) return 'admin';
-  if (lower.includes('mitra')) return 'mitra';
-  return 'user';
-};
 
 /**
  * Global auth store using Zustand with session persistence.
@@ -61,26 +41,11 @@ export const useAuthStore = create<AuthState>()(
       token: null,
       isAuthenticated: false,
 
-      login: async (email: string, _password: string): Promise<void> => {
-        // Simulate a 1-second network round-trip.
-        await new Promise<void>((resolve) => setTimeout(resolve, 1000));
-
-        const role = deriveRoleFromEmail(email);
-
-        const mockUser: UserProfile = {
-          id: 1,
-          name: role === 'admin' ? 'Admin Gymnox' : role === 'mitra' ? 'Mitra Partner' : 'Budi Santoso',
-          email,
-          role,
-          credit_balance: role === 'user' ? 50 : 0,
-        };
-
-        set({
-          user: mockUser,
-          token: MOCK_TOKEN,
-          isAuthenticated: true,
-        });
-      },
+      setAuth: (user, token) => set({
+        user,
+        token,
+        isAuthenticated: true
+      }),
 
       updateUser: (data) =>
         set((state) => ({
