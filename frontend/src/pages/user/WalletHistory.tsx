@@ -9,7 +9,7 @@ import { useAuthStore } from '../../store/authStore';
 
 const fetchTransactions = async (): Promise<TransactionHistory[]> => {
   const response = await apiClient.get('/transactions');
-  return response.data;
+  return response.data?.data || response.data || [];
 };
 
 const WalletHistory: React.FC = () => {
@@ -91,7 +91,7 @@ const WalletHistory: React.FC = () => {
                     <div className="flex-grow">
                       <h3 className="font-bold text-white flex items-center gap-2">
                         {tx.type === 'deduction' && <Dumbbell size={14} className="text-zinc-400" />}
-                        {tx.type === 'topup' ? 'Top Up Saldo' : tx.gym_name}
+                        {tx.type === 'topup' ? 'Top Up Saldo' : (tx.gym_name || 'Gym')}
                       </h3>
                       <p className="text-xs text-zinc-500">{formatDate(tx.created_at)}</p>
                     </div>

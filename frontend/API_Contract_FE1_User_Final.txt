@@ -1,0 +1,83 @@
+# 📄 FINAL API CONTRACT: FRONTEND 1 (USER / MEMBER APP)
+**Base URL:** `VITE_API_BASE_URL` (Bawaan: `http://localhost:8000/api`)
+**Auth Header:** `Authorization: Bearer <token>`
+**Format Waktu:** ISO8601 (Contoh: `2026-08-27T14:00:00Z`)
+
+Dokumen ini mendeskripsikan *endpoint* aktual yang saat ini dikonsumsi secara aktif oleh Frontend User (Axios & TanStack Query).
+
+## 1. Authentication (Guest)
+Endpoint untuk proses pendaftaran dan otentikasi awal.
+
+*   **POST `/auth/register`**
+    *   **Request:** `{ "name": "Budi", "email": "budi@email.com", "password": "password" }`
+    *   **Response (201):** `{ "token": "...", "user": { ... } }`
+
+*   **POST `/auth/login`**
+    *   **Request:** `{ "email": "budi@email.com", "password": "password" }`
+    *   **Response (200):** `{ "token": "...", "user": { "id": 1, "name": "Budi", "role": "user", "credit_balance": 50 } }`
+
+## 2. User & Profile Management (Protected)
+Digunakan oleh *Zustand authStore* dan halaman profil.
+
+*   **GET `/user`**
+    *   **Kegunaan:** Refetch data saldo dan profil terkini.
+    *   **Response (200):** `{ "id": 1, "name": "Budi", "email": "budi@email.com", "role": "user", "credit_balance": 45 }`
+
+*   **PUT `/user`** (Opsional/Sesuai Kesiapan Backend)
+    *   **Kegunaan:** Pembaruan profil (Nama/Password) dari form `EditProfile` & `Security`.
+    *   **Request:** `{ "name": "Budi Santoso", "current_password": "...", "new_password": "..." }`
+
+## 3. Katalog Gym (Protected)
+Digunakan pada halaman `GymDiscovery`.
+
+*   **GET `/gyms`**
+    *   **Kegunaan:** Menampilkan array list mitra gym aktif.
+    *   **Response (200):**
+        ```json
+        [
+          {
+            "id": 1,
+            "name": "Iron Works Elite",
+            "location": "Downtown District",
+            "facilities": ["Cardio", "Free Weights"],
+            "credit_price": 5
+          }
+        ]
+        ```
+
+## 4. Transaksi & Validasi (Protected)
+Inti dari sistem akses Member (Pay-per-visit).
+
+*   **POST `/transactions/checkin`**
+    *   **Kegunaan:** Mengunci (reserve) saldo dan mengeluarkan PIN.
+    *   **Request:** `{ "gym_id": 1 }`
+    *   **Response (201):**
+        ```json
+        {
+          "message": "Check-in pending",
+          "transaction": {
+            "id": 101,
+            "amount": 5,
+            "pin_code": "8492",
+            "status": "pending",
+            "expires_at": "2026-08-27T16:00:00Z" 
+          }
+        }
+        ```
+    *   *Catatan Kritis FE:* `expires_at` di-*parse* menjadi `new Date("2026-08-27T16:00:00Z")` pada Timer untuk mencegah distorsi zona waktu lokal (Timezone Drift).
+
+*   **GET `/transactions`**
+    *   **Kegunaan:** Menampilkan histori dompet (WalletHistory) secara eksklusif untuk role User (mutasi -/+) yang sedang login.
+    *   **Response (200):**
+        ```json
+        [
+          {
+            "id": 101,
+            "gym_name": "Iron Works Elite",
+            "type": "deduction",
+            "amount": 5,
+            "status": "completed",
+            "created_at": "2026-08-27T08:30:00Z"
+          }
+        ]
+        ```

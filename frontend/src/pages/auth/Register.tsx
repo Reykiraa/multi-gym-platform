@@ -78,7 +78,7 @@ const Register: React.FC = () => {
               <Input 
                 id="register-name"
                 type="text" 
-                placeholder="Masukkan nama..." 
+                placeholder="Your Name" 
                 error={errors.name?.message}
                 {...register('name')} 
               />
@@ -89,7 +89,7 @@ const Register: React.FC = () => {
               <Input 
                 id="register-email"
                 type="email" 
-                placeholder="example@example.com" 
+                placeholder="e.g., name@email.com" 
                 error={errors.email?.message}
                 {...register('email')} 
               />
@@ -100,7 +100,7 @@ const Register: React.FC = () => {
               <Input 
                 id="register-password"
                 type="password" 
-                placeholder="Masukkan password..." 
+                placeholder="Min. 8 karakter" 
                 error={errors.password?.message}
                 {...register('password')} 
               />

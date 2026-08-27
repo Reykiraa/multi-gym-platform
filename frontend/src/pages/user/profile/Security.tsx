@@ -6,6 +6,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import Input from '../../../components/ui/Input';
 import Button from '../../../components/ui/Button';
+import apiClient from '../../../lib/axios';
 
 const securitySchema = z.object({
   currentPassword: z.string().min(6, { message: "Password minimal 6 karakter" }),
@@ -25,9 +26,21 @@ const Security: React.FC = () => {
     resolver: zodResolver(securitySchema)
   });
 
-  const onSubmit = (data: SecurityFormValues) => {
-    window.alert("Password successfully changed!");
-    reset();
+  const onSubmit = async (data: SecurityFormValues) => {
+    try {
+      await apiClient.put('/user', {
+        current_password: data.currentPassword,
+        new_password: data.newPassword,
+      });
+      window.alert("Password successfully changed!");
+      reset();
+    } catch (error: any) {
+      if (error.response?.status === 422) {
+        window.alert(error.response.data.message || "Validasi gagal");
+      } else {
+        window.alert("Terjadi kesalahan saat mengubah password");
+      }
+    }
   };
 
   return (

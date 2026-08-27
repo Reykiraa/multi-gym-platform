@@ -7,6 +7,7 @@ import { z } from 'zod';
 import Input from '../../../components/ui/Input';
 import Button from '../../../components/ui/Button';
 import { useAuthStore } from '../../../store/authStore';
+import apiClient from '../../../lib/axios';
 
 const editProfileSchema = z.object({
   name: z.string().min(3, { message: "Nama minimal 3 karakter" }),
@@ -29,10 +30,19 @@ const EditProfile: React.FC = () => {
     }
   });
 
-  const onSubmit = (data: EditProfileFormValues) => {
-    updateUser(data);
-    window.alert("Profile updated!");
-    navigate('/user/profile');
+  const onSubmit = async (data: EditProfileFormValues) => {
+    try {
+      const response = await apiClient.put('/user', data);
+      updateUser(response.data.user);
+      window.alert("Profile updated!");
+      navigate('/user/profile');
+    } catch (error: any) {
+      if (error.response?.status === 422) {
+        window.alert(error.response.data.message || "Validasi gagal");
+      } else {
+        window.alert("Terjadi kesalahan saat menyimpan profil");
+      }
+    }
   };
 
   return (

@@ -60,7 +60,7 @@ export const useAuthStore = create<AuthState>()(
         }),
     }),
     {
-      name: 'gymnox-auth-storage',
+      name: 'auth-storage',
       // Only persist the essential fields; derive isAuthenticated on rehydration.
       partialize: (state) => ({
         user: state.user,
