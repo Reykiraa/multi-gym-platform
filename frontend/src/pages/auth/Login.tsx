@@ -65,7 +65,7 @@ const Login: React.FC = () => {
               <Input 
                 id="login-email"
                 type="email" 
-                placeholder="contoh@email.com" 
+                placeholder="example@example.com" 
                 error={errors.email?.message}
                 {...register('email')} 
               />
@@ -76,7 +76,7 @@ const Login: React.FC = () => {
               <Input 
                 id="login-password"
                 type="password" 
-                placeholder="••••••••" 
+                placeholder="Masukkan password..." 
                 error={errors.password?.message}
                 {...register('password')} 
               />
