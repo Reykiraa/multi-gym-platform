@@ -23,7 +23,7 @@ class AuthController extends Controller
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users',
             'password' => 'required|string|min:8',
-            'role' => 'required|string|in:admin,mitra,user',
+            // 'role' => 'required|string|in:admin,mitra,user',
         ]);
 
         // Create user, password will be hashed automatically by User model casts
@@ -31,7 +31,7 @@ class AuthController extends Controller
             'name' => $validated['name'],
             'email' => $validated['email'],
             'password' => $validated['password'],
-            'role' => $validated['role'],
+            'role' => 'user',
         ]);
 
         $token = $user->createToken('auth_token')->plainTextToken;
@@ -82,5 +82,41 @@ class AuthController extends Controller
     public function user(Request $request): JsonResponse
     {
         return response()->json($request->user(), 200);
+    }
+
+    /**
+     * Update user profile.
+     *
+     * @param Request $request
+     * @return JsonResponse
+     */
+    public function updateProfile(Request $request): JsonResponse
+    {
+        /** @var \App\Models\User $user */
+        $user = $request->user();
+
+        $validated = $request->validate([
+            'name' => 'sometimes|string|max:255',
+            'current_password' => 'required_with:new_password|string',
+            'new_password' => 'sometimes|string|min:8',
+        ]);
+
+        if (isset($validated['new_password'])) {
+            if (!Hash::check($validated['current_password'], $user->password)) {
+                return response()->json(['message' => 'Password saat ini salah'], 422);
+            }
+            $user->password = $validated['new_password'];
+        }
+
+        if (isset($validated['name'])) {
+            $user->name = $validated['name'];
+        }
+
+        $user->save();
+
+        return response()->json([
+            'message' => 'Profile updated successfully',
+            'user' => $user,
+        ], 200);
     }
 }

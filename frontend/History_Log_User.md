@@ -53,3 +53,8 @@
 - **File Dibuat/Dimodifikasi:** `.env.local`, `src/lib/axios.ts`, `src/store/authStore.ts`, `src/pages/auth/Login.tsx`, `src/pages/auth/Register.tsx`, `src/pages/user/GymDiscovery.tsx`, `src/pages/user/WalletHistory.tsx`, `src/pages/user/GymDetail.tsx`.
 - **Mock Data & State Status:** MOCK DATA RESMI DIHAPUS. Aplikasi 100% mengonsumsi RESTful API asli dari *backend*.
 - **Catatan Integrasi Backend:** *Endpoint* tersambung sempurna tanpa *route collision*. (Catatan teknis ke depan: Perlu mengimplementasikan `persist` middleware pada Zustand agar sesi login bertahan saat *page refresh*).
+
+## [2026-08-27] - Minor Revision: Partner Acquisition CTA
+- **Fitur Selesai:** Menambahkan kalimat Call-to-Action (CTA) "Hubungi Kami" pada bagian bawah form Register untuk membuka jalur akuisisi Mitra Gym (B2B) via mailto.
+- **File Dibuat/Dimodifikasi:** `src/pages/auth/Register.tsx`.
+- **Catatan UI/UX:** Diimplementasikan dengan hierarki visual sekunder (light font weight, teks abu-abu) agar tidak mendistraksi konversi pendaftaran Member utama.

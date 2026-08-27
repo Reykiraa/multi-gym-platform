@@ -12,6 +12,7 @@ Route::post('/auth/login', [AuthController::class, 'login']);
 
 Route::middleware('auth:sanctum')->group(function () {
     Route::get('/user', [AuthController::class, 'user']);
+    Route::put('/user', [AuthController::class, 'updateProfile']);
 
     Route::get('/gyms', [GymController::class, 'index']);
     Route::post('/gyms', [GymController::class, 'store']);

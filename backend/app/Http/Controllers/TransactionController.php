@@ -123,6 +123,17 @@ class TransactionController extends Controller
                 ->with('gym')
                 ->latest()
                 ->paginate(15);
+
+            $transactions->getCollection()->transform(function ($tx) {
+                return [
+                    'id' => $tx->id,
+                    'gym_name' => $tx->gym->name ?? 'Gym',
+                    'type' => 'deduction',
+                    'amount' => $tx->amount,
+                    'status' => $tx->status,
+                    'created_at' => $tx->created_at->toIso8601String(),
+                ];
+            });
         } elseif ($user->role === 'mitra') {
             $transactions = Transaction::whereHas('gym', function ($query) use ($user) {
                 $query->where('mitra_id', $user->id);
