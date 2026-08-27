@@ -6,16 +6,15 @@ import { z } from 'zod';
 import Input from '../../components/ui/Input';
 import Button from '../../components/ui/Button';
 import Card from '../../components/ui/Card';
+import apiClient from '../../lib/axios';
+import { useAuthStore } from '../../store/authStore';
 
-// ---------------------------------------------------------------------------
-// Validation schema
-// ---------------------------------------------------------------------------
 const registerSchema = z.object({
   name: z.string().min(3, 'Nama minimal 3 karakter'),
   email: z.string().email('Format email tidak valid'),
   password: z.string().min(6, 'Password minimal 6 karakter'),
   terms: z.literal(true, {
-    errorMap: () => ({ message: 'Anda harus menyetujui Syarat & Ketentuan' }),
+    message: 'Anda harus menyetujui Syarat & Ketentuan',
   }),
 });
 
@@ -23,7 +22,8 @@ type RegisterFormValues = z.infer<typeof registerSchema>;
 
 const Register: React.FC = () => {
   const navigate = useNavigate();
-
+  const { setAuth } = useAuthStore();
+  
   const {
     register,
     handleSubmit,
@@ -35,12 +35,15 @@ const Register: React.FC = () => {
 
   const onSubmit = async (values: RegisterFormValues) => {
     try {
-      // Mock register delay
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-      
-      // Navigate to login or discovery upon successful registration mock
+      const response = await apiClient.post('/auth/register', { 
+        name: values.name, 
+        email: values.email, 
+        password: values.password 
+      });
+      setAuth(response.data.user, response.data.token);
       navigate('/user/gyms', { replace: true });
-    } catch {
+    } catch (error) {
+      console.error('Register failed', error);
       setError('root', { message: 'Pendaftaran gagal. Silakan coba lagi.' });
     }
   };
