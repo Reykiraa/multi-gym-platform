@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -8,6 +8,7 @@ import Button from '../../components/ui/Button';
 import Card from '../../components/ui/Card';
 import apiClient from '../../lib/axios';
 import { useAuthStore } from '../../store/authStore';
+import TermsModal from '../../components/modals/TermsModal';
 
 const registerSchema = z.object({
   name: z.string().min(3, 'Nama minimal 3 karakter'),
@@ -23,6 +24,7 @@ type RegisterFormValues = z.infer<typeof registerSchema>;
 const Register: React.FC = () => {
   const navigate = useNavigate();
   const { setAuth } = useAuthStore();
+  const [isTermsOpen, setIsTermsOpen] = useState(false);
   
   const {
     register,
@@ -67,7 +69,7 @@ const Register: React.FC = () => {
               <Input 
                 id="register-name"
                 type="text" 
-                placeholder="Budi Santoso" 
+                placeholder="Masukkan nama..." 
                 error={errors.name?.message}
                 {...register('name')} 
               />
@@ -78,7 +80,7 @@ const Register: React.FC = () => {
               <Input 
                 id="register-email"
                 type="email" 
-                placeholder="contoh@email.com" 
+                placeholder="example@example.com" 
                 error={errors.email?.message}
                 {...register('email')} 
               />
@@ -89,7 +91,7 @@ const Register: React.FC = () => {
               <Input 
                 id="register-password"
                 type="password" 
-                placeholder="••••••••" 
+                placeholder="Masukkan password..." 
                 error={errors.password?.message}
                 {...register('password')} 
               />
@@ -104,7 +106,7 @@ const Register: React.FC = () => {
                   {...register('terms')}
                 />
                 <label htmlFor="terms" className="text-sm text-zinc-400">
-                  Saya setuju dengan <a href="#" className="text-yellow-500 hover:underline">Syarat & Ketentuan</a> serta Kebijakan Privasi.
+                  Saya setuju dengan <span onClick={() => setIsTermsOpen(true)} className="text-yellow-500 hover:underline cursor-pointer">Syarat & Ketentuan</span> serta Kebijakan Privasi.
                 </label>
               </div>
               {errors.terms && <span className="text-xs text-rose-500">{errors.terms.message}</span>}
@@ -123,8 +125,17 @@ const Register: React.FC = () => {
           <p className="text-center text-sm text-zinc-500 mt-6">
             Sudah punya akun? <Link to="/login" className="text-yellow-500 hover:underline">Login di sini</Link>
           </p>
+
+          <hr className="my-4 border-zinc-800" />
+          <div className="mt-4">
+            <p className="text-sm text-zinc-400 text-center font-light">
+              Memiliki fasilitas Gym? <a href="mailto:admin@multigym.com" className="text-yellow-500 hover:underline">Hubungi Kami</a> untuk menjadi Mitra.
+            </p>
+          </div>
         </Card>
       </div>
+
+      <TermsModal isOpen={isTermsOpen} onClose={() => setIsTermsOpen(false)} />
     </div>
   );
 };
