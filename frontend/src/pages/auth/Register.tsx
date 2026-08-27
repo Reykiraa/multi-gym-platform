@@ -138,7 +138,7 @@ const Register: React.FC = () => {
           <hr className="my-4 border-zinc-800" />
           <div className="mt-4">
             <p className="text-sm text-zinc-400 text-center font-light">
-              Memiliki fasilitas Gym? <a href="mailto:admin@multigym.com" className="text-yellow-500 hover:underline">Hubungi Kami</a> untuk menjadi Mitra.
+              Memiliki fasilitas Gym? <a href="https://wa.me/6281315792492" className="text-yellow-500 hover:underline">Hubungi Kami</a> untuk menjadi Mitra.
             </p>
           </div>
         </Card>
