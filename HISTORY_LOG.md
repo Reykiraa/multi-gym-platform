@@ -1,0 +1,16 @@
+## [2026-08-27] - Integrasi Modul FE1 (User/Member App) & Backend
+- **Fitur Selesai:** 
+  - Endpoint `PUT /api/user` (Update nama dan ganti password dengan verifikasi password lama).
+  - Transformasi payload `GET /api/transactions` untuk menyajikan skema flat (`gym_name`, `type: deduction`, ISO8601 timestamp) kompatibel dengan FE1.
+  - Penambahan Zustand `persist` middleware pada `authStore.ts` di Frontend untuk mengunci sesi login saat refresh halaman.
+  - Perbaikan konsumsi data histori dompet di `WalletHistory.tsx`.
+- **File Dibuat/Dimodifikasi:** 
+  - `backend/app/Http/Controllers/AuthController.php`
+  - `backend/app/Http/Controllers/TransactionController.php`
+  - `backend/routes/api.php`
+  - `frontend/src/store/authStore.ts`
+  - `frontend/src/pages/user/WalletHistory.tsx`
+  - `frontend/src/pages/user/profile/EditProfile.tsx`
+  - `frontend/src/pages/user/profile/Security.tsx`
+- **Keputusan Arsitektur & Keamanan:** Menggunakan `$transactions->getCollection()->transform()` untuk mempertahankan format paginator Laravel tanpa merusak kontrak JSON FE1. Validasi keamanan password lama via `Hash::check()` sebelum menyimpan hash password baru.
+- **Catatan Integrasi Frontend:** Seluruh alur User (Register, Login, Discovery, Check-in, Timer, Edit Profile, dan Wallet History) telah terhubung secara *live* ke API Backend.
