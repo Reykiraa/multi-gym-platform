@@ -6,6 +6,10 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 // --- Layouts ---
 import ProtectedLayout from './layouts/ProtectedLayout';
 import AdminLayout from './layouts/AdminLayout';
+import MitraLayout from './layouts/MitraLayout';
+
+// --- Global UI ---
+import ToastContainer from './components/ui/ToastContainer';
 
 // --- Guest / Public Pages ---
 import LandingPage from './pages/guest/LandingPage';
@@ -27,8 +31,9 @@ import AdminDashboard from './pages/admin/AdminDashboard';
 import GymManager from './pages/admin/GymManager';
 import Transactions from './pages/admin/Transactions';
 
-// --- Mitra Pages (Placeholder — FE2 Core Phase 3) ---
+// --- Mitra Pages ---
 import MitraDashboard from './pages/mitra/MitraDashboard';
+import MitraHistory from './pages/mitra/MitraHistory';
 
 // --- Error Pages ---
 import ForbiddenPage from './pages/error/ForbiddenPage';
@@ -78,7 +83,6 @@ function App() {
 
           {/* ------------------------------------------------------------------ */}
           {/* USER PROTECTED ROUTES (role: user)                                 */}
-          {/* Wrapped in the original <main> for FE1 visual consistency.          */}
           {/* ------------------------------------------------------------------ */}
           <Route
             element={
@@ -100,7 +104,6 @@ function App() {
 
           {/* ------------------------------------------------------------------ */}
           {/* ADMIN PROTECTED ROUTES (role: admin)                               */}
-          {/* Admin routes use AdminLayout (sidebar) instead of <main> wrapper.  */}
           {/* ------------------------------------------------------------------ */}
           <Route element={<ProtectedLayout allowedRoles={['admin']} />}>
             <Route element={<AdminLayout />}>
@@ -114,7 +117,10 @@ function App() {
           {/* MITRA PROTECTED ROUTES (role: mitra)                               */}
           {/* ------------------------------------------------------------------ */}
           <Route element={<ProtectedLayout allowedRoles={['mitra']} />}>
-            <Route path="/mitra/dashboard" element={<MitraDashboard />} />
+            <Route element={<MitraLayout />}>
+              <Route path="/mitra/dashboard" element={<MitraDashboard />} />
+              <Route path="/mitra/history" element={<MitraHistory />} />
+            </Route>
           </Route>
 
           {/* ------------------------------------------------------------------ */}
@@ -122,6 +128,8 @@ function App() {
           {/* ------------------------------------------------------------------ */}
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
+        
+        <ToastContainer />
       </BrowserRouter>
     </QueryClientProvider>
   );
