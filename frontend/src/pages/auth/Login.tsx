@@ -35,8 +35,17 @@ const Login: React.FC = () => {
         email: values.email, 
         password: values.password 
       });
-      setAuth(response.data.user, response.data.token);
-      navigate('/user/gyms');
+      const user = response.data.user;
+      setAuth(user, response.data.token);
+      
+      // Role-based smart redirect
+      if (user.role === 'admin') {
+        navigate('/admin/dashboard');
+      } else if (user.role === 'mitra') {
+        navigate('/mitra/dashboard');
+      } else {
+        navigate('/user/gyms');
+      }
     } catch (error) {
       console.error('Login failed', error);
       setError('root', { message: 'Login gagal. Silakan periksa email dan password Anda.' });

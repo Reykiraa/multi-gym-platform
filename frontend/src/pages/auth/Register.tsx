@@ -38,10 +38,19 @@ const Register: React.FC = () => {
       const response = await apiClient.post('/auth/register', { 
         name: values.name, 
         email: values.email, 
-        password: values.password 
+        password: values.password,
+        role: 'user'
       });
-      setAuth(response.data.user, response.data.token);
-      navigate('/user/gyms', { replace: true });
+      const user = response.data.user;
+      setAuth(user, response.data.token);
+      
+      if (user.role === 'admin') {
+        navigate('/admin/dashboard', { replace: true });
+      } else if (user.role === 'mitra') {
+        navigate('/mitra/dashboard', { replace: true });
+      } else {
+        navigate('/user/gyms', { replace: true });
+      }
     } catch (error) {
       console.error('Register failed', error);
       setError('root', { message: 'Pendaftaran gagal. Silakan coba lagi.' });
