@@ -4,26 +4,16 @@ import Navbar from '../../components/shared/Navbar';
 import Card from '../../components/ui/Card';
 import { ArrowDownRight, ArrowUpRight, Dumbbell, CreditCard } from 'lucide-react';
 import { type TransactionHistory } from '../../types';
+import apiClient from '../../lib/axios';
+import { useAuthStore } from '../../store/authStore';
 
-// Mock function for fetching transaction history
 const fetchTransactions = async (): Promise<TransactionHistory[]> => {
-  return [
-    { id: 1, type: "deduction", gym_name: "Iron Works Elite", amount: 5, created_at: "2026-08-25T08:30:00Z" },
-    { id: 2, type: "topup", gym_name: "System", amount: 50, created_at: "2026-08-20T10:00:00Z" },
-    { id: 3, type: "deduction", gym_name: "The Foundry", amount: 6, created_at: "2026-08-18T14:15:00Z" },
-    { id: 4, type: "topup", gym_name: "System", amount: 20, created_at: "2026-08-15T09:00:00Z" },
-  ];
-};
-
-const fetchBalance = async (): Promise<number> => {
-  return 50; // Mock current balance
+  const response = await apiClient.get('/transactions');
+  return response.data;
 };
 
 const WalletHistory: React.FC = () => {
-  const { data: balance, isLoading: isBalanceLoading } = useQuery({
-    queryKey: ['balance'],
-    queryFn: fetchBalance,
-  });
+  const { user } = useAuthStore();
 
   const { data: transactions = [], isLoading: isHistoryLoading } = useQuery({
     queryKey: ['transactions'],
@@ -61,7 +51,7 @@ const WalletHistory: React.FC = () => {
               <div className="relative z-10 p-4">
                 <h2 className="text-zinc-400 font-medium mb-2">Total Saldo Kredit</h2>
                 <div className="text-5xl font-bold text-yellow-500 mb-6 flex items-baseline gap-2">
-                  {isBalanceLoading ? '...' : balance} <span className="text-2xl text-yellow-500/70">CR</span>
+                  {user?.credit_balance ?? 0} <span className="text-2xl text-yellow-500/70">CR</span>
                 </div>
                 <div className="flex gap-3">
                   <button 
