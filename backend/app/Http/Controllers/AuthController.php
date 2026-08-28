@@ -85,6 +85,25 @@ class AuthController extends Controller
     }
 
     /**
+     * Get all users (Admin only).
+     *
+     * @param Request $request
+     * @return JsonResponse
+     */
+    public function index(Request $request): JsonResponse
+    {
+        if ($request->user()->role !== 'admin') {
+            return response()->json(['message' => 'Unauthorized'], 403);
+        }
+
+        $users = User::when($request->role, fn($q, $r) => $q->where('role', $r))
+            ->get(['id', 'name', 'email', 'role', 'credit_balance']);
+
+        return response()->json($users, 200);
+    }
+
+
+    /**
      * Update user profile.
      *
      * @param Request $request

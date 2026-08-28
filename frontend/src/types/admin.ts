@@ -49,6 +49,7 @@ export interface AdminTransaction {
 export interface TopUpPayload {
   user_id: number;
   amount: number;
+  notes?: string;
 }
 
 /**
@@ -59,4 +60,15 @@ export interface AdminStats {
   total_users: number;
   total_transactions: number;
   total_revenue: number;
+}
+
+/**
+ * Represents a User as returned by GET /api/users.
+ */
+export interface AdminUser {
+  id: number;
+  name: string;
+  email: string;
+  role: Role;
+  credit_balance: number;
 }

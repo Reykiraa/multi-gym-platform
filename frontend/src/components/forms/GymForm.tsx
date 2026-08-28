@@ -4,16 +4,27 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { X } from 'lucide-react';
+import { useQuery } from '@tanstack/react-query';
 import Input from '../ui/Input';
 import Button from '../ui/Button';
 import type { GymFormPayload, AdminGym } from '../../types/admin';
+import apiClient from '../../lib/axios';
+
+// ---------------------------------------------------------------------------
+// Mitra list type (only what we need for the dropdown)
+// ---------------------------------------------------------------------------
+
+interface MitraOption {
+  id: number;
+  name: string;
+}
 
 // ---------------------------------------------------------------------------
 // Validation schema
 // ---------------------------------------------------------------------------
 
 const gymSchema = z.object({
-  mitra_id: z.coerce.number().int().positive('Mitra ID wajib diisi'),
+  mitra_id: z.coerce.number().int().positive('Pemilik Gym wajib dipilih'),
   name: z.string().min(3, 'Nama gym minimal 3 karakter'),
   location: z.string().min(3, 'Lokasi minimal 3 karakter'),
   facilities: z.string().min(1, 'Fasilitas wajib diisi (pisahkan dengan koma)'),
@@ -41,6 +52,7 @@ interface GymFormProps {
  * Reusable modal form for creating or editing a Gym.
  * Facilities are entered as a comma-separated string, then split into an array
  * before submission to match the API contract.
+ * The Mitra owner is selected from a live dropdown fetched from GET /api/users?role=mitra.
  */
 const GymForm: React.FC<GymFormProps> = ({ gym, onSubmit, onClose, isLoading = false }) => {
   const isEdit = Boolean(gym);
@@ -58,6 +70,15 @@ const GymForm: React.FC<GymFormProps> = ({ gym, onSubmit, onClose, isLoading = f
       location: gym?.location ?? '',
       facilities: gym?.facilities.join(', ') ?? '',
       credit_price: gym?.credit_price ?? ('' as unknown as number),
+    },
+  });
+
+  // Fetch mitra list for the dropdown
+  const { data: mitras = [], isLoading: mitrasLoading } = useQuery<MitraOption[]>({
+    queryKey: ['users', 'mitra'],
+    queryFn: async () => {
+      const response = await apiClient.get('/users', { params: { role: 'mitra' } });
+      return response.data;
     },
   });
 
@@ -104,14 +125,31 @@ const GymForm: React.FC<GymFormProps> = ({ gym, onSubmit, onClose, isLoading = f
 
         {/* Body */}
         <form onSubmit={handleSubmit(handleFormSubmit)} className="px-6 py-5 flex flex-col gap-4" noValidate>
-          <Input
-            id="gym-mitra-id"
-            label="Mitra ID"
-            type="number"
-            placeholder="2"
-            error={errors.mitra_id?.message}
-            {...register('mitra_id')}
-          />
+          {/* Mitra dropdown — populated from live API */}
+          <div>
+            <label className="block text-sm font-medium text-zinc-300 mb-1.5" htmlFor="gym-mitra-id">
+              Pemilik Gym (Mitra)
+            </label>
+            <select
+              id="gym-mitra-id"
+              {...register('mitra_id')}
+              disabled={mitrasLoading}
+              className="w-full bg-zinc-800 border border-zinc-700 rounded-xl px-4 py-3 text-white text-sm focus:outline-none focus:border-yellow-500 transition-colors disabled:opacity-50"
+            >
+              <option value="">
+                {mitrasLoading ? 'Memuat daftar mitra...' : '-- Pilih Mitra --'}
+              </option>
+              {mitras.map((m) => (
+                <option key={m.id} value={m.id}>
+                  {m.name} (ID: {m.id})
+                </option>
+              ))}
+            </select>
+            {errors.mitra_id && (
+              <p className="text-rose-500 text-xs mt-1">{errors.mitra_id.message}</p>
+            )}
+          </div>
+
           <Input
             id="gym-name"
             label="Nama Gym"
