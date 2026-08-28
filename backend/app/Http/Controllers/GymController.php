@@ -24,6 +24,19 @@ class GymController extends Controller
     }
 
     /**
+     * Display the specified gym.
+     *
+     * @param string $id
+     * @return JsonResponse
+     */
+    public function show(string $id): JsonResponse
+    {
+        $gym = Gym::with('mitra')->findOrFail($id);
+        
+        return response()->json($gym, 200);
+    }
+
+    /**
      * Store a newly created gym in storage.
      *
      * @param Request $request
@@ -41,7 +54,7 @@ class GymController extends Controller
             'name' => 'required|string|max:255',
             'location' => 'required|string',
             'facilities' => 'required|array',
-            'credit_price' => 'required|integer',
+            'credit_price' => 'required|integer|min:1',
         ]);
 
         $gym = Gym::create($validated);
@@ -74,7 +87,7 @@ class GymController extends Controller
             'name' => 'sometimes|string|max:255',
             'location' => 'sometimes|string',
             'facilities' => 'sometimes|array',
-            'credit_price' => 'sometimes|integer',
+            'credit_price' => 'sometimes|integer|min:1',
         ]);
 
         $gym->update($validated);

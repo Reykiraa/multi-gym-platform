@@ -73,22 +73,21 @@ const LandingPage: React.FC = () => {
                 Join Us Now <ChevronRight className="w-4 h-4 ml-2" />
               </Button>
             </Link>
-            <Link to="/login" className="w-full sm:w-auto">
+            <a href="#about" className="w-full sm:w-auto">
               <Button variant="outline" className="w-full sm:w-auto text-sm sm:text-base py-4 px-8 uppercase tracking-widest font-bold border-yellow-500 text-yellow-500 hover:bg-yellow-500/10">
                 Explore More
               </Button>
-            </Link>
+            </a>
           </div>
 
         </div>
       </section>
 
       {/* About Section */}
-      <section className="bg-zinc-950 px-6 py-20 border-t border-zinc-900/50">
+      <section id="about" className="bg-zinc-950 px-6 py-20 border-t border-zinc-900/50">
         <div className="max-w-7xl mx-auto flex flex-col items-center">
           
           <div className="text-yellow-500 text-xs font-bold tracking-[0.2em] uppercase mb-4 flex items-center gap-2">
-            <span className="w-1.5 h-1.5 bg-yellow-500 rounded-full"></span>
             About Us
           </div>
           

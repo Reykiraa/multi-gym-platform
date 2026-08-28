@@ -13,8 +13,10 @@ Route::post('/auth/login', [AuthController::class, 'login']);
 Route::middleware('auth:sanctum')->group(function () {
     Route::get('/user', [AuthController::class, 'user']);
     Route::put('/user', [AuthController::class, 'updateProfile']);
+    Route::get('/users', [AuthController::class, 'index']);
 
     Route::get('/gyms', [GymController::class, 'index']);
+    Route::get('/gyms/{id}', [GymController::class, 'show']);
     Route::post('/gyms', [GymController::class, 'store']);
     Route::put('/gyms/{id}', [GymController::class, 'update']);
     Route::delete('/gyms/{id}', [GymController::class, 'destroy']);

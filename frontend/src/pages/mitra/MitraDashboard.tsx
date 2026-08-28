@@ -4,16 +4,20 @@ import { ScanLine, Clock, CheckCircle, XCircle } from 'lucide-react';
 import PinInput from '../../components/forms/PinInput';
 import Button from '../../components/ui/Button';
 import Badge from '../../components/ui/Badge';
-import { useRecentEntries, useValidatePin } from '../../hooks/api/useMitraAPI';
-import { useToastStore } from '../../store/toastStore';
+import { useGetTransactions, useValidatePin } from '../../hooks/api/useMitraAPI';
 
+/**
+ * Mitra dashboard: PIN validation and recent entries from live backend.
+ * useGetTransactions pulls the Mitra's own transactions via GET /api/transactions
+ * (scoped by auth:sanctum to the logged-in mitra).
+ */
 const MitraDashboard: React.FC = () => {
   const [pin, setPin] = useState('');
   const [pinError, setPinError] = useState('');
 
-  const { data: entries = [], isLoading: entriesLoading } = useRecentEntries();
+  // Live data — backend scopes this to the mitra's own gyms automatically
+  const { data: entries = [], isLoading: entriesLoading } = useGetTransactions();
   const validatePin = useValidatePin();
-  const { addToast } = useToastStore();
 
   const handleSubmit = useCallback(
     async (e: React.FormEvent) => {
@@ -28,18 +32,16 @@ const MitraDashboard: React.FC = () => {
         { pin_code: trimmedPin },
         {
           onSuccess: () => {
-            addToast('success', 'Validasi Sukses! Saldo member telah dipotong.');
             setPin('');
             setPinError('');
           },
-          onError: (error) => {
-            addToast('error', error.message || 'PIN tidak valid atau sudah kedaluwarsa');
-            setPinError(error.message);
+          onError: (error: any) => {
+            setPinError(error.response?.data?.message || 'PIN tidak valid atau sudah kedaluwarsa');
           },
         },
       );
     },
-    [pin, validatePin, addToast],
+    [pin, validatePin],
   );
 
   const formatTime = (iso: string): string =>
@@ -49,6 +51,7 @@ const MitraDashboard: React.FC = () => {
     completed: { variant: 'success', label: 'Berhasil' },
     failed: { variant: 'danger', label: 'Gagal' },
     expired: { variant: 'warning', label: 'Kedaluwarsa' },
+    pending: { variant: 'warning', label: 'Pending' },
   };
 
   return (
@@ -79,7 +82,7 @@ const MitraDashboard: React.FC = () => {
             <table className="w-full text-left text-sm">
               <thead>
                 <tr className="border-b border-zinc-800 text-zinc-400 uppercase text-xs tracking-wider">
-                  <th className="px-6 py-4 font-medium">Member</th>
+                  <th className="px-6 py-4 font-medium">Gym</th>
                   <th className="px-6 py-4 font-medium">PIN</th>
                   <th className="px-6 py-4 font-medium text-right">Kredit</th>
                   <th className="px-6 py-4 font-medium text-center">Status</th>
@@ -87,18 +90,23 @@ const MitraDashboard: React.FC = () => {
                 </tr>
               </thead>
               <tbody className="divide-y divide-zinc-800">
-                {entriesLoading ? <tr><td colSpan={5} className="px-6 py-12 text-center text-zinc-500">Memuat data...</td></tr> : entries.map((entry) => {
-                  const config = statusConfig[entry.status] ?? { variant: 'warning' as const, label: entry.status };
+                {entriesLoading ? (
+                  <tr><td colSpan={5} className="px-6 py-12 text-center text-zinc-500">Memuat data...</td></tr>
+                ) : entries.length === 0 ? (
+                  <tr><td colSpan={5} className="px-6 py-12 text-center text-zinc-500">Belum ada transaksi hari ini.</td></tr>
+                ) : entries.map((entry) => {
+                  const status = (entry as any).status as string;
+                  const config = statusConfig[status] ?? { variant: 'warning' as const, label: status };
                   return (
                     <tr key={entry.id} className="hover:bg-zinc-800/50 transition-colors">
                       <td className="px-6 py-4 font-medium text-white whitespace-nowrap">
                         <div className="flex items-center gap-2">
-                          {entry.status === 'completed' ? <CheckCircle size={16} className="text-emerald-500 shrink-0" /> : <XCircle size={16} className="text-rose-500 shrink-0" />}
-                          {entry.user_name}
+                          {status === 'completed' ? <CheckCircle size={16} className="text-emerald-500 shrink-0" /> : <XCircle size={16} className="text-rose-500 shrink-0" />}
+                          {entry.gym_name}
                         </div>
                       </td>
-                      <td className="px-6 py-4 text-zinc-400 font-mono tracking-widest">{entry.pin_code}</td>
-                      <td className="px-6 py-4 text-right text-yellow-500 font-semibold whitespace-nowrap">-{entry.credit_amount}</td>
+                      <td className="px-6 py-4 text-zinc-400 font-mono tracking-widest">{(entry as any).pin_code ?? '—'}</td>
+                      <td className="px-6 py-4 text-right text-yellow-500 font-semibold whitespace-nowrap">-{entry.amount}</td>
                       <td className="px-6 py-4 text-center"><Badge variant={config.variant}>{config.label}</Badge></td>
                       <td className="px-6 py-4 text-right text-zinc-400 whitespace-nowrap">{formatTime(entry.created_at)}</td>
                     </tr>

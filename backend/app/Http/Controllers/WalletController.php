@@ -26,6 +26,7 @@ class WalletController extends Controller
 
         $validated = $request->validate([
             'amount' => 'required|integer|min:1',
+            'notes' => 'nullable|string',
         ]);
 
         $userToTopup = User::find($id);
@@ -34,14 +35,22 @@ class WalletController extends Controller
             return response()->json(['message' => 'User not found'], 404);
         }
 
-        $userToTopup->increment('credit_balance', $validated['amount']);
+        \Illuminate\Support\Facades\DB::transaction(function () use ($userToTopup, $validated) {
+            $userToTopup->increment('credit_balance', $validated['amount']);
 
-        // Refresh the model to get the updated credit_balance
-        $userToTopup->refresh();
+            \App\Models\Transaction::create([
+                'user_id' => $userToTopup->id,
+                'gym_id' => null,
+                'amount' => $validated['amount'],
+                'pin_code' => 'TOPUP',
+                'status' => 'completed',
+                'expires_at' => now(),
+            ]);
+        });
 
         return response()->json([
             'message' => 'Top-up successful',
-            'credit_balance' => $userToTopup->credit_balance,
+            'user' => $userToTopup->fresh(),
         ], 200);
     }
 }
