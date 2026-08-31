@@ -24,6 +24,8 @@ class Transaction extends Model
         'pin_code',
         'status',
         'expires_at',
+        'validated_at',
+        'validated_by',
     ];
 
     /**
@@ -35,6 +37,7 @@ class Transaction extends Model
     {
         return [
             'expires_at' => 'datetime',
+            'validated_at' => 'datetime',
         ];
     }
 

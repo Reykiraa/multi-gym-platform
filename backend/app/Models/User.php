@@ -5,12 +5,12 @@ declare(strict_types=1);
 namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
-use Database\Factories\UserFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class User extends Authenticatable
 {
@@ -28,6 +28,20 @@ class User extends Authenticatable
         'password',
         'role',
         'credit_balance',
+        'mitra_org_id',
+    ];
+
+    /**
+     * The accessors to append to the model's array form.
+     *
+     * @var array<int, string>
+     */
+    protected $appends = [
+        'member_since',
+        'total_visits',
+        'tier',
+        'pending_credits',
+        'available_credits',
     ];
 
     /**
@@ -54,7 +68,15 @@ class User extends Authenticatable
     }
 
     /**
-     * Get the gyms associated with the user.
+     * Get the mitra organization this user (branch manager) belongs to.
+     */
+    public function mitraOrg(): BelongsTo
+    {
+        return $this->belongsTo(Mitra::class, 'mitra_org_id');
+    }
+
+    /**
+     * Get the gyms associated with the user (as branch manager).
      */
     public function gyms(): HasMany
     {
@@ -67,5 +89,44 @@ class User extends Authenticatable
     public function transactions(): HasMany
     {
         return $this->hasMany(Transaction::class);
+    }
+
+    public function getMemberSinceAttribute(): string
+    {
+        return $this->created_at ? $this->created_at->format('F Y') : '-';
+    }
+
+    public function getTotalVisitsAttribute(): int
+    {
+        return $this->transactions()
+                    ->where('status', 'completed')
+                    ->whereNotNull('gym_id')
+                    ->count();
+    }
+
+    public function getTierAttribute(): ?string
+    {
+        if ($this->role !== 'user') {
+            return null;
+        }
+
+        $visits = $this->total_visits;
+
+        if ($visits > 50) return 'GOLD';
+        if ($visits > 10) return 'SILVER';
+        return 'MEMBER';
+    }
+
+    public function getPendingCreditsAttribute(): int
+    {
+        return (int) $this->transactions()
+            ->where('status', 'pending')
+            ->where('expires_at', '>', now())
+            ->sum('amount');
+    }
+
+    public function getAvailableCreditsAttribute(): int
+    {
+        return max(0, $this->credit_balance - $this->pending_credits);
     }
 }

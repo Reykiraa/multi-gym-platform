@@ -6,6 +6,7 @@ import {
   Users,
   ArrowLeftRight,
   TrendingUp,
+  Building2,
 } from 'lucide-react';
 import { useGyms } from '../../hooks/api/useGyms';
 import { useTransactions } from '../../hooks/api/useTransactions';
@@ -81,7 +82,20 @@ const AdminDashboard: React.FC = () => {
       </div>
 
       {/* Quick-access cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <Link
+          to="/admin/mitras"
+          className="group bg-zinc-900 border border-zinc-800 rounded-xl p-6 hover:border-yellow-500/50 transition-colors"
+        >
+          <div className="flex items-center gap-3 mb-3">
+            <Building2 size={20} className="text-yellow-500" />
+            <h3 className="text-lg font-semibold text-white">Mitra Organisasi</h3>
+          </div>
+          <p className="text-sm text-zinc-400">
+            Daftarkan & kelola brand gym partner (PT FTL, Gold's Gym, dll).
+          </p>
+        </Link>
+
         <Link
           to="/admin/gyms"
           className="group bg-zinc-900 border border-zinc-800 rounded-xl p-6 hover:border-yellow-500/50 transition-colors"

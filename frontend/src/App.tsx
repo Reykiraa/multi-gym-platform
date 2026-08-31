@@ -29,6 +29,7 @@ import Notifications from './pages/user/profile/Notifications';
 // --- Admin Pages ---
 import AdminDashboard from './pages/admin/AdminDashboard';
 import GymManager from './pages/admin/GymManager';
+import MitraManager from './pages/admin/MitraManager';
 import Transactions from './pages/admin/Transactions';
 
 // --- Mitra Pages ---
@@ -109,6 +110,7 @@ function App() {
             <Route element={<AdminLayout />}>
               <Route path="/admin/dashboard" element={<AdminDashboard />} />
               <Route path="/admin/gyms" element={<GymManager />} />
+              <Route path="/admin/mitras" element={<MitraManager />} />
               <Route path="/admin/transactions" element={<Transactions />} />
             </Route>
           </Route>

@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import Button from '../../components/ui/Button';
-import { Dumbbell, ChevronRight, MapPin, Wallet, Maximize } from 'lucide-react';
+import { ChevronRight, MapPin, Wallet, Maximize } from 'lucide-react';
 import gym3 from '../../assets/gym3.jpg';
 import LegalModal from '../../components/modals/LegalModal';
 
@@ -15,7 +15,7 @@ const LandingPage: React.FC = () => {
   };
 
   return (
-    <div className="bg-zinc-950 min-h-screen text-white font-sans selection:bg-yellow-500 selection:text-black">
+    <div className="bg-zinc-950 min-h-screen text-white font-sans selection:bg-yellow-500 selection:text-black scroll-smooth">
       
       {/* Hero Section */}
       <section className="relative w-full min-h-screen flex flex-col">
@@ -73,11 +73,14 @@ const LandingPage: React.FC = () => {
                 Join Us Now <ChevronRight className="w-4 h-4 ml-2" />
               </Button>
             </Link>
-            <a href="#about" className="w-full sm:w-auto">
+            <button
+              onClick={() => document.getElementById('about')?.scrollIntoView({ behavior: 'smooth' })}
+              className="w-full sm:w-auto"
+            >
               <Button variant="outline" className="w-full sm:w-auto text-sm sm:text-base py-4 px-8 uppercase tracking-widest font-bold border-yellow-500 text-yellow-500 hover:bg-yellow-500/10">
                 Explore More
               </Button>
-            </a>
+            </button>
           </div>
 
         </div>

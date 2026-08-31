@@ -1,30 +1,21 @@
 // src/store/authStore.ts
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
-import type { AuthUser } from '../types/auth';
-
-/**
- * Extended user profile used by FE1 user-facing pages (Profile, Wallet, etc.).
- * Kept for backward compatibility — FE1 components consume `user` as `UserProfile`.
- */
-export interface UserProfile extends AuthUser {
-  phone?: string;
-  credit_balance: number;
-}
+import type { User } from '../types';
 
 interface AuthState {
   /** The authenticated user, null when logged out. */
-  user: UserProfile | null;
+  user: User | null;
   /** JWT or mock session token. */
   token: string | null;
   /** Derived flag — true when both user and token are present. */
   isAuthenticated: boolean;
 
   /** Sets the authenticated user and token */
-  setAuth: (user: UserProfile, token: string) => void;
+  setAuth: (user: User, token: string) => void;
 
   /** Partially updates the authenticated user's mutable profile fields. */
-  updateUser: (data: Partial<UserProfile>) => void;
+  updateUser: (data: Partial<User> | User) => void;
 
   /** Clears all auth state (user, token, isAuthenticated). */
   logout: () => void;

@@ -2,9 +2,19 @@ export interface User {
   id: number;
   name: string;
   email: string;
-  role: string;
+  role: 'admin' | 'mitra' | 'user';
   credit_balance: number;
+  pending_credits?: number;
+  available_credits?: number;
+  mitra_org_id?: number | null;
+  tier?: string;
+  total_visits?: number;
+  member_since?: string;
+  created_at?: string;
+  updated_at?: string;
 }
+
+export type UserProfile = User;
 
 export interface Gym {
   id: number;
@@ -28,4 +38,8 @@ export interface TransactionHistory {
   gym_name: string;
   amount: number;
   created_at: string;
+  expires_at: Transaction['expires_at'];
+  user: User;
+  status: string;
+  pin_code: string;
 }

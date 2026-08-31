@@ -30,38 +30,54 @@ class TransactionController extends Controller
             'gym_id' => 'required|integer|exists:gyms,id',
         ]);
 
-        $gym = Gym::find($validated['gym_id']);
+        return DB::transaction(function () use ($user, $validated) {
+            $hasPending = Transaction::where('user_id', $user->id)
+                ->where('status', 'pending')
+                ->exists();
 
-        if ($user->credit_balance < $gym->credit_price) {
-            return response()->json(['message' => 'Insufficient credit balance'], 400);
-        }
+            if ($hasPending) {
+                return response()->json(['message' => 'Anda sudah memiliki 1 check-in pending'], 400);
+            }
 
-        $pinCode = str_pad((string)random_int(0, 9999), 4, '0', STR_PAD_LEFT);
-        $expiresAt = now()->addHours(2);
+            $gym = Gym::find($validated['gym_id']);
+            
+            $lockedUser = \App\Models\User::where('id', $user->id)->lockForUpdate()->first();
 
-        $transaction = Transaction::create([
-            'user_id' => $user->id,
-            'gym_id' => $gym->id,
-            'amount' => $gym->credit_price,
-            'pin_code' => $pinCode,
-            'status' => 'pending',
-            'expires_at' => $expiresAt,
-        ]);
+            if ($lockedUser->available_credits < $gym->credit_price) {
+                return response()->json(['message' => 'Saldo kredit yang tersedia tidak mencukupi.'], 422);
+            }
 
-        return response()->json([
-            'message' => 'Check-in initiated successfully',
-            'transaction' => [
-                'id' => $transaction->id,
-                'user_id' => $transaction->user_id,
-                'gym_id' => $transaction->gym_id,
-                'amount' => $transaction->amount,
-                'pin_code' => $transaction->pin_code,
-                'status' => $transaction->status,
-                'expires_at' => $transaction->expires_at->toIso8601String(),
-                'created_at' => $transaction->created_at,
-                'updated_at' => $transaction->updated_at,
-            ]
-        ], 201);
+            // credit_balance is NOT decremented here. 
+            // pending_credits accessor handles the escrow balance reduction dynamically.
+
+            $pinCode = str_pad((string)random_int(0, 9999), 4, '0', STR_PAD_LEFT);
+            $expiresAt = now()->addHour();
+
+            $transaction = Transaction::create([
+                'user_id' => $lockedUser->id,
+                'gym_id' => $gym->id,
+                'amount' => $gym->credit_price,
+                'pin_code' => $pinCode,
+                'status' => 'pending',
+                'expires_at' => $expiresAt,
+            ]);
+
+            $transaction->load('gym');
+
+            return response()->json([
+                'message' => 'Check-in berhasil diinisiasi.',
+                'data' => [
+                    'id' => $transaction->id,
+                    'transaction_id' => $transaction->id,
+                    'gym_id' => $transaction->gym_id,
+                    'gym_name' => $transaction->gym->name ?? $gym->name,
+                    'pin_code' => (string) $transaction->pin_code,
+                    'amount' => (int) $transaction->amount,
+                    'status' => $transaction->status,
+                    'expires_at' => $transaction->expires_at->toIso8601String(),
+                ]
+            ], 201);
+        });
     }
 
     /**
@@ -82,30 +98,41 @@ class TransactionController extends Controller
             'pin_code' => 'required|string|size:4',
         ]);
 
-        $transaction = Transaction::where('pin_code', $validated['pin_code'])
-            ->where('status', 'pending')
-            ->first();
+        return DB::transaction(function () use ($mitra, $validated) {
+            $transaction = Transaction::where('pin_code', $validated['pin_code'])
+                ->where('status', 'pending')
+                ->lockForUpdate()
+                ->first();
 
-        if (!$transaction) {
-            return response()->json(['message' => 'Transaction not found or already processed'], 400);
-        }
+            if (!$transaction) {
+                return response()->json(['message' => 'Transaction not found or already processed'], 400);
+            }
 
-        if (now()->greaterThan($transaction->expires_at)) {
-            $transaction->update(['status' => 'expired']);
-            return response()->json(['message' => 'PIN code expired'], 400);
-        }
+            if (now()->greaterThan($transaction->expires_at)) {
+                $transaction->update(['status' => 'expired']);
+                return response()->json(['message' => 'PIN code expired'], 400);
+            }
 
-        // Validate if mitra owns the gym associated with the transaction
-        if ($transaction->gym->mitra_id !== $mitra->id) {
-            return response()->json(['message' => 'Forbidden: You do not own this gym'], 403);
-        }
+            // Validate if mitra owns the gym associated with the transaction
+            if ($transaction->gym->mitra_id !== $mitra->id) {
+                return response()->json(['message' => 'Forbidden: You do not own this gym'], 403);
+            }
 
-        DB::transaction(function () use ($transaction) {
-            $transaction->update(['status' => 'completed']);
-            $transaction->user->decrement('credit_balance', $transaction->amount);
+            // Settlement: Permanently deduct the credit_balance
+            $lockedUser = \App\Models\User::where('id', $transaction->user_id)->lockForUpdate()->first();
+            $lockedUser->decrement('credit_balance', $transaction->amount);
+
+            $transaction->update([
+                'status' => 'completed',
+                'validated_at' => now(),
+                'validated_by' => $mitra->id,
+            ]);
+
+            return response()->json([
+                'message' => 'Validasi check-in berhasil.',
+                'data' => $transaction
+            ], 200);
         });
-
-        return response()->json(['message' => 'Validation successful, credit deducted'], 200);
     }
 
     /**
@@ -126,11 +153,16 @@ class TransactionController extends Controller
 
             $transactions->getCollection()->transform(function ($tx) {
                 return [
-                    'id' => $tx->id,
-                    'gym_name' => $tx->gym->name ?? 'Gym',
-                    'type' => 'deduction',
-                    'amount' => $tx->amount,
-                    'status' => $tx->status,
+                    'id'         => $tx->id,
+                    'gym_id'     => $tx->gym_id,
+                    'gym_name'   => $tx->gym->name ?? 'Gym',
+                    'type'       => 'deduction',
+                    'amount'     => $tx->amount,
+                    'status'     => $tx->status,
+                    // pin_code is included so the frontend modal can display it without
+                    // an extra /transactions/{id} round-trip for pending transactions.
+                    'pin_code'   => $tx->pin_code,
+                    'expires_at' => $tx->expires_at?->toIso8601String(),
                     'created_at' => $tx->created_at->toIso8601String(),
                 ];
             });
@@ -150,5 +182,76 @@ class TransactionController extends Controller
         }
 
         return response()->json($transactions, 200);
+    }
+
+    /**
+     * Get a specific transaction by ID.
+     *
+     * @param Request $request
+     * @param string $id
+     * @return JsonResponse
+     */
+    public function show(Request $request, string $id): JsonResponse
+    {
+        $transaction = Transaction::findOrFail($id);
+        
+        // Authorization check: user can only view their own, mitra can view gyms they own
+        $user = $request->user();
+        if ($user->role === 'user' && $transaction->user_id !== $user->id) {
+            return response()->json(['message' => 'Unauthorized'], 403);
+        }
+        if ($user->role === 'mitra' && $transaction->gym && $transaction->gym->mitra_id !== $user->id) {
+            return response()->json(['message' => 'Unauthorized'], 403);
+        }
+
+        return response()->json(['data' => $transaction], 200);
+    }
+
+    /**
+     * Cancel a pending transaction.
+     *
+     * @param Request $request
+     * @param string $id
+     * @return JsonResponse
+     */
+    public function cancel(Request $request, string $id): JsonResponse
+    {
+        return DB::transaction(function () use ($request, $id) {
+            $transaction = Transaction::where('id', $id)
+                ->where('user_id', $request->user()->id)
+                ->where('status', 'pending')
+                ->lockForUpdate()
+                ->first();
+
+            if (!$transaction) {
+                return response()->json(['message' => 'Transaksi tidak dapat dibatalkan.'], 400);
+            }
+
+            $transaction->update(['status' => 'cancelled']);
+            
+            // Available credits automatically restored via the pending_credits accessor logic
+
+            return response()->json([
+                'message' => 'Transaksi berhasil dibatalkan.'
+            ], 200);
+        });
+    }
+
+    /**
+     * Get the active pending transaction for the user.
+     *
+     * @param Request $request
+     * @return JsonResponse
+     */
+    public function activePending(Request $request): JsonResponse
+    {
+        $transaction = Transaction::with('gym')
+            ->where('user_id', $request->user()->id)
+            ->where('status', 'pending')
+            ->where('expires_at', '>', now())
+            ->latest()
+            ->first();
+
+        return response()->json(['data' => $transaction], 200);
     }
 }
