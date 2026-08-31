@@ -2,6 +2,7 @@ export interface User {
   id: number;
   name: string;
   email: string;
+  phone?: string;
   role: 'admin' | 'mitra' | 'user';
   credit_balance: number;
   pending_credits?: number;
