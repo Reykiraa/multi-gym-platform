@@ -20,7 +20,7 @@ export const useValidatePin = () => {
 
   return useMutation<ValidatePinResponse, Error, ValidatePinPayload>({
     mutationFn: async (payload) => {
-      const response = await apiClient.post('/transactions/validate', payload);
+      const response = await apiClient.post('mitra/transactions/validate-pin', payload);
       return response.data;
     },
     onSuccess: (data) => {

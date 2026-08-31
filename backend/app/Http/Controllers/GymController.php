@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Http\Controllers;
 
 use App\Models\Gym;
+use App\Models\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
@@ -50,16 +51,95 @@ class GymController extends Controller
         }
 
         $validated = $request->validate([
-            'mitra_id' => 'required|integer|exists:users,id',
+            'mitra_name' => 'required|string|max:255',
+            'mitra_email' => 'required|string|email|unique:users,email',
+            'mitra_password' => 'nullable|string|min:8',
             'name' => 'required|string|max:255',
             'location' => 'required|string',
             'facilities' => 'required|array',
             'credit_price' => 'required|integer|min:1',
         ]);
 
-        $gym = Gym::create($validated);
+        $result = \Illuminate\Support\Facades\DB::transaction(function () use ($validated) {
+            $newMitra = \App\Models\User::create([
+                'name' => $validated['mitra_name'],
+                'email' => $validated['mitra_email'],
+                'password' => $validated['mitra_password'] ?? 'Gym1234!',
+                'role' => 'mitra',
+            ]);
 
-        return response()->json($gym, 201);
+            $gym = Gym::create([
+                'mitra_id' => $newMitra->id,
+                'name' => $validated['name'],
+                'location' => $validated['location'],
+                'facilities' => $validated['facilities'],
+                'credit_price' => $validated['credit_price'],
+            ]);
+
+            return ['gym' => $gym, 'mitra' => $newMitra];
+        });
+
+        return response()->json([
+            'message' => 'Gym created successfully',
+            'gym' => $result['gym'],
+            'mitra' => $result['mitra']
+        ], 201);
+    }
+
+    /**
+     * Store a new gym branch with a dedicated new mitra account.
+     *
+     * Each branch receives its own mitra account so branch managers can
+     * independently validate PINs and manage their location.
+     * Password defaults to 'Gym1234!' when not provided.
+     *
+     * @param Request $request
+     * @return JsonResponse
+     */
+    public function storeBranch(Request $request): JsonResponse
+    {
+        if ($request->user()->role !== 'admin') {
+            return response()->json(['message' => 'Unauthorized'], 403);
+        }
+
+        $validated = $request->validate([
+            'mitra_org_id'    => 'required|integer|exists:mitras,id',
+            'branch_name'     => 'required|string|max:255',
+            'branch_email'    => 'required|string|email|unique:users,email',
+            'branch_password' => 'nullable|string|min:8',
+            'name'            => 'required|string|max:255',
+            'location'        => 'required|string',
+            'facilities'      => 'required|array',
+            'credit_price'    => 'required|integer|min:1',
+        ]);
+
+        $result = \Illuminate\Support\Facades\DB::transaction(function () use ($validated) {
+            // Create a dedicated branch manager account linked to the mitra org
+            $branchMitra = \App\Models\User::create([
+                'name'          => $validated['branch_name'],
+                'email'         => $validated['branch_email'],
+                'password'      => $validated['branch_password'] ?? 'Gym1234!',
+                'role'          => 'mitra',
+                'mitra_org_id'  => $validated['mitra_org_id'],
+            ]);
+
+            $gym = Gym::create([
+                'mitra_id'     => $branchMitra->id,
+                'mitra_org_id' => $validated['mitra_org_id'],
+                'name'         => $validated['name'],
+                'location'     => $validated['location'],
+                'facilities'   => $validated['facilities'],
+                'credit_price' => $validated['credit_price'],
+            ]);
+
+            return ['gym' => $gym, 'mitra' => $branchMitra];
+        });
+
+        return response()->json([
+            'message' => 'Cabang gym berhasil ditambahkan',
+            'gym'     => $result['gym'],
+            'mitra'   => $result['mitra'],
+        ], 201);
     }
 
     /**

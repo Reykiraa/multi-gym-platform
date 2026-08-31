@@ -135,7 +135,28 @@ class AuthController extends Controller
 
         return response()->json([
             'message' => 'Profile updated successfully',
-            'user' => $user,
+            'user'    => $user,
         ], 200);
+    }
+
+    /**
+     * Get all mitra accounts (Admin only).
+     *
+     * Returns a minimal projection (id, name, email) sufficient for the
+     * "Tambah Cabang" dropdown in the Gym Manager form.
+     *
+     * @param Request $request
+     * @return JsonResponse
+     */
+    public function mitras(Request $request): JsonResponse
+    {
+        if ($request->user()->role !== 'admin') {
+            return response()->json(['message' => 'Unauthorized'], 403);
+        }
+
+        $mitras = User::where('role', 'mitra')
+            ->get(['id', 'name', 'email']);
+
+        return response()->json($mitras, 200);
     }
 }

@@ -82,7 +82,7 @@ const MitraDashboard: React.FC = () => {
             <table className="w-full text-left text-sm">
               <thead>
                 <tr className="border-b border-zinc-800 text-zinc-400 uppercase text-xs tracking-wider">
-                  <th className="px-6 py-4 font-medium">Gym</th>
+                  <th className="px-6 py-4 font-medium">Status</th>
                   <th className="px-6 py-4 font-medium">PIN</th>
                   <th className="px-6 py-4 font-medium text-right">Kredit</th>
                   <th className="px-6 py-4 font-medium text-center">Status</th>
@@ -102,7 +102,7 @@ const MitraDashboard: React.FC = () => {
                       <td className="px-6 py-4 font-medium text-white whitespace-nowrap">
                         <div className="flex items-center gap-2">
                           {status === 'completed' ? <CheckCircle size={16} className="text-emerald-500 shrink-0" /> : <XCircle size={16} className="text-rose-500 shrink-0" />}
-                          {entry.gym_name}
+                          <p className="capitalize">{entry.status || 'pending'}</p>
                         </div>
                       </td>
                       <td className="px-6 py-4 text-zinc-400 font-mono tracking-widest">{(entry as any).pin_code ?? '—'}</td>

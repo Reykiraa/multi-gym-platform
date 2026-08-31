@@ -4,15 +4,27 @@ import { Plus, Pencil, Trash2 } from 'lucide-react';
 import Button from '../../components/ui/Button';
 import Badge from '../../components/ui/Badge';
 import GymForm from '../../components/forms/GymForm';
-import { useGyms, useCreateGym, useUpdateGym, useDeleteGym } from '../../hooks/api/useGyms';
-import type { AdminGym, GymFormPayload } from '../../types/admin';
+import {
+  useGyms,
+  useCreateGym,
+  useUpdateGym,
+  useDeleteGym,
+  useCreateGymBranch,
+} from '../../hooks/api/useGyms';
+import { useMitraOrgs } from '../../hooks/api/useMitrasOrg';
+import type { AdminGym, GymFormPayload, GymBranchPayload } from '../../types/admin';
 
 /**
  * Admin Gym Management page — full CRUD table for gym partners.
+ * Supports two registration modes via GymForm tabs:
+ *  - "Mitra Baru"    → POST /gyms   (creates mitra account + gym)
+ *  - "Tambah Cabang" → POST /gyms/branch (links gym to existing mitra)
  */
 const GymManager: React.FC = () => {
   const { data: gyms = [], isLoading } = useGyms();
+  const { data: mitraOrgs = [] } = useMitraOrgs();
   const createGym = useCreateGym();
+  const createBranch = useCreateGymBranch();
   const updateGym = useUpdateGym();
   const deleteGym = useDeleteGym();
 
@@ -21,6 +33,12 @@ const GymManager: React.FC = () => {
 
   const handleCreate = (payload: GymFormPayload) => {
     createGym.mutate(payload, {
+      onSuccess: () => setShowForm(false),
+    });
+  };
+
+  const handleCreateBranch = (payload: GymBranchPayload) => {
+    createBranch.mutate(payload, {
       onSuccess: () => setShowForm(false),
     });
   };
@@ -140,8 +158,10 @@ const GymManager: React.FC = () => {
       {showForm && (
         <GymForm
           onSubmit={handleCreate}
+          onSubmitBranch={handleCreateBranch}
           onClose={() => setShowForm(false)}
-          isLoading={createGym.isPending}
+          isLoading={createGym.isPending || createBranch.isPending}
+          mitraOrgs={mitraOrgs}
         />
       )}
 
@@ -152,6 +172,7 @@ const GymManager: React.FC = () => {
           onSubmit={handleUpdate}
           onClose={() => setEditingGym(null)}
           isLoading={updateGym.isPending}
+          mitraOrgs={mitraOrgs}
         />
       )}
     </div>

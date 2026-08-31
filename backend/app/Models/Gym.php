@@ -20,6 +20,7 @@ class Gym extends Model
      */
     protected $fillable = [
         'mitra_id',
+        'mitra_org_id',
         'name',
         'location',
         'facilities',
@@ -39,11 +40,19 @@ class Gym extends Model
     }
 
     /**
-     * Get the mitra (user) that owns the gym.
+     * Get the branch manager user that owns/operates this gym location.
      */
     public function mitra(): BelongsTo
     {
         return $this->belongsTo(User::class, 'mitra_id');
+    }
+
+    /**
+     * Get the parent mitra organization this gym belongs to.
+     */
+    public function mitraOrg(): BelongsTo
+    {
+        return $this->belongsTo(Mitra::class, 'mitra_org_id');
     }
 
     /**

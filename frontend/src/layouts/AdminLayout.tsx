@@ -8,6 +8,7 @@ import {
   LogOut,
   Menu,
   X,
+  Building2,
 } from 'lucide-react';
 import { useAuthStore } from '../store/authStore';
 
@@ -19,6 +20,7 @@ interface NavItem {
 
 const NAV_ITEMS: NavItem[] = [
   { label: 'Dashboard', to: '/admin/dashboard', icon: <LayoutDashboard size={20} /> },
+  { label: 'Mitra Organisasi', to: '/admin/mitras', icon: <Building2 size={20} /> },
   { label: 'Gym Network', to: '/admin/gyms', icon: <Dumbbell size={20} /> },
   { label: 'Transactions', to: '/admin/transactions', icon: <ArrowLeftRight size={20} /> },
 ];

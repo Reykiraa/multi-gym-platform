@@ -3,9 +3,15 @@ import React, { useState, useEffect } from 'react';
 interface PinDisplayProps {
   pinCode: string;
   expiresAt: string;
+  onClose?: () => void;
+  onCancel?: () => void;
+  isCanceling?: boolean;
 }
 
-const PinDisplay: React.FC<PinDisplayProps> = ({ pinCode, expiresAt }) => {
+import { X } from 'lucide-react';
+import Button from './Button';
+
+const PinDisplay: React.FC<PinDisplayProps> = ({ pinCode, expiresAt, onClose, onCancel, isCanceling }) => {
   const [timeLeft, setTimeLeft] = useState<number>(0);
   const [isExpired, setIsExpired] = useState<boolean>(false);
 
@@ -44,7 +50,15 @@ const PinDisplay: React.FC<PinDisplayProps> = ({ pinCode, expiresAt }) => {
   };
 
   return (
-    <div className="flex flex-col items-center justify-center flex-grow py-20 px-4 w-full">
+    <div className="flex flex-col items-center justify-center flex-grow py-20 px-4 w-full relative">
+      {onClose && (
+        <button 
+          onClick={onClose} 
+          className="absolute top-4 right-4 p-2 bg-zinc-800 hover:bg-zinc-700 text-zinc-400 hover:text-white rounded-full transition-colors z-10"
+        >
+          <X size={24} />
+        </button>
+      )}
       <h2 className="text-xl text-zinc-400 mb-6 font-medium text-center">
         {isExpired ? 'PIN Kedaluwarsa' : 'PIN Akses Anda'}
       </h2>
@@ -63,9 +77,25 @@ const PinDisplay: React.FC<PinDisplayProps> = ({ pinCode, expiresAt }) => {
       )}
       
       {!isExpired && (
-        <p className="text-sm text-zinc-500 text-center mt-4">
-          Tunjukkan PIN ini ke resepsionis atau scan pada mesin pintu otomatis.
-        </p>
+        <div className="mt-4 flex flex-col items-center">
+          <p className="text-sm text-zinc-500 text-center mb-6 max-w-xs">
+            Tunjukkan PIN ini ke resepsionis atau scan pada mesin pintu otomatis.
+          </p>
+          {onCancel && (
+            <Button
+              variant="outline"
+              className="text-rose-500 border-rose-500/50 hover:bg-rose-500 hover:text-white"
+              onClick={() => {
+                if (window.confirm("Yakin ingin membatalkan? Saldo kredit akan dikembalikan seketika.")) {
+                  onCancel();
+                }
+              }}
+              isLoading={isCanceling}
+            >
+              Batalkan Check-in
+            </Button>
+          )}
+        </div>
       )}
     </div>
   );

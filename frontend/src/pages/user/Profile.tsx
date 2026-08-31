@@ -6,10 +6,12 @@ import Card from '../../components/ui/Card';
 import Button from '../../components/ui/Button';
 import Badge from '../../components/ui/Badge';
 import { useAuthStore } from '../../store/authStore';
+import type { User } from '../../types';
 
 const Profile: React.FC = () => {
   const navigate = useNavigate();
-  const { user, logout } = useAuthStore();
+  const { user: rawUser, logout } = useAuthStore();
+  const user = rawUser as User | null;
 
   const handleLogout = () => {
     logout();
@@ -36,7 +38,7 @@ const Profile: React.FC = () => {
           <h1 className="text-2xl font-bold text-white mb-1">{user?.name}</h1>
           <p className="text-zinc-400 text-sm mb-3">{user?.email}</p>
           <Badge variant="warning" className="px-4 py-1 font-bold tracking-wider">
-            GOLD MEMBER
+            {(user?.tier ?? 'MEMBER').toUpperCase()}
           </Badge>
         </div>
 
@@ -44,11 +46,11 @@ const Profile: React.FC = () => {
         <div className="grid grid-cols-2 gap-4 mb-8">
           <Card className="text-center p-4">
             <h3 className="text-zinc-400 text-sm mb-1">Total Visits</h3>
-            <p className="text-2xl font-bold text-white">24</p>
+            <p className="text-2xl font-bold text-white">{user?.total_visits ?? 0}</p>
           </Card>
           <Card className="text-center p-4">
             <h3 className="text-zinc-400 text-sm mb-1">Member Since</h3>
-            <p className="text-2xl font-bold text-white">Oct 2023</p>
+            <p className="text-2xl font-bold text-white">{user?.member_since ?? '-'}</p>
           </Card>
         </div>
 

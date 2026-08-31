@@ -37,14 +37,14 @@ const Navbar: React.FC = () => {
               <Link to="/user/profile" className={getDesktopMenuClass('/user/profile')}>Profile</Link>
             </div>
             <Badge variant="warning" className="text-sm px-3 py-1.5">
-              Saldo: {user?.credit_balance ?? 0}
+              Saldo: {user?.available_credits ?? user?.credit_balance ?? 0}
             </Badge>
           </div>
 
           {/* Mobile Balance */}
           <div className="md:hidden">
             <Badge variant="warning" className="text-xs px-2 py-1">
-              {user?.credit_balance ?? 0} CR
+              {user?.available_credits ?? user?.credit_balance ?? 0} CR
             </Badge>
           </div>
         </div>
