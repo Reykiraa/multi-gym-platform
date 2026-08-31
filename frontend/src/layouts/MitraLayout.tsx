@@ -28,9 +28,6 @@ const MitraLayout: React.FC = () => {
             <h1 className="text-2xl font-black text-yellow-500 tracking-wide">Mitra</h1>
           </div>
           <nav className="hidden md:flex items-center gap-6">
-            <button onClick={() => addToast('info', 'Fitur Branches akan segera hadir.')} className="text-sm font-medium text-zinc-500 opacity-50 cursor-not-allowed hover:text-zinc-400 transition-colors">Branches</button>
-            <button onClick={() => addToast('info', 'Fitur Staff akan segera hadir.')} className="text-sm font-medium text-zinc-500 opacity-50 cursor-not-allowed hover:text-zinc-400 transition-colors">Staff</button>
-            <button onClick={() => addToast('info', 'Fitur Support akan segera hadir.')} className="text-sm font-medium text-zinc-500 opacity-50 cursor-not-allowed hover:text-zinc-400 transition-colors">Support</button>
             <NavLink to="/mitra/dashboard" className={linkClass}>Dashboard</NavLink>
             <NavLink to="/mitra/history" className={linkClass}>History</NavLink>
           </nav>
