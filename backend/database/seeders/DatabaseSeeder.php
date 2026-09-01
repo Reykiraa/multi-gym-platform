@@ -18,7 +18,7 @@ class DatabaseSeeder extends Seeder
         User::firstOrCreate(
             ['email' => 'admin@multigym.com'],
             [
-                'name' => 'Admin Gymnox',
+                'name' => 'Admin RoamFit',
                 'password' => 'password',
                 'role' => 'admin',
                 'credit_balance' => 0,

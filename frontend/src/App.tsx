@@ -35,6 +35,7 @@ import Transactions from './pages/admin/Transactions';
 // --- Mitra Pages ---
 import MitraDashboard from './pages/mitra/MitraDashboard';
 import MitraHistory from './pages/mitra/MitraHistory';
+import MitraGymProfile from './pages/mitra/MitraGymProfile';
 
 // --- Error Pages ---
 import ForbiddenPage from './pages/error/ForbiddenPage';
@@ -122,6 +123,7 @@ function App() {
             <Route element={<MitraLayout />}>
               <Route path="/mitra/dashboard" element={<MitraDashboard />} />
               <Route path="/mitra/history" element={<MitraHistory />} />
+              <Route path="/mitra/gym-profile" element={<MitraGymProfile />} />
             </Route>
           </Route>
 

@@ -1,6 +1,7 @@
 // frontend/src/pages/user/GymDetail.tsx
 
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect, useCallback } from 'react';
+import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { useParams } from 'react-router-dom';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import Button from '../../components/ui/Button';
@@ -21,6 +22,8 @@ const fetchGym = async (id: number): Promise<Gym> => {
 const GymDetail: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [activePhotoIdx, setActivePhotoIdx] = useState(0);
+  const autoSlideRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const { setIsPinModalOpen } = useCheckInStore();
   const { addToast } = useToastStore();
   const { updateUser } = useAuthStore();
@@ -78,6 +81,42 @@ const GymDetail: React.FC = () => {
     }
   });
 
+  // Auto-slide: MUST be declared before any conditional returns (React Rules of Hooks)
+  const startAutoSlide = useCallback((total: number) => {
+    if (autoSlideRef.current) clearInterval(autoSlideRef.current);
+    autoSlideRef.current = setInterval(() => {
+      setActivePhotoIdx(prev => (prev + 1) % total);
+    }, 4000);
+  }, []);
+
+  useEffect(() => {
+    if (gym && gym.photos && gym.photos.length > 1) {
+      startAutoSlide(gym.photos.length);
+    }
+    return () => {
+      if (autoSlideRef.current) clearInterval(autoSlideRef.current);
+    };
+  }, [gym, startAutoSlide]);
+
+  const handleDotClick = (idx: number, total: number) => {
+    setActivePhotoIdx(idx);
+    startAutoSlide(total);
+  };
+
+  const handlePrev = () => {
+    if (!gym?.photos) return;
+    const total = gym.photos.length;
+    setActivePhotoIdx(prev => (prev - 1 + total) % total);
+    startAutoSlide(total);
+  };
+
+  const handleNext = () => {
+    if (!gym?.photos) return;
+    const total = gym.photos.length;
+    setActivePhotoIdx(prev => (prev + 1) % total);
+    startAutoSlide(total);
+  };
+
   if (isGymLoading) {
     return <div className="text-white text-center py-20 min-h-screen flex items-center justify-center">Memuat detail gym...</div>;
   }
@@ -93,7 +132,69 @@ const GymDetail: React.FC = () => {
       <main className="flex-grow container mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-6">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           <div className="md:col-span-2">
-            <div className="h-64 md:h-96 bg-gradient-to-br from-zinc-800 to-zinc-900 w-full mb-8 rounded-2xl shadow-xl" />
+            {gym.photos && gym.photos.length > 1 ? (
+              /* Multi-photo: auto-sliding crossfade carousel */
+              <div className="relative h-64 md:h-96 w-full mb-8 rounded-t-2xl overflow-hidden">
+                {gym.photos.map((photo, idx) => (
+                  <img
+                    key={idx}
+                    src={photo}
+                    alt={`${gym.name} - foto ${idx + 1}`}
+                    className="absolute inset-0 w-full h-full object-cover transition-opacity duration-700"
+                    style={{ opacity: idx === activePhotoIdx ? 1 : 0 }}
+                  />
+                ))}
+                {/* Gradient overlay */}
+                <div className="absolute inset-0 bg-gradient-to-t from-zinc-950 from-5% via-zinc-950/60 to-transparent pointer-events-none" />
+                {/* Dot indicators */}
+                <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex items-center gap-2 pointer-events-none">
+                  {gym.photos.map((_, idx) => (
+                    <button
+                      key={idx}
+                      type="button"
+                      onClick={() => handleDotClick(idx, gym.photos!.length)}
+                      className={`rounded-full transition-all duration-300 pointer-events-auto ${
+                        idx === activePhotoIdx
+                          ? 'w-5 h-2 bg-yellow-500'
+                          : 'w-2 h-2 bg-white/40 hover:bg-white/70'
+                      }`}
+                      aria-label={`Foto ${idx + 1}`}
+                    />
+                  ))}
+                </div>
+                {/* Prev button */}
+                <button
+                  type="button"
+                  onClick={handlePrev}
+                  aria-label="Foto sebelumnya"
+                  className="absolute left-3 top-1/2 -translate-y-1/2 bg-black/30 hover:bg-black/80 backdrop-blur-sm text-white rounded-full p-2 transition-all duration-200 hover:scale-130"
+                >
+                  <ChevronLeft size={25} />
+                </button>
+                {/* Next button */}
+                <button
+                  type="button"
+                  onClick={handleNext}
+                  aria-label="Foto berikutnya"
+                  className="absolute right-3 top-1/2 -translate-y-1/2 bg-black/50 hover:bg-black/80 backdrop-blur-sm text-white rounded-full p-2 transition-all duration-200 hover:scale-130"
+                >
+                  <ChevronRight size={25} />
+                </button>
+                {/* Photo counter badge */}
+                {/* <div className="absolute top-3 right-3 bg-black/60 backdrop-blur-sm text-white text-xs font-medium px-2.5 py-1 rounded-full pointer-events-none">
+                  {activePhotoIdx + 1} / {gym.photos.length} Foto
+                </div> */}
+              </div>
+            ) : gym.photos && gym.photos.length === 1 ? (
+              /* Single photo: static image with overlay */
+              <div className="h-64 md:h-96 w-full mb-8 rounded-2xl shadow-xl relative overflow-hidden">
+                <img src={gym.photos[0]} alt={gym.name} className="absolute inset-0 w-full h-full object-cover" />
+                <div className="absolute inset-0 bg-gradient-to-t from-zinc-950 via-zinc-950/20 to-transparent" />
+              </div>
+            ) : (
+              /* No photos: fallback gradient placeholder */
+              <div className="h-64 md:h-96 bg-gradient-to-br from-zinc-800 to-zinc-900 w-full mb-8 rounded-2xl shadow-xl" />
+            )}
             
             <div className="px-2 md:px-0">
               <h1 className="text-3xl md:text-5xl font-extrabold text-white mb-3">{gym.name}</h1>
