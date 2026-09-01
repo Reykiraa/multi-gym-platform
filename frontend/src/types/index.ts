@@ -35,7 +35,8 @@ export interface Transaction {
 }
 
 export interface TransactionHistory {
-  id: number;
+  id: string;
+  topup_package_id?: string | null;
   type: "deduction" | "topup";
   gym_name: string;
   amount: number;
@@ -44,6 +45,8 @@ export interface TransactionHistory {
   user: User;
   status: string;
   pin_code: string;
+  order_id?: string;
+  snap_token?: string;
 }
 
 export interface TopupPackage {
