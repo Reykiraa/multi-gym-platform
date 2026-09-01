@@ -27,7 +27,8 @@ class GymController extends Controller
                   ->orWhere('location', 'ilike', '%' . $searchTerm . '%');
         }
         
-        $gyms = $query->get();
+        $perPage = $request->query('per_page', 8);
+        $gyms = $query->paginate($perPage);
         
         return response()->json($gyms, 200);
     }
