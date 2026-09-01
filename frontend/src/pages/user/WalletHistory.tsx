@@ -47,7 +47,7 @@ const WalletHistory: React.FC = () => {
       case 'pending':
         return <span className="px-2 py-1 text-xs font-bold uppercase tracking-wider rounded border text-yellow-400 bg-yellow-500/10 border-yellow-500/30">Menunggu Validasi</span>;
       case 'cancelled':
-        return <span className="px-2 py-1 text-xs font-bold uppercase tracking-wider rounded border text-red-400 bg-red-500/10 border-red-500/30">Dibatalkan</span>;
+        return <span className="px-2 py-1 text-xs font-bold uppercase tracking-wider rounded border text-rose-400 bg-rose-500/10 border-rose-500/30">Dibatalkan</span>;
       case 'expired':
         return <span className="px-2 py-1 text-xs font-bold uppercase tracking-wider rounded border text-zinc-400 bg-zinc-800 border-zinc-700">Kedaluwarsa</span>;
       default:
