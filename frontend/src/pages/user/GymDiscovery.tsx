@@ -5,24 +5,21 @@ import Input from '../../components/ui/Input';
 import GymCard from '../../components/cards/GymCard';
 import { type Gym } from '../../types';
 import apiClient from '../../lib/axios';
+import { useDebounce } from '../../hooks/useDebounce';
 
-const fetchGyms = async (): Promise<Gym[]> => {
-  const response = await apiClient.get('/gyms');
+const fetchGyms = async (search: string = ''): Promise<Gym[]> => {
+  const response = await apiClient.get('/gyms', { params: { search } });
   return response.data;
 };
 
 const GymDiscovery: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState('');
+  const debouncedSearchTerm = useDebounce<string>(searchQuery, 300);
 
   const { data: gyms = [], isLoading } = useQuery({
-    queryKey: ['gyms'],
-    queryFn: fetchGyms,
+    queryKey: ['gyms', debouncedSearchTerm],
+    queryFn: () => fetchGyms(debouncedSearchTerm),
   });
-
-  const filteredGyms = gyms.filter(gym => 
-    gym.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    gym.location.toLowerCase().includes(searchQuery.toLowerCase())
-  );
 
   return (
     <div className="flex flex-col min-h-screen pb-16 md:pb-0"> {/* padding bottom for mobile nav */}
@@ -45,8 +42,8 @@ const GymDiscovery: React.FC = () => {
           <div className="text-center text-zinc-500 py-20">Memuat data gym...</div>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-            {filteredGyms.length > 0 ? (
-              filteredGyms.map(gym => (
+            {gyms.length > 0 ? (
+              gyms.map(gym => (
                 <GymCard key={gym.id} gym={gym} />
               ))
             ) : (
