@@ -57,7 +57,7 @@ const Login: React.FC = () => {
       <div className="w-full max-w-md">
         <div className="text-center mb-8">
           <Link to="/" className="text-3xl font-black text-white tracking-widest">
-            GYMNOX
+            ROAM<span className="text-yellow-500">FIT</span>
           </Link>
           <p className="text-zinc-400 mt-2">Masuk ke akun Anda</p>
         </div>

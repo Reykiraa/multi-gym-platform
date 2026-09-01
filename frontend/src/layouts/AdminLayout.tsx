@@ -54,7 +54,7 @@ const AdminLayout: React.FC = () => {
     <>
       {/* Brand */}
       <div className="px-6 py-6 border-b border-zinc-800">
-        <h1 className="text-xl font-black text-white tracking-widest">GYMNOX</h1>
+        <h1 className="text-xl font-black text-white tracking-widest">ROAMFIT</h1>
         <p className="text-xs text-zinc-500 mt-1">Admin Panel</p>
       </div>
 
@@ -136,7 +136,7 @@ const AdminLayout: React.FC = () => {
           >
             <Menu size={24} />
           </button>
-          <h1 className="text-lg font-black text-white tracking-widest">GYMNOX</h1>
+          <h1 className="text-lg font-black text-white tracking-widest">ROAMFIT</h1>
           <div className="w-6" /> {/* Spacer for centering */}
         </header>
 

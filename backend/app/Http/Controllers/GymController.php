@@ -199,4 +199,56 @@ class GymController extends Controller
 
         return response()->json(['message' => 'Gym deleted successfully'], 200);
     }
+
+    /**
+     * Get the gym associated with the currently authenticated mitra.
+     *
+     * @param Request $request
+     * @return JsonResponse
+     */
+    public function myGym(Request $request): JsonResponse
+    {
+        if ($request->user()->role !== 'mitra') {
+            return response()->json(['message' => 'Unauthorized'], 403);
+        }
+
+        // A mitra is linked to gyms via mitra_id
+        $gym = Gym::where('mitra_id', $request->user()->id)->first();
+
+        if (!$gym) {
+            return response()->json(['message' => 'Data Gym tidak ditemukan'], 404);
+        }
+
+        return response()->json(['data' => $gym], 200);
+    }
+
+    /**
+     * Update the gym associated with the currently authenticated mitra.
+     *
+     * @param Request $request
+     * @return JsonResponse
+     */
+    public function updateMyGym(Request $request): JsonResponse
+    {
+        if ($request->user()->role !== 'mitra') {
+            return response()->json(['message' => 'Unauthorized'], 403);
+        }
+
+        $gym = Gym::where('mitra_id', $request->user()->id)->first();
+
+        if (!$gym) {
+            return response()->json(['message' => 'Data Gym tidak ditemukan'], 404);
+        }
+
+        $validated = $request->validate([
+            'name' => 'sometimes|string|max:255',
+            'location' => 'sometimes|string',
+            'facilities' => 'sometimes|array',
+            'photos' => 'sometimes|array',
+        ]);
+
+        $gym->update($validated);
+
+        return response()->json(['message' => 'Profil Gym berhasil diperbarui', 'data' => $gym], 200);
+    }
 }

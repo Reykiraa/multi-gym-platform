@@ -21,14 +21,14 @@ const LegalModal: React.FC<LegalModalProps> = ({ isOpen, onClose, type }) => {
           {type === 'tos' ? (
             <>
               <p className="text-zinc-400"><strong>Berlaku Efektif: 27 Agustus 2026</strong></p>
-              <p>Selamat datang di Gymnox. Syarat dan Ketentuan ini ("Perjanjian") adalah perjanjian sah antara Anda ("Pengguna" atau "Member") dan pengelola platform Gymnox ("Kami"). Dengan mendaftar, mengakses, atau menggunakan layanan Kami, Anda menyatakan setuju untuk terikat dengan seluruh syarat dan ketentuan di bawah ini sesuai dengan hukum yang berlaku di Republik Indonesia (Pasal 1320 KUHPerdata tentang Syarat Sah Perjanjian).</p>
+              <p>Selamat datang di RoamFit. Syarat dan Ketentuan ini ("Perjanjian") adalah perjanjian sah antara Anda ("Pengguna" atau "Member") dan pengelola platform RoamFit ("Kami"). Dengan mendaftar, mengakses, atau menggunakan layanan Kami, Anda menyatakan setuju untuk terikat dengan seluruh syarat dan ketentuan di bawah ini sesuai dengan hukum yang berlaku di Republik Indonesia (Pasal 1320 KUHPerdata tentang Syarat Sah Perjanjian).</p>
 
               <div>
                 <h3 className="text-yellow-500 font-bold mb-2 text-base">1. Definisi</h3>
                 <ul className="list-decimal list-inside space-y-1 text-zinc-400">
-                  <li><strong>Gymnox</strong> adalah platform perantara digital yang memfasilitasi akses pay-per-visit ke berbagai fasilitas kebugaran.</li>
-                  <li><strong>Mitra Gym</strong> adalah pihak ketiga (fasilitas kebugaran independen) yang bekerja sama dengan Gymnox untuk menerima kunjungan Pengguna.</li>
-                  <li><strong>Kredit</strong> adalah satuan nilai tukar digital internal Gymnox yang digunakan untuk mengakses fasilitas Mitra Gym.</li>
+                  <li><strong>RoamFit</strong> adalah platform perantara digital yang memfasilitasi akses pay-per-visit ke berbagai fasilitas kebugaran.</li>
+                  <li><strong>Mitra Gym</strong> adalah pihak ketiga (fasilitas kebugaran independen) yang bekerja sama dengan RoamFit untuk menerima kunjungan Pengguna.</li>
+                  <li><strong>Kredit</strong> adalah satuan nilai tukar digital internal RoamFit yang digunakan untuk mengakses fasilitas Mitra Gym.</li>
                   <li><strong>PIN Check-in</strong> adalah kode unik sementara yang dihasilkan oleh sistem untuk memvalidasi akses Pengguna di lokasi Mitra Gym.</li>
                 </ul>
               </div>
@@ -36,7 +36,7 @@ const LegalModal: React.FC<LegalModalProps> = ({ isOpen, onClose, type }) => {
               <div>
                 <h3 className="text-yellow-500 font-bold mb-2 text-base">2. Layanan Ekosistem & Batasan Tanggung Jawab</h3>
                 <ul className="list-decimal list-inside space-y-1 text-zinc-400">
-                  <li>Gymnox murni bertindak sebagai <strong>penyedia platform teknologi perantara</strong>. Kami tidak memiliki, mengelola, atau mengontrol fasilitas fisik, peralatan, maupun staf di lokasi Mitra Gym.</li>
+                  <li>RoamFit murni bertindak sebagai <strong>penyedia platform teknologi perantara</strong>. Kami tidak memiliki, mengelola, atau mengontrol fasilitas fisik, peralatan, maupun staf di lokasi Mitra Gym.</li>
                   <li>Kami tidak bertanggung jawab atas cedera fisik, kecelakaan, kerugian materiil, atau kehilangan barang bawaan yang terjadi selama Pengguna berada di fasilitas Mitra Gym. Risiko penggunaan alat kebugaran sepenuhnya menjadi tanggung jawab Pengguna.</li>
                   <li>Pengguna wajib mematuhi seluruh tata tertib, jam operasional, dan standar berpakaian yang ditetapkan secara sepihak oleh masing-masing Mitra Gym.</li>
                 </ul>
@@ -45,7 +45,7 @@ const LegalModal: React.FC<LegalModalProps> = ({ isOpen, onClose, type }) => {
               <div>
                 <h3 className="text-yellow-500 font-bold mb-2 text-base">3. Sistem Kredit, Top-Up, dan Kebijakan Non-Refundable</h3>
                 <ul className="list-decimal list-inside space-y-1 text-zinc-400">
-                  <li>Kredit Gymnox hanya dapat digunakan di dalam ekosistem platform Kami dan tidak memiliki nilai tunai (bukan uang elektronik sebagaimana diatur oleh Bank Indonesia).</li>
+                  <li>Kredit RoamFit hanya dapat digunakan di dalam ekosistem platform Kami dan tidak memiliki nilai tunai (bukan uang elektronik sebagaimana diatur oleh Bank Indonesia).</li>
                   <li><strong>Kebijakan Non-Refundable:</strong> Seluruh transaksi pembelian Kredit yang telah berhasil bersifat final. Kredit tidak dapat ditukar kembali menjadi uang tunai, ditransfer ke akun bank, atau dikembalikan dalam bentuk apa pun.</li>
                   <li>Jika akun ditutup, baik atas permintaan Pengguna maupun akibat pelanggaran aturan, seluruh sisa Kredit akan hangus.</li>
                 </ul>
@@ -72,13 +72,13 @@ const LegalModal: React.FC<LegalModalProps> = ({ isOpen, onClose, type }) => {
 
               <div>
                 <h3 className="text-yellow-500 font-bold mb-2 text-base">6. Penyelesaian Sengketa</h3>
-                <p className="text-zinc-400">Segala perselisihan yang timbul dari Perjanjian ini akan diselesaikan secara musyawarah untuk mufakat. Apabila tidak tercapai mufakat dalam waktu 30 hari, maka kedua belah pihak sepakat untuk menyelesaikannya melalui yurisdiksi non-eksklusif Pengadilan Negeri tempat domisili hukum Gymnox berada.</p>
+                <p className="text-zinc-400">Segala perselisihan yang timbul dari Perjanjian ini akan diselesaikan secara musyawarah untuk mufakat. Apabila tidak tercapai mufakat dalam waktu 30 hari, maka kedua belah pihak sepakat untuk menyelesaikannya melalui yurisdiksi non-eksklusif Pengadilan Negeri tempat domisili hukum RoamFit berada.</p>
               </div>
             </>
           ) : (
             <>
               <p className="text-zinc-400"><strong>Berlaku Efektif: 27 Agustus 2026</strong></p>
-              <p>Gymnox ("Kami") sangat menghargai dan melindungi privasi data Anda. Kebijakan Privasi ini menjelaskan bagaimana Kami mengumpulkan, menggunakan, menyimpan, dan melindungi informasi pribadi Anda sesuai dengan <strong>Undang-Undang Nomor 27 Tahun 2022 tentang Pelindungan Data Pribadi (UU PDP)</strong> Republik Indonesia.</p>
+              <p>RoamFit ("Kami") sangat menghargai dan melindungi privasi data Anda. Kebijakan Privasi ini menjelaskan bagaimana Kami mengumpulkan, menggunakan, menyimpan, dan melindungi informasi pribadi Anda sesuai dengan <strong>Undang-Undang Nomor 27 Tahun 2022 tentang Pelindungan Data Pribadi (UU PDP)</strong> Republik Indonesia.</p>
 
               <div>
                 <h3 className="text-yellow-500 font-bold mb-2 text-base">1. Data yang Kami Kumpulkan</h3>
@@ -94,7 +94,7 @@ const LegalModal: React.FC<LegalModalProps> = ({ isOpen, onClose, type }) => {
                 <h3 className="text-yellow-500 font-bold mb-2 text-base">2. Tujuan Penggunaan Data</h3>
                 <p className="text-zinc-400 mb-2">Kami menggunakan Data Pribadi Anda secara eksklusif untuk:</p>
                 <ul className="list-decimal list-inside space-y-1 text-zinc-400">
-                  <li>Memproses pembuatan dan pengelolaan akun Gymnox Anda.</li>
+                  <li>Memproses pembuatan dan pengelolaan akun RoamFit Anda.</li>
                   <li>Memfasilitasi transaksi pemotongan Kredit dan penerbitan PIN.</li>
                   <li>Memberikan dukungan pelanggan (customer support).</li>
                   <li>Melakukan audit internal untuk mencegah tindakan penipuan (fraud detection).</li>
@@ -133,7 +133,7 @@ const LegalModal: React.FC<LegalModalProps> = ({ isOpen, onClose, type }) => {
               <div>
                 <h3 className="text-yellow-500 font-bold mb-2 text-base">6. Perubahan Kebijakan & Kontak</h3>
                 <p className="text-zinc-400 mb-2">Kami berhak memperbarui Kebijakan Privasi ini dari waktu ke waktu. Jika ada perubahan material, Kami akan memberitahukan Anda melalui email atau notifikasi aplikasi.</p>
-                <p className="text-zinc-400">Untuk pertanyaan, keluhan, atau pelaksanaan Hak Subjek Data, Anda dapat menghubungi Data Protection Officer (DPO) / Tim Admin Kami melalui email: <strong>privacy@gymnox.com</strong> atau fitur "Hubungi Kami" di aplikasi.</p>
+                <p className="text-zinc-400">Untuk pertanyaan, keluhan, atau pelaksanaan Hak Subjek Data, Anda dapat menghubungi Data Protection Officer (DPO) / Tim Admin Kami melalui email: <strong>privacy@roamfit.com</strong> atau fitur "Hubungi Kami" di aplikasi.</p>
               </div>
             </>
           )}
