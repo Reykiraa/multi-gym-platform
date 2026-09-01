@@ -5,6 +5,7 @@ namespace Database\Seeders;
 use App\Models\Gym;
 use App\Models\User;
 use Illuminate\Database\Seeder;
+use Database\Seeders\TopupPackageSeeder;
 use Illuminate\Support\Facades\Hash;
 
 class DatabaseSeeder extends Seeder

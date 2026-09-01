@@ -4,6 +4,7 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\GymController;
 use App\Http\Controllers\MitraController;
 use App\Http\Controllers\TransactionController;
+use App\Http\Controllers\TopupController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -40,6 +41,7 @@ Route::middleware('auth:sanctum')->group(function () {
 
     // Topup
     Route::post('/topups', [\App\Http\Controllers\TopupController::class, 'createTransaction']);
+    Route::post('/topups/{order_id}/verify', [\App\Http\Controllers\TopupController::class, 'verifyPayment']);
 });
 
 Route::get('/topup-packages', [\App\Http\Controllers\TopupController::class, 'index']);

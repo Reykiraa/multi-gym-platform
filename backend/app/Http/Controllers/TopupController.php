@@ -69,6 +69,8 @@ class TopupController extends Controller
         ]);
 
         return response()->json([
+            'message' => 'Transaksi top-up diinisiasi.',
+            'order_id' => $transaction->order_id,
             'data' => $transaction,
             'snap_token' => $snapToken,
         ], 201);
@@ -114,6 +116,53 @@ class TopupController extends Controller
             }
 
             return response()->json(['message' => 'Webhook handled successfully'], 200);
+        });
+    }
+
+    /**
+     * Verify payment status directly with Midtrans for instant UI update.
+     */
+    public function verifyPayment(Request $request, string $orderId, MidtransService $midtransService): JsonResponse
+    {
+        $statusData = $midtransService->getTransactionStatus($orderId);
+        $status = $statusData['transaction_status'] ?? null;
+        $fraud = $statusData['fraud_status'] ?? null;
+        $paymentType = $statusData['payment_type'] ?? null;
+
+        return DB::transaction(function () use ($request, $orderId, $status, $fraud, $paymentType) {
+            $trx = TopupTransaction::where('order_id', $orderId)
+                ->where('user_id', $request->user()->id)
+                ->lockForUpdate()
+                ->firstOrFail();
+
+            // Idempotency check
+            if ($trx->status === 'success') {
+                return response()->json([
+                    'message' => 'Transaksi sudah berhasil diproses sebelumnya.',
+                    'data' => $trx
+                ], 200);
+            }
+
+            if ($status === 'settlement' || ($status === 'capture' && $fraud === 'accept')) {
+                $user = User::where('id', $trx->user_id)->lockForUpdate()->first();
+                $user->increment('credit_balance', $trx->total_credits);
+
+                $trx->update([
+                    'status' => 'success',
+                    'payment_type' => $paymentType,
+                ]);
+
+                return response()->json([
+                    'message' => 'Pembayaran berhasil dikonfirmasi! Saldo telah ditambahkan.',
+                    'data' => $trx,
+                    'new_balance' => $user->credit_balance
+                ], 200);
+            }
+
+            return response()->json([
+                'message' => 'Status transaksi saat ini: ' . $status,
+                'data' => $trx
+            ], 200);
         });
     }
 }
