@@ -19,7 +19,15 @@ class GymController extends Controller
      */
     public function index(Request $request): JsonResponse
     {
-        $gyms = Gym::all();
+        $query = Gym::query();
+        
+        if ($request->has('search') && $request->query('search') !== '') {
+            $searchTerm = $request->query('search');
+            $query->where('name', 'ilike', '%' . $searchTerm . '%')
+                  ->orWhere('location', 'ilike', '%' . $searchTerm . '%');
+        }
+        
+        $gyms = $query->get();
         
         return response()->json($gyms, 200);
     }
