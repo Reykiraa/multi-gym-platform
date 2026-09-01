@@ -41,8 +41,8 @@ const MitraLayout: React.FC = () => {
           <button onClick={() => navigate('/mitra/dashboard')} className="hidden sm:block bg-yellow-500 text-black px-4 py-1.5 rounded-md text-sm font-bold hover:bg-yellow-400 transition-colors">
             Check-in
           </button>
-          <button className="hidden sm:block border border-yellow-500/30 text-yellow-500 px-4 py-1.5 rounded-md text-sm font-medium hover:bg-yellow-500/10 transition-colors">
-            Profile
+          <button onClick={() => navigate('/mitra/gym-profile')} className="hidden sm:block border border-yellow-500/30 text-yellow-500 px-4 py-1.5 rounded-md text-sm font-medium hover:bg-yellow-500/10 transition-colors">
+            Profile Gym
           </button>
           <div className="flex items-center gap-4 border-l border-zinc-700 pl-4">
             <button onClick={() => addToast('info', 'Belum ada notifikasi')} className="text-zinc-600 cursor-not-allowed transition-colors" aria-label="Notifications"><Bell size={20} /></button>

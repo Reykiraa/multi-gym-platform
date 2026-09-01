@@ -1,4 +1,4 @@
-Ini adalah draf lengkap **Syarat & Ketentuan (Terms of Service)** dan **Kebijakan Privasi (Privacy Policy)** untuk platform **Gymnox** (Multi-Gym Access Platform). 
+Ini adalah draf lengkap **Syarat & Ketentuan (Terms of Service)** dan **Kebijakan Privasi (Privacy Policy)** untuk platform **RoamFit** (Multi-Gym Access Platform). 
 
 Draf ini telah disesuaikan dengan model bisnis *pay-per-visit* berbasis kredit digital Anda, serta disusun merujuk pada regulasi hukum yang berlaku di Indonesia, khususnya **Undang-Undang Perlindungan Konsumen (UU No. 8 Tahun 1999)**, **Undang-Undang Informasi dan Transaksi Elektronik (UU ITE)**, serta **Undang-Undang Pelindungan Data Pribadi (UU No. 27 Tahun 2022 / UU PDP)**.
 
@@ -7,21 +7,21 @@ Draf ini telah disesuaikan dengan model bisnis *pay-per-visit* berbasis kredit d
 # 📜 SYARAT DAN KETENTUAN (TERMS OF SERVICE)
 **Berlaku Efektif: 27 Agustus 2026**
 
-Selamat datang di Gymnox. Syarat dan Ketentuan ini ("Perjanjian") adalah perjanjian sah antara Anda ("Pengguna" atau "Member") dan pengelola platform Gymnox ("Kami"). Dengan mendaftar, mengakses, atau menggunakan layanan Kami, Anda menyatakan setuju untuk terikat dengan seluruh syarat dan ketentuan di bawah ini sesuai dengan hukum yang berlaku di Republik Indonesia (Pasal 1320 KUHPerdata tentang Syarat Sah Perjanjian).
+Selamat datang di RoamFit. Syarat dan Ketentuan ini ("Perjanjian") adalah perjanjian sah antara Anda ("Pengguna" atau "Member") dan pengelola platform RoamFit ("Kami"). Dengan mendaftar, mengakses, atau menggunakan layanan Kami, Anda menyatakan setuju untuk terikat dengan seluruh syarat dan ketentuan di bawah ini sesuai dengan hukum yang berlaku di Republik Indonesia (Pasal 1320 KUHPerdata tentang Syarat Sah Perjanjian).
 
 ### 1. Definisi
-1. **Gymnox** adalah platform perantara digital yang memfasilitasi akses *pay-per-visit* ke berbagai fasilitas kebugaran.
-2. **Mitra Gym** adalah pihak ketiga (fasilitas kebugaran independen) yang bekerja sama dengan Gymnox untuk menerima kunjungan Pengguna.
-3. **Kredit** adalah satuan nilai tukar digital internal Gymnox yang digunakan untuk mengakses fasilitas Mitra Gym.
+1. **RoamFit** adalah platform perantara digital yang memfasilitasi akses *pay-per-visit* ke berbagai fasilitas kebugaran.
+2. **Mitra Gym** adalah pihak ketiga (fasilitas kebugaran independen) yang bekerja sama dengan RoamFit untuk menerima kunjungan Pengguna.
+3. **Kredit** adalah satuan nilai tukar digital internal RoamFit yang digunakan untuk mengakses fasilitas Mitra Gym.
 4. **PIN Check-in** adalah kode unik sementara yang dihasilkan oleh sistem untuk memvalidasi akses Pengguna di lokasi Mitra Gym.
 
 ### 2. Layanan Ekosistem & Batasan Tanggung Jawab
-1. Gymnox murni bertindak sebagai **penyedia platform teknologi perantara**. Kami tidak memiliki, mengelola, atau mengontrol fasilitas fisik, peralatan, maupun staf di lokasi Mitra Gym.
+1. RoamFit murni bertindak sebagai **penyedia platform teknologi perantara**. Kami tidak memiliki, mengelola, atau mengontrol fasilitas fisik, peralatan, maupun staf di lokasi Mitra Gym.
 2. Kami tidak bertanggung jawab atas cedera fisik, kecelakaan, kerugian materiil, atau kehilangan barang bawaan yang terjadi selama Pengguna berada di fasilitas Mitra Gym. Risiko penggunaan alat kebugaran sepenuhnya menjadi tanggung jawab Pengguna.
 3. Pengguna wajib mematuhi seluruh tata tertib, jam operasional, dan standar berpakaian yang ditetapkan secara sepihak oleh masing-masing Mitra Gym.
 
 ### 3. Sistem Kredit, Top-Up, dan Kebijakan Non-Refundable
-1. Kredit Gymnox hanya dapat digunakan di dalam ekosistem platform Kami dan tidak memiliki nilai tunai (bukan uang elektronik sebagaimana diatur oleh Bank Indonesia).
+1. Kredit RoamFit hanya dapat digunakan di dalam ekosistem platform Kami dan tidak memiliki nilai tunai (bukan uang elektronik sebagaimana diatur oleh Bank Indonesia).
 2. **Kebijakan Non-Refundable:** Seluruh transaksi pembelian Kredit yang telah berhasil bersifat final. Kredit tidak dapat ditukar kembali menjadi uang tunai, ditransfer ke akun bank, atau dikembalikan dalam bentuk apa pun.
 3. Jika akun ditutup, baik atas permintaan Pengguna maupun akibat pelanggaran aturan, seluruh sisa Kredit akan hangus.
 
@@ -37,14 +37,14 @@ Kami berhak, atas kebijakan Kami sendiri, untuk membekukan atau menghapus akun P
 3. Tindakan yang melanggar hukum positif Republik Indonesia.
 
 ### 6. Penyelesaian Sengketa
-Segala perselisihan yang timbul dari Perjanjian ini akan diselesaikan secara musyawarah untuk mufakat. Apabila tidak tercapai mufakat dalam waktu 30 hari, maka kedua belah pihak sepakat untuk menyelesaikannya melalui yurisdiksi non-eksklusif Pengadilan Negeri tempat domisili hukum Gymnox berada.
+Segala perselisihan yang timbul dari Perjanjian ini akan diselesaikan secara musyawarah untuk mufakat. Apabila tidak tercapai mufakat dalam waktu 30 hari, maka kedua belah pihak sepakat untuk menyelesaikannya melalui yurisdiksi non-eksklusif Pengadilan Negeri tempat domisili hukum RoamFit berada.
 
 ---
 
 # 🔒 KEBIJAKAN PRIVASI (PRIVACY POLICY)
 **Berlaku Efektif: 27 Agustus 2026**
 
-Gymnox ("Kami") sangat menghargai dan melindungi privasi data Anda. Kebijakan Privasi ini menjelaskan bagaimana Kami mengumpulkan, menggunakan, menyimpan, dan melindungi informasi pribadi Anda sesuai dengan **Undang-Undang Nomor 27 Tahun 2022 tentang Pelindungan Data Pribadi (UU PDP)** Republik Indonesia.
+RoamFit ("Kami") sangat menghargai dan melindungi privasi data Anda. Kebijakan Privasi ini menjelaskan bagaimana Kami mengumpulkan, menggunakan, menyimpan, dan melindungi informasi pribadi Anda sesuai dengan **Undang-Undang Nomor 27 Tahun 2022 tentang Pelindungan Data Pribadi (UU PDP)** Republik Indonesia.
 
 ### 1. Data yang Kami Kumpulkan
 Saat Anda menggunakan aplikasi Kami, Kami mengumpulkan Data Pribadi Spesifik dan Umum, termasuk namun tidak terbatas pada:
@@ -54,7 +54,7 @@ Saat Anda menggunakan aplikasi Kami, Kami mengumpulkan Data Pribadi Spesifik dan
 
 ### 2. Tujuan Penggunaan Data
 Kami menggunakan Data Pribadi Anda secara eksklusif untuk:
-1. Memproses pembuatan dan pengelolaan akun Gymnox Anda.
+1. Memproses pembuatan dan pengelolaan akun RoamFit Anda.
 2. Memfasilitasi transaksi pemotongan Kredit dan penerbitan PIN.
 3. Memberikan dukungan pelanggan (*customer support*).
 4. Melakukan audit internal untuk mencegah tindakan penipuan (*fraud detection*).
@@ -79,6 +79,6 @@ Sesuai dengan UU PDP, Anda memiliki hak penuh untuk:
 ### 6. Perubahan Kebijakan & Kontak
 Kami berhak memperbarui Kebijakan Privasi ini dari waktu ke waktu. Jika ada perubahan material, Kami akan memberitahukan Anda melalui email atau notifikasi aplikasi. 
 
-Untuk pertanyaan, keluhan, atau pelaksanaan Hak Subjek Data, Anda dapat menghubungi *Data Protection Officer* (DPO) / Tim Admin Kami melalui email: **privacy@gymnox.com** atau fitur "Hubungi Kami" di aplikasi.
+Untuk pertanyaan, keluhan, atau pelaksanaan Hak Subjek Data, Anda dapat menghubungi *Data Protection Officer* (DPO) / Tim Admin Kami melalui email: **privacy@roamfit.com** atau fitur "Hubungi Kami" di aplikasi.
 
 ---

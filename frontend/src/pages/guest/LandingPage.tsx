@@ -30,7 +30,7 @@ const LandingPage: React.FC = () => {
         {/* Header (Absolute Top) */}
         <header className="relative z-10 w-full px-6 py-5 flex justify-between items-center max-w-7xl mx-auto">
           <div className="flex items-center gap-2">
-            <span className="font-black text-white tracking-widest text-xl">GYMNOX</span>
+            <span className="font-black text-white tracking-widest text-xl">ROAMFIT</span>
           </div>
           <Link to="/register">
             <button className="bg-yellow-500 hover:bg-yellow-400 text-black text-xs font-bold px-5 py-2 rounded-full uppercase tracking-widest transition-colors">
@@ -138,7 +138,7 @@ const LandingPage: React.FC = () => {
       {/* Footer */}
       <footer className="bg-zinc-950 flex flex-col items-center justify-center py-12 px-6 border-t border-zinc-900/50">
         <div className="flex items-center gap-2 mb-8">
-          <span className="font-black text-white tracking-widest text-lg">GYMNOX</span>
+          <span className="font-black text-white tracking-widest text-lg">ROAMFIT</span>
         </div>
 
         <div className="flex flex-wrap justify-center gap-6 sm:gap-10 mb-8">
@@ -148,7 +148,7 @@ const LandingPage: React.FC = () => {
         </div>
 
         <p className="text-zinc-500 text-[10px] sm:text-xs tracking-wider uppercase">
-          &copy; 2024 Gymnox Platform. All rights reserved.
+          &copy; 2024 RoamFit Platform. All rights reserved.
         </p>
       </footer>
       

@@ -25,10 +25,10 @@ const GymDiscovery: React.FC = () => {
     <div className="flex flex-col min-h-screen pb-16 md:pb-0"> {/* padding bottom for mobile nav */}
       <Navbar />
       
-      <main className="flex-grow container mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-6">
+      <main className="grow container mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-6">
         <div className="mb-8 md:mb-10 max-w-2xl">
           <h1 className="text-3xl md:text-5xl font-extrabold text-white uppercase tracking-tight mb-6">
-            Stay Fit,<br />Anywhere.
+            Stay <span className='text-yellow-500'>Fit</span>,<br />Anywhere.
           </h1>
           <Input 
             placeholder="Cari nama gym atau lokasi..." 
