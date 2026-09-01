@@ -6,6 +6,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Gym;
 use App\Models\Transaction;
+use App\Models\TopupTransaction;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -40,7 +41,7 @@ class TransactionController extends Controller
             }
 
             $gym = Gym::find($validated['gym_id']);
-            
+
             $lockedUser = \App\Models\User::where('id', $user->id)->lockForUpdate()->first();
 
             if ($lockedUser->available_credits < $gym->credit_price) {
@@ -50,7 +51,7 @@ class TransactionController extends Controller
             // credit_balance is NOT decremented here. 
             // pending_credits accessor handles the escrow balance reduction dynamically.
 
-            $pinCode = str_pad((string)random_int(0, 9999), 4, '0', STR_PAD_LEFT);
+            $pinCode = str_pad((string) random_int(0, 9999), 4, '0', STR_PAD_LEFT);
             $expiresAt = now()->addHour();
 
             $transaction = Transaction::create([
@@ -146,26 +147,53 @@ class TransactionController extends Controller
         $user = $request->user();
 
         if ($user->role === 'user') {
-            $transactions = Transaction::where('user_id', $user->id)
+            // 1. Ambil Riwayat Check-in Gym
+            $checkins = Transaction::where('user_id', $user->id)
                 ->with('gym')
                 ->latest()
-                ->paginate(15);
+                ->get()
+                ->map(function ($tx) {
+                    return [
+                        'id' => (string) $tx->id,
+                        'gym_id' => $tx->gym_id,
+                        'gym_name' => $tx->gym->name ?? 'Gym',
+                        'type' => 'deduction',
+                        'amount' => (int) $tx->amount,
+                        'status' => $tx->status,
+                        'pin_code' => $tx->pin_code,
+                        'expires_at' => $tx->expires_at?->toIso8601String(),
+                        'created_at' => $tx->created_at?->toIso8601String(),
+                    ];
+                });
 
-            $transactions->getCollection()->transform(function ($tx) {
-                return [
-                    'id'         => $tx->id,
-                    'gym_id'     => $tx->gym_id,
-                    'gym_name'   => $tx->gym->name ?? 'Gym',
-                    'type'       => 'deduction',
-                    'amount'     => $tx->amount,
-                    'status'     => $tx->status,
-                    // pin_code is included so the frontend modal can display it without
-                    // an extra /transactions/{id} round-trip for pending transactions.
-                    'pin_code'   => $tx->pin_code,
-                    'expires_at' => $tx->expires_at?->toIso8601String(),
-                    'created_at' => $tx->created_at->toIso8601String(),
-                ];
-            });
+            // 2. Ambil Riwayat Top-up Midtrans
+            $topups = TopupTransaction::where('user_id', $user->id)
+                ->with('topupPackage')
+                ->latest()
+                ->get()
+                ->map(function ($tp) {
+                    return [
+                        'id' => (string) $tp->id,
+                        'gym_id' => null,
+                        'gym_name' => $tp->topupPackage?->name ?? 'Top Up Saldo',
+                        'type' => 'topup',
+                        'amount' => (int) $tp->total_credits,
+                        'status' => $tp->status,
+                        'pin_code' => null,
+                        'expires_at' => null,
+                        'created_at' => $tp->created_at?->toIso8601String(),
+                    ];
+                });
+
+            // 3. Gabungkan dan Urutkan Kronologis Terbaru (DESC)
+            $merged = $checkins->concat($topups)
+                ->sortByDesc('created_at')
+                ->values();
+
+            return response()->json([
+                'data' => $merged
+            ], 200);
+
         } elseif ($user->role === 'mitra') {
             $transactions = Transaction::whereHas('gym', function ($query) use ($user) {
                 $query->where('mitra_id', $user->id);
@@ -173,15 +201,19 @@ class TransactionController extends Controller
                 ->with(['gym', 'user'])
                 ->latest()
                 ->paginate(15);
+
+            return response()->json($transactions, 200);
+
         } elseif ($user->role === 'admin') {
             $transactions = Transaction::with(['gym', 'user'])
                 ->latest()
                 ->paginate(15);
+
+            return response()->json($transactions, 200);
+
         } else {
             return response()->json(['message' => 'Unauthorized'], 403);
         }
-
-        return response()->json($transactions, 200);
     }
 
     /**
@@ -194,7 +226,7 @@ class TransactionController extends Controller
     public function show(Request $request, string $id): JsonResponse
     {
         $transaction = Transaction::findOrFail($id);
-        
+
         // Authorization check: user can only view their own, mitra can view gyms they own
         $user = $request->user();
         if ($user->role === 'user' && $transaction->user_id !== $user->id) {
@@ -228,7 +260,7 @@ class TransactionController extends Controller
             }
 
             $transaction->update(['status' => 'cancelled']);
-            
+
             // Available credits automatically restored via the pending_credits accessor logic
 
             return response()->json([
