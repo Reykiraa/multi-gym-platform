@@ -38,4 +38,9 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/transactions', [TransactionController::class, 'index']);
     Route::get('/transactions/{id}', [TransactionController::class, 'show']);
 
+    // Topup
+    Route::post('/topups', [\App\Http\Controllers\TopupController::class, 'createTransaction']);
 });
+
+Route::get('/topup-packages', [\App\Http\Controllers\TopupController::class, 'index']);
+Route::post('/webhooks/midtrans', [\App\Http\Controllers\TopupController::class, 'handleWebhook']);
