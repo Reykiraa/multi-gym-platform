@@ -19,6 +19,9 @@ interface AuthState {
 
   /** Clears all auth state (user, token, isAuthenticated). */
   logout: () => void;
+
+  /** Sets the user directly for live sync */
+  setUser: (user: User) => void;
 }
 
 /**
@@ -37,6 +40,8 @@ export const useAuthStore = create<AuthState>()(
         token,
         isAuthenticated: true
       }),
+
+      setUser: (user) => set({ user }),
 
       updateUser: (data) =>
         set((state) => ({

@@ -44,3 +44,29 @@ export interface TransactionHistory {
   status: string;
   pin_code: string;
 }
+
+export interface TopupPackage {
+  id: string;
+  name: string;
+  price_idr: number;
+  credits: number;
+  bonus_credits: number;
+  is_active: boolean;
+}
+
+// Global declaration for Midtrans Snap
+declare global {
+  interface Window {
+    snap: {
+      pay: (
+        snapToken: string,
+        callbacks: {
+          onSuccess?: (result: any) => void;
+          onPending?: (result: any) => void;
+          onError?: (result: any) => void;
+          onClose?: () => void;
+        }
+      ) => void;
+    };
+  }
+}
