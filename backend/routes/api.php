@@ -24,6 +24,10 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::put('/gyms/{id}', [GymController::class, 'update']);
     Route::delete('/gyms/{id}', [GymController::class, 'destroy']);
 
+    // Mitra personal gym management
+    Route::get('/mitra/my-gym', [GymController::class, 'myGym']);
+    Route::put('/mitra/my-gym', [GymController::class, 'updateMyGym']);
+
     // Mitra organization management
     Route::get('/mitras', [MitraController::class, 'index']);
     Route::post('/mitras', [MitraController::class, 'store']);
