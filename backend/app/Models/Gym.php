@@ -24,6 +24,7 @@ class Gym extends Model
         'name',
         'location',
         'facilities',
+        'photos',
         'credit_price',
     ];
 
@@ -36,6 +37,7 @@ class Gym extends Model
     {
         return [
             'facilities' => 'array',
+            'photos' => 'array',
         ];
     }
 

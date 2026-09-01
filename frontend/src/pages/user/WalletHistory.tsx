@@ -91,13 +91,13 @@ const WalletHistory: React.FC = () => {
                 <div className="flex gap-3">
                   <button 
                     className="flex-1 bg-yellow-500 text-black font-bold py-3 rounded-xl hover:bg-yellow-400 transition-colors"
-                    onClick={() => window.alert("Fitur segera hadir. Untuk MVP, silakan hubungi Admin Gymnox untuk pengisian saldo.")}
+                    onClick={() => window.alert("Fitur segera hadir. Untuk MVP, silakan hubungi Admin RoamFit untuk pengisian saldo.")}
                   >
                     Top Up Credits
                   </button>
                   <button 
                     className="flex-1 bg-zinc-800 text-white font-bold py-3 rounded-xl hover:bg-zinc-700 transition-colors border border-zinc-700"
-                    onClick={() => window.alert("Fitur segera hadir. Untuk MVP, silakan hubungi Admin Gymnox untuk pengisian saldo.")}
+                    onClick={() => window.alert("Fitur segera hadir. Untuk MVP, silakan hubungi Admin RoamFit untuk pengisian saldo.")}
                   >
                     Transfer Credits
                   </button>

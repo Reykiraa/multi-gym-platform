@@ -26,7 +26,7 @@ const Navbar: React.FC = () => {
       <nav className="w-full border-b border-zinc-800 bg-zinc-950 sticky top-0 z-50">
         <div className="container mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-4 flex items-center justify-between">
           <Link to="/user/gyms" className="text-xl font-bold text-white tracking-wider">
-            GYMNOX
+            ROAM<span className="text-yellow-500">FIT</span>
           </Link>
           
           {/* Desktop Menu */}
