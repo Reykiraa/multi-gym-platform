@@ -97,5 +97,9 @@ class DatabaseSeeder extends Seeder
                 'credit_price' => 8,
             ]
         );
+
+        $this->call([
+            TopupPackageSeeder::class,
+        ]);
     }
 }
