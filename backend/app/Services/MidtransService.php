@@ -31,6 +31,12 @@ class MidtransService
         $serverKey = config('services.midtrans.server_key');
         $endpoint = $this->getEndpoint();
 
+        $params['expiry'] = [
+            'start_time' => date("Y-m-d H:i:s O"),
+            'unit' => 'minute',
+            'duration' => 15
+        ];
+
         $response = Http::withHeaders([
             'Authorization' => 'Basic ' . base64_encode($serverKey . ':'),
             'Content-Type' => 'application/json',
@@ -53,13 +59,37 @@ class MidtransService
 
         $serverKey = config('services.midtrans.server_key');
 
-        $response = Http::withHeaders([
-            'Authorization' => 'Basic ' . base64_encode($serverKey . ':'),
-            'Accept' => 'application/json',
-        ])->get($baseUrl . $orderId . '/status');
+        // Optimasi koneksi cepat
+        $response = Http::timeout(4)
+            ->connectTimeout(2)
+            ->withHeaders([
+                'Authorization' => 'Basic ' . base64_encode($serverKey . ':'),
+                'Accept' => 'application/json',
+            ])->get($baseUrl . $orderId . '/status');
 
         if ($response->failed()) {
             throw new Exception('Gagal memeriksa status ke Midtrans: ' . $response->body());
+        }
+
+        return $response->json();
+    }
+
+    public function cancelTransaction(string $orderId): array
+    {
+        $isProduction = config('services.midtrans.is_production');
+        $baseUrl = $isProduction
+            ? 'https://api.midtrans.com/v2/'
+            : 'https://api.sandbox.midtrans.com/v2/';
+
+        $serverKey = config('services.midtrans.server_key');
+
+        $response = Http::withHeaders([
+            'Authorization' => 'Basic ' . base64_encode($serverKey . ':'),
+            'Accept' => 'application/json',
+        ])->post($baseUrl . $orderId . '/cancel');
+
+        if ($response->failed()) {
+            throw new Exception('Gagal membatalkan transaksi di Midtrans: ' . $response->body());
         }
 
         return $response->json();

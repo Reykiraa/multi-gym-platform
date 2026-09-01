@@ -153,14 +153,46 @@ class TopupController extends Controller
                 ]);
 
                 return response()->json([
-                    'message' => 'Pembayaran berhasil dikonfirmasi! Saldo telah ditambahkan.',
+                    'message' => 'Pembayaran berhasil dikonfirmasi!',
                     'data' => $trx,
-                    'new_balance' => $user->credit_balance
+                    'user' => $user->fresh()
                 ], 200);
             }
 
             return response()->json([
                 'message' => 'Status transaksi saat ini: ' . $status,
+                'data' => $trx
+            ], 200);
+        });
+    }
+
+    /**
+     * Cancel a pending topup transaction.
+     */
+    public function cancel(Request $request, string $id, MidtransService $midtransService): JsonResponse
+    {
+        return DB::transaction(function () use ($request, $id, $midtransService) {
+            $trx = TopupTransaction::where('id', $id)
+                ->where('user_id', $request->user()->id)
+                ->where('status', 'pending')
+                ->lockForUpdate()
+                ->first();
+
+            if (!$trx) {
+                return response()->json(['message' => 'Transaksi tidak ditemukan atau sudah diproses.'], 400);
+            }
+
+            try {
+                $midtransService->cancelTransaction($trx->order_id);
+            } catch (\Throwable $e) {
+                // Abaikan jika order belum terbentuk di Midtrans
+            }
+
+            // Gunakan 'failed' agar tidak melanggar check constraint PostgreSQL
+            $trx->update(['status' => 'failed']);
+
+            return response()->json([
+                'message' => 'Transaksi top-up berhasil dibatalkan.',
                 'data' => $trx
             ], 200);
         });

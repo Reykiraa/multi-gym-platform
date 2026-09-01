@@ -147,7 +147,13 @@ class TransactionController extends Controller
         $user = $request->user();
 
         if ($user->role === 'user') {
-            // 1. Ambil Riwayat Check-in Gym
+            // 1. Auto-expire transaksi pending yang umurnya > 15 menit (Murni query DB)
+            \App\Models\TopupTransaction::where('user_id', $user->id)
+                ->where('status', 'pending')
+                ->where('created_at', '<', now()->subMinutes(15))
+                ->update(['status' => 'expired']);
+
+            // 2. Ambil Riwayat Check-in
             $checkins = Transaction::where('user_id', $user->id)
                 ->with('gym')
                 ->latest()
@@ -174,6 +180,7 @@ class TransactionController extends Controller
                 ->map(function ($tp) {
                     return [
                         'id' => (string) $tp->id,
+                        'topup_package_id' => $tp->topup_package_id,
                         'gym_id' => null,
                         'gym_name' => $tp->topupPackage?->name ?? 'Top Up Saldo',
                         'type' => 'topup',
@@ -182,6 +189,8 @@ class TransactionController extends Controller
                         'pin_code' => null,
                         'expires_at' => null,
                         'created_at' => $tp->created_at?->toIso8601String(),
+                        'order_id'   => $tp->order_id,
+                        'snap_token' => $tp->snap_token,
                     ];
                 });
 

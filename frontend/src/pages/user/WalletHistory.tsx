@@ -15,6 +15,9 @@ import { type TransactionHistory } from "../../types";
 import apiClient from "../../lib/axios";
 import { useAuthStore } from "../../store/authStore";
 import { TopupModal } from "../../components/modals/TopupModal";
+import { useCancelTopup, useVerifyTopup, useCheckoutTopup } from "../../hooks/api/useTopup";
+import { useQueryClient } from "@tanstack/react-query";
+import { useToastStore } from "../../store/toastStore";
 
 const fetchTransactions = async (): Promise<TransactionHistory[]> => {
   const response = await apiClient.get("/transactions");
@@ -31,6 +34,34 @@ const WalletHistory: React.FC = () => {
   const { user, setUser, isAuthenticated, token } = useAuthStore();
   const [isTopupOpen, setIsTopupOpen] = useState(false);
   const [selectedTx, setSelectedTx] = useState<TransactionHistory | null>(null);
+  const { mutate: checkout, isPending: isCheckingOut } = useCheckoutTopup();
+  const { mutate: cancelTopup, isPending: isCancelling } = useCancelTopup();
+  const { mutate: verifyTopup } = useVerifyTopup();
+  const queryClient = useQueryClient();
+  const { addToast } = useToastStore();
+
+  const handlePaymentSync = (orderId: string) => {
+    verifyTopup(
+      { orderId },
+      {
+        onSuccess: (res) => {
+          if (res.data?.status === 'success' || res.user) {
+            addToast('success', 'Top-up berhasil dan saldo telah bertambah!');
+          } else {
+            addToast('info', 'Menunggu pembayaran diselesaikan.');
+          }
+          queryClient.invalidateQueries({ queryKey: ['auth', 'user'] });
+          queryClient.invalidateQueries({ queryKey: ['transactions', 'history'] });
+          setSelectedTx(null);
+        },
+        onError: () => {
+          addToast('info', 'Menunggu pembayaran diselesaikan.');
+          queryClient.invalidateQueries({ queryKey: ['transactions', 'history'] });
+          setSelectedTx(null);
+        }
+      }
+    );
+  };
 
   // 1. Sinkronisasi User Profile ke Zustand Global (Agar Navbar langsung update!)
   useQuery({
@@ -314,6 +345,97 @@ const WalletHistory: React.FC = () => {
                 {renderStatusBadge(selectedTx.status)}
               </div>
             </div>
+
+            {selectedTx.status === "pending" && selectedTx.type === "topup" && (
+              <div className="space-y-2.5 mt-4 pt-4 border-t border-zinc-800">
+                {/* 1. Tombol Lanjutkan Pembayaran (Membuka langsung Nomor VA / QR Code yang sedang aktif) */}
+                {selectedTx.snap_token && (
+                  <button
+                    className="w-full py-2.5 bg-yellow-500 hover:bg-yellow-400 text-black font-bold rounded-xl transition-all shadow-md text-sm flex items-center justify-center gap-2"
+                    onClick={() => {
+                      if (window.snap && selectedTx.snap_token) {
+                        window.snap.pay(selectedTx.snap_token, {
+                          onSuccess: () => {
+                            if (selectedTx.order_id) verifyTopup({ orderId: selectedTx.order_id });
+                            setSelectedTx(null);
+                          },
+                          onPending: () => setSelectedTx(null),
+                          onClose: () => {
+                            if (selectedTx.order_id) verifyTopup({ orderId: selectedTx.order_id });
+                            setSelectedTx(null);
+                          },
+                          onError: () => setSelectedTx(null),
+                        });
+                      }
+                    }}
+                  >
+                    Lanjutkan Pembayaran (Lihat VA / QRIS)
+                  </button>
+                )}
+
+                {/* 2. Tombol Ganti Metode Pembayaran (Membatalkan yang lama, lalu membuka modal paket baru) */}
+                <button
+                  disabled={isCancelling || isCheckingOut}
+                  className="w-full py-2.5 bg-zinc-800 hover:bg-zinc-700 text-white font-semibold rounded-xl border border-zinc-700 transition-colors text-sm flex items-center justify-center gap-2"
+                  onClick={() => {
+                    if (!selectedTx.topup_package_id) {
+                      // Fallback jika tidak ada package id
+                      setSelectedTx(null);
+                      setIsTopupOpen(true);
+                      return;
+                    }
+
+                    const oldTxId = selectedTx.id;
+                    const packageId = selectedTx.topup_package_id;
+
+                    // 1. Batalkan transaksi lama secara diam-diam (tanpa toast)
+                    cancelTopup({ id: oldTxId.toString(), silent: true });
+
+                    // 2. Langsung checkout paket yang sama & buka pop-up Snap (Gambar 3)
+                    checkout(
+                      { topup_package_id: packageId },
+                      {
+                        onSuccess: (data) => {
+                          setSelectedTx(null);
+                          if (data.snap_token && window.snap) {
+                            window.snap.pay(data.snap_token, {
+                              onSuccess: () => {
+                                if (data.order_id) verifyTopup({ orderId: data.order_id });
+                              },
+                              onPending: () => {
+                                if (data.order_id) verifyTopup({ orderId: data.order_id });
+                              },
+                              onClose: () => {
+                                if (data.order_id) verifyTopup({ orderId: data.order_id });
+                              },
+                              onError: () => {}
+                            });
+                          }
+                        }
+                      }
+                    );
+                  }}
+                >
+                  {isCheckingOut ? "Membuka Metode Pembayaran..." : "Ganti Metode Pembayaran"}
+                </button>
+
+                {/* 3. Tombol Batalkan Transaksi */}
+                <button
+                  disabled={isCancelling}
+                  className="w-full py-2 bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 border border-rose-500/30 font-medium rounded-xl transition-colors text-xs"
+                  onClick={() => {
+                    cancelTopup(
+                      { id: selectedTx.id.toString() },
+                      {
+                        onSuccess: () => setSelectedTx(null)
+                      }
+                    );
+                  }}
+                >
+                  Batalkan Transaksi Ini
+                </button>
+              </div>
+            )}
 
             <button
               className="w-full mt-6 py-3 bg-zinc-800 hover:bg-zinc-700 text-white font-bold rounded-xl transition-colors"

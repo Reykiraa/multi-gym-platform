@@ -24,6 +24,31 @@ export const TopupModal: React.FC<TopupModalProps> = ({ isOpen, onClose }) => {
 
   if (!isOpen) return null;
 
+  const handlePaymentSync = (orderId: string) => {
+    verifyTopup(
+      { orderId },
+      {
+        onSuccess: (res) => {
+          if (res.data?.status === 'success' || res.user) {
+            addToast('success', 'Top-up berhasil dan saldo telah bertambah!');
+            // Invalidate cache secara paralel
+            queryClient.invalidateQueries({ queryKey: ['auth', 'user'] });
+            queryClient.invalidateQueries({ queryKey: ['transactions', 'history'] });
+          } else {
+            addToast('info', 'Menunggu pembayaran diselesaikan.');
+            queryClient.invalidateQueries({ queryKey: ['transactions', 'history'] });
+          }
+          onClose();
+        },
+        onError: () => {
+          addToast('info', 'Menunggu pembayaran diselesaikan.');
+          queryClient.invalidateQueries({ queryKey: ['transactions', 'history'] });
+          onClose();
+        }
+      }
+    );
+  };
+
   const handleCheckout = () => {
     if (!selectedPackage) return;
 
@@ -33,46 +58,12 @@ export const TopupModal: React.FC<TopupModalProps> = ({ isOpen, onClose }) => {
         onSuccess: (data) => {
           if (data.snap_token && window.snap) {
             window.snap.pay(data.snap_token, {
-              onSuccess: () => {
-                // Panggil verifikasi langsung ke server backend
-                verifyTopup(
-                  { orderId: data.order_id },
-                  {
-                    onSuccess: () => {
-                      addToast(
-                        "success",
-                        "Top-up berhasil dan saldo telah bertambah!",
-                      );
-                      queryClient.invalidateQueries({
-                        queryKey: ["auth", "user"],
-                      });
-                      queryClient.invalidateQueries({
-                        queryKey: ["transactions", "active"],
-                      });
-                      onClose();
-                    },
-                    onError: () => {
-                      addToast(
-                        "info",
-                        "Pembayaran diterima. Sedang menunggu konfirmasi server.",
-                      );
-                      queryClient.invalidateQueries({
-                        queryKey: ["transactions", "active"],
-                      });
-                      onClose();
-                    },
-                  },
-                );
-              },
-              onPending: () => {
-                addToast("info", "Menunggu pembayaran diselesaikan.");
-                queryClient.invalidateQueries({
-                  queryKey: ["transactions", "active"],
-                });
-                onClose();
-              },
+              onSuccess: () => handlePaymentSync(data.order_id),
+              onPending: () => handlePaymentSync(data.order_id),
+              onClose: () => handlePaymentSync(data.order_id),
               onError: () => {
                 addToast("error", "Pembayaran gagal.");
+                onClose();
               },
             });
           } else {
