@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
+import { motion } from 'framer-motion';
 import { ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight } from 'lucide-react';
 import Navbar from '../../components/shared/Navbar';
 import Input from '../../components/ui/Input';
@@ -73,8 +74,15 @@ const GymDiscovery: React.FC = () => {
           <>
             <div className={`grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 transition-opacity duration-200 ${isFetching ? 'opacity-50' : 'opacity-100'}`}>
               {gyms.length > 0 ? (
-                gyms.map(gym => (
-                  <GymCard key={gym.id} gym={gym} />
+                gyms.map((gym, index) => (
+                  <motion.div
+                    key={gym.id}
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.4, delay: index * 0.05 }}
+                  >
+                    <GymCard gym={gym} />
+                  </motion.div>
                 ))
               ) : (
                 <div className="col-span-full text-center text-zinc-500 py-20 bg-zinc-900/50 rounded-2xl border border-zinc-800 border-dashed">

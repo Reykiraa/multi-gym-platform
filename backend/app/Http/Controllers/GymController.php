@@ -254,6 +254,7 @@ class GymController extends Controller
             'location' => 'sometimes|string',
             'facilities' => 'sometimes|array',
             'photos' => 'sometimes|array',
+            'maps_url' => 'sometimes|nullable|url',
         ]);
 
         $gym->update($validated);
