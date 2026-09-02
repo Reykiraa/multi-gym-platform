@@ -15,7 +15,11 @@ import { type TransactionHistory } from "../../types";
 import apiClient from "../../lib/axios";
 import { useAuthStore } from "../../store/authStore";
 import { TopupModal } from "../../components/modals/TopupModal";
-import { useCancelTopup, useVerifyTopup, useCheckoutTopup } from "../../hooks/api/useTopup";
+import {
+  useCancelTopup,
+  useVerifyTopup,
+  useCheckoutTopup,
+} from "../../hooks/api/useTopup";
 import { useQueryClient } from "@tanstack/react-query";
 import { useToastStore } from "../../store/toastStore";
 
@@ -31,6 +35,7 @@ const fetchUserProfile = async () => {
 };
 
 const WalletHistory: React.FC = () => {
+  const [isConfirmingCancel, setIsConfirmingCancel] = useState(false);
   const { user, setUser, isAuthenticated, token } = useAuthStore();
   const [isTopupOpen, setIsTopupOpen] = useState(false);
   const [selectedTx, setSelectedTx] = useState<TransactionHistory | null>(null);
@@ -45,21 +50,25 @@ const WalletHistory: React.FC = () => {
       { orderId },
       {
         onSuccess: (res) => {
-          if (res.data?.status === 'success' || res.user) {
-            addToast('success', 'Top-up berhasil dan saldo telah bertambah!');
+          if (res.data?.status === "success" || res.user) {
+            addToast("success", "Top-up berhasil dan saldo telah bertambah!");
           } else {
-            addToast('info', 'Menunggu pembayaran diselesaikan.');
+            addToast("info", "Menunggu pembayaran diselesaikan.");
           }
-          queryClient.invalidateQueries({ queryKey: ['auth', 'user'] });
-          queryClient.invalidateQueries({ queryKey: ['transactions', 'history'] });
+          queryClient.invalidateQueries({ queryKey: ["auth", "user"] });
+          queryClient.invalidateQueries({
+            queryKey: ["transactions", "history"],
+          });
           setSelectedTx(null);
         },
         onError: () => {
-          addToast('info', 'Menunggu pembayaran diselesaikan.');
-          queryClient.invalidateQueries({ queryKey: ['transactions', 'history'] });
+          addToast("info", "Menunggu pembayaran diselesaikan.");
+          queryClient.invalidateQueries({
+            queryKey: ["transactions", "history"],
+          });
           setSelectedTx(null);
-        }
-      }
+        },
+      },
     );
   };
 
@@ -356,12 +365,14 @@ const WalletHistory: React.FC = () => {
                       if (window.snap && selectedTx.snap_token) {
                         window.snap.pay(selectedTx.snap_token, {
                           onSuccess: () => {
-                            if (selectedTx.order_id) verifyTopup({ orderId: selectedTx.order_id });
+                            if (selectedTx.order_id)
+                              verifyTopup({ orderId: selectedTx.order_id });
                             setSelectedTx(null);
                           },
                           onPending: () => setSelectedTx(null),
                           onClose: () => {
-                            if (selectedTx.order_id) verifyTopup({ orderId: selectedTx.order_id });
+                            if (selectedTx.order_id)
+                              verifyTopup({ orderId: selectedTx.order_id });
                             setSelectedTx(null);
                           },
                           onError: () => setSelectedTx(null),
@@ -400,40 +411,73 @@ const WalletHistory: React.FC = () => {
                           if (data.snap_token && window.snap) {
                             window.snap.pay(data.snap_token, {
                               onSuccess: () => {
-                                if (data.order_id) verifyTopup({ orderId: data.order_id });
+                                if (data.order_id)
+                                  verifyTopup({ orderId: data.order_id });
                               },
                               onPending: () => {
-                                if (data.order_id) verifyTopup({ orderId: data.order_id });
+                                if (data.order_id)
+                                  verifyTopup({ orderId: data.order_id });
                               },
                               onClose: () => {
-                                if (data.order_id) verifyTopup({ orderId: data.order_id });
+                                if (data.order_id)
+                                  verifyTopup({ orderId: data.order_id });
                               },
-                              onError: () => {}
+                              onError: () => {},
                             });
                           }
-                        }
-                      }
+                        },
+                      },
                     );
                   }}
                 >
-                  {isCheckingOut ? "Membuka Metode Pembayaran..." : "Ganti Metode Pembayaran"}
+                  {isCheckingOut
+                    ? "Membuka Metode Pembayaran..."
+                    : "Ganti Metode Pembayaran"}
                 </button>
 
                 {/* 3. Tombol Batalkan Transaksi */}
-                <button
-                  disabled={isCancelling}
-                  className="w-full py-2 bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 border border-rose-500/30 font-medium rounded-xl transition-colors text-xs"
-                  onClick={() => {
-                    cancelTopup(
-                      { id: selectedTx.id.toString() },
-                      {
-                        onSuccess: () => setSelectedTx(null)
-                      }
-                    );
-                  }}
-                >
-                  Batalkan Transaksi Ini
-                </button>
+                {!isConfirmingCancel ? (
+                  <button
+                    disabled={isCancelling || isCheckingOut}
+                    className="w-full py-2 bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 border border-rose-500/30 font-medium rounded-xl transition-colors text-xs"
+                    onClick={() => setIsConfirmingCancel(true)}
+                  >
+                    Batalkan Transaksi Ini
+                  </button>
+                ) : (
+                  <div className="p-3 bg-rose-950/40 border border-rose-500/30 rounded-xl space-y-2.5 animate-in fade-in zoom-in-95 duration-150">
+                    <p className="text-xs text-rose-300 font-medium text-center">
+                      Yakin ingin membatalkan pesanan ini? Nomor pembayaran
+                      aktif akan dinonaktifkan.
+                    </p>
+                    <div className="flex gap-2">
+                      <button
+                        disabled={isCancelling}
+                        className="flex-1 py-1.5 bg-zinc-800 hover:bg-zinc-700 text-zinc-300 font-semibold rounded-lg text-xs transition-colors"
+                        onClick={() => setIsConfirmingCancel(false)}
+                      >
+                        Tidak, Kembali
+                      </button>
+                      <button
+                        disabled={isCancelling}
+                        className="flex-1 py-1.5 bg-rose-600 hover:bg-rose-700 text-white font-bold rounded-lg text-xs transition-colors shadow-md"
+                        onClick={() => {
+                          cancelTopup(
+                            { id: selectedTx.id },
+                            {
+                              onSuccess: () => {
+                                setIsConfirmingCancel(false);
+                                setSelectedTx(null);
+                              },
+                            },
+                          );
+                        }}
+                      >
+                        {isCancelling ? "Membatalkan..." : "Ya, Batalkan"}
+                      </button>
+                    </div>
+                  </div>
+                )}
               </div>
             )}
 
