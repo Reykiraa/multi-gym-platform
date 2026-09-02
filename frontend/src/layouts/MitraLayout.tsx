@@ -1,4 +1,3 @@
-// src/layouts/MitraLayout.tsx
 import React from 'react';
 import { NavLink, Outlet, useNavigate } from 'react-router-dom';
 import { Bell, Package, ChevronDown, LogOut } from 'lucide-react';
