@@ -1,4 +1,3 @@
-// src/layouts/AdminLayout.tsx
 import React, { useState } from 'react';
 import ConfirmModal from '../components/modals/ConfirmModal';
 import { NavLink, Outlet, useNavigate } from 'react-router-dom';

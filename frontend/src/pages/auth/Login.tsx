@@ -8,6 +8,8 @@ import Button from '../../components/ui/Button';
 import Card from '../../components/ui/Card';
 import apiClient from '../../lib/axios';
 import { useAuthStore } from '../../store/authStore';
+import { useToastStore } from '../../store/toastStore';
+import { GoogleLogin } from '@react-oauth/google';
 
 const loginSchema = z.object({
   email: z.string().email('Format email tidak valid'),
@@ -19,6 +21,7 @@ type LoginFormValues = z.infer<typeof loginSchema>;
 const Login: React.FC = () => {
   const navigate = useNavigate();
   const { setAuth } = useAuthStore();
+  const { addToast } = useToastStore();
   
   const {
     register,
@@ -49,6 +52,28 @@ const Login: React.FC = () => {
     } catch (error) {
       console.error('Login failed', error);
       setError('root', { message: 'Login gagal. Silakan periksa email dan password Anda.' });
+    }
+  };
+
+  const handleGoogleSuccess = async (credentialResponse: any) => {
+    try {
+      const response = await apiClient.post('/auth/google', {
+        credential: credentialResponse.credential,
+      });
+
+      const { user, token } = response.data;
+      setAuth(user, token);
+      addToast('success', `Selamat datang, ${user.name}!`);
+      
+      if (user.role === 'admin') {
+        navigate('/admin/dashboard');
+      } else if (user.role === 'mitra') {
+        navigate('/mitra/dashboard');
+      } else {
+        navigate('/user/gyms');
+      }
+    } catch (error: any) {
+      addToast('error', error.response?.data?.message || 'Login Google gagal.');
     }
   };
 
@@ -101,6 +126,24 @@ const Login: React.FC = () => {
               {isSubmitting ? 'Memproses...' : 'Login'}
             </Button>
           </form>
+
+          <div className="my-6 flex items-center">
+            <div className="flex-grow border-t border-zinc-800"></div>
+            <span className="flex-shrink mx-4 text-xs font-semibold text-zinc-500 uppercase tracking-wider">
+              atau
+            </span>
+            <div className="flex-grow border-t border-zinc-800"></div>
+          </div>
+
+          <div className="flex justify-center w-full">
+            <GoogleLogin
+              onSuccess={handleGoogleSuccess}
+              onError={() => addToast('error', 'Gagal memuat Google Sign-In')}
+              theme="filled_black"
+              shape="pill"
+              width="100%"
+            />
+          </div>
 
           <p className="text-center text-sm text-zinc-500 mt-6">
             Belum punya akun?{' '}

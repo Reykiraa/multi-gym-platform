@@ -1,9 +1,10 @@
 // frontend/src/pages/user/GymDetail.tsx
 
 import React, { useState, useRef, useEffect, useCallback } from 'react';
-import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { ChevronLeft, ChevronRight, MapPin, ExternalLink } from 'lucide-react';
 import { useParams } from 'react-router-dom';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { motion } from 'framer-motion';
 import Button from '../../components/ui/Button';
 import Badge from '../../components/ui/Badge';
 import CheckInConfirmModal from '../../components/modals/CheckInConfirmModal';
@@ -131,7 +132,12 @@ const GymDetail: React.FC = () => {
 
       <main className="flex-grow container mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-6">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-          <div className="md:col-span-2">
+          <motion.div 
+            initial={{ opacity: 0, y: 20 }} 
+            animate={{ opacity: 1, y: 0 }} 
+            transition={{ duration: 0.4 }}
+            className="md:col-span-2"
+          >
             {gym.photos && gym.photos.length > 1 ? (
               /* Multi-photo: auto-sliding crossfade carousel */
               <div className="relative h-64 md:h-96 w-full mb-8 rounded-t-2xl overflow-hidden">
@@ -208,11 +214,19 @@ const GymDetail: React.FC = () => {
                   </Badge>
                 ))}
               </div>
-            </div>
-          </div>
 
-          <div className="md:col-span-1">
-            <div className="fixed bottom-14 md:bottom-auto md:static left-0 right-0 w-full md:w-auto p-4 md:p-6 bg-zinc-950/90 backdrop-blur-md md:bg-zinc-900/50 md:backdrop-blur-none border-t border-zinc-800 md:border md:border-zinc-800 z-40 md:rounded-2xl md:sticky md:top-24">
+            </div>
+          </motion.div>
+
+          <motion.div 
+            initial={{ opacity: 0, y: 20 }} 
+            animate={{ opacity: 1, y: 0 }} 
+            transition={{ duration: 0.4, delay: 0.15 }}
+            className="md:col-span-1"
+          >
+            <div className="md:sticky md:top-24 space-y-6">
+              {/* Check-in Card */}
+              <div className="p-4 md:p-6 bg-zinc-900/50 border border-zinc-800 rounded-2xl">
               <div className="hidden md:block mb-4">
                 <h3 className="text-zinc-300 font-medium mb-1">Akses Masuk</h3>
                 <p className="text-sm text-zinc-500">Tukarkan kredit Anda untuk mendapatkan PIN masuk ke gym ini.</p>
@@ -237,7 +251,28 @@ const GymDetail: React.FC = () => {
                 CHECK-IN SEKARANG
               </Button>
             </div>
-          </div>
+
+              {/* Minimap Card */}
+              {gym.maps_url && (
+                <div className="bg-zinc-900/50 border border-zinc-800 rounded-2xl overflow-hidden p-4">
+                  <h3 className="text-zinc-300 font-medium mb-3 flex items-center gap-2">
+                    <MapPin size={18} className="text-yellow-500" /> Lokasi Gym
+                  </h3>
+                  <div className="w-full h-40 bg-zinc-800 rounded-xl mb-4 overflow-hidden relative">
+                    <iframe 
+                      title="Gym Location Minimap"
+                      width="100%" 
+                      height="100%" 
+                      frameBorder="0" 
+                      style={{ border: 0 }} 
+                      src={gym.maps_url.includes('/embed') ? gym.maps_url : `https://maps.google.com/maps?q=${encodeURIComponent(gym.name + " " + gym.location)}&t=&z=14&ie=UTF8&iwloc=&output=embed`} 
+                      allowFullScreen 
+                    />
+                  </div>
+                </div>
+              )}
+            </div>
+          </motion.div>
         </div>
 
         <CheckInConfirmModal
