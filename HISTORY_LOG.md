@@ -232,3 +232,20 @@
 - **Keputusan Arsitektur & Keamanan:**
   - **Fail-Safe Try-Catch:** Seluruh proses `Mail::send` diisolasi dalam blok `try-catch` dan pencatatan log error agar kegagalan jaringan SMTP tidak pernah membatalkan eksekusi `DB::transaction()` penambahan saldo atau pembuatan akun.
   - **Cross-Client Email Styling:** Menggunakan *inline CSS* standar tabel email agar tampilan struk invoice dan welcome email tampil rapi di aplikasi Gmail, Apple Mail, dan Outlook.
+
+  ## [2026-09-02] - Phase: Admin Gym Network, B2B Hierarchy & Modal UX Polish
+- **Fitur Selesai:** 
+  - Perbaikan bug submit form Edit Gym (memisahkan validasi mode edit dari Zod schema registrasi mitra baru).
+  - Smart B2B Mitra Hierarchy Accessor pada model `Gym.php` (memprioritaskan nama Brand Organisasi dari tabel `mitras`, dengan fallback ke nama pengelola untuk gym standalone).
+  - Eager-loading relasi bersarang `mitra.mitraOrg` pada `GymController@index`.
+  - Peningkatan UX penghapusan Gym: Mengganti dialog native `confirm()` browser dengan komponen kustom `ConfirmModal`.
+- **File Dibuat/Dimodifikasi:**
+  - **Backend:**
+    - `app/Models/Gym.php` (Aksesor `mitra_name` dan `pengelola_name`)
+    - `app/Http/Controllers/GymController.php` (Eager loading relasi `mitra.mitraOrg`)
+  - **Frontend:**
+    - `src/components/forms/GymForm.tsx` (Perbaikan handler form edit)
+    - `src/pages/admin/GymManager.tsx` (Integrasi `ConfirmModal` dan penanganan safe payload)
+- **Keputusan Arsitektur & Keamanan:**
+  - **Separation of Form Concerns:** Form edit tidak memvalidasi ulang kredensial akun mitra, melainkan fokus murni pada pembaruan entitas gym (`name`, `location`, `facilities`, `credit_price`).
+  - **Hierarchical Accessor Pattern:** Memastikan kolom tabel admin menampilkan entitas bisnis yang relevan tanpa memerlukan query manual berulang di frontend.
