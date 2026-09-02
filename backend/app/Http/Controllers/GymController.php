@@ -19,17 +19,17 @@ class GymController extends Controller
      */
     public function index(Request $request): JsonResponse
     {
-        $query = Gym::query();
-        
+        $query = Gym::with(['mitra.mitraOrg']); // Eager load mitra
+
         if ($request->has('search') && $request->query('search') !== '') {
             $searchTerm = $request->query('search');
             $query->where('name', 'ilike', '%' . $searchTerm . '%')
-                  ->orWhere('location', 'ilike', '%' . $searchTerm . '%');
+                ->orWhere('location', 'ilike', '%' . $searchTerm . '%');
         }
-        
-        $perPage = $request->query('per_page', 8);
-        $gyms = $query->paginate($perPage);
-        
+
+        $perPage = $request->query('per_page', 15);
+        $gyms = $query->latest()->paginate($perPage);
+
         return response()->json($gyms, 200);
     }
 
@@ -42,7 +42,7 @@ class GymController extends Controller
     public function show(string $id): JsonResponse
     {
         $gym = Gym::with('mitra')->findOrFail($id);
-        
+
         return response()->json($gym, 200);
     }
 
@@ -112,32 +112,32 @@ class GymController extends Controller
         }
 
         $validated = $request->validate([
-            'mitra_org_id'    => 'required|integer|exists:mitras,id',
-            'branch_name'     => 'required|string|max:255',
-            'branch_email'    => 'required|string|email|unique:users,email',
+            'mitra_org_id' => 'required|integer|exists:mitras,id',
+            'branch_name' => 'required|string|max:255',
+            'branch_email' => 'required|string|email|unique:users,email',
             'branch_password' => 'nullable|string|min:8',
-            'name'            => 'required|string|max:255',
-            'location'        => 'required|string',
-            'facilities'      => 'required|array',
-            'credit_price'    => 'required|integer|min:1',
+            'name' => 'required|string|max:255',
+            'location' => 'required|string',
+            'facilities' => 'required|array',
+            'credit_price' => 'required|integer|min:1',
         ]);
 
         $result = \Illuminate\Support\Facades\DB::transaction(function () use ($validated) {
             // Create a dedicated branch manager account linked to the mitra org
             $branchMitra = \App\Models\User::create([
-                'name'          => $validated['branch_name'],
-                'email'         => $validated['branch_email'],
-                'password'      => $validated['branch_password'] ?? 'Gym1234!',
-                'role'          => 'mitra',
-                'mitra_org_id'  => $validated['mitra_org_id'],
+                'name' => $validated['branch_name'],
+                'email' => $validated['branch_email'],
+                'password' => $validated['branch_password'] ?? 'Gym1234!',
+                'role' => 'mitra',
+                'mitra_org_id' => $validated['mitra_org_id'],
             ]);
 
             $gym = Gym::create([
-                'mitra_id'     => $branchMitra->id,
+                'mitra_id' => $branchMitra->id,
                 'mitra_org_id' => $validated['mitra_org_id'],
-                'name'         => $validated['name'],
-                'location'     => $validated['location'],
-                'facilities'   => $validated['facilities'],
+                'name' => $validated['name'],
+                'location' => $validated['location'],
+                'facilities' => $validated['facilities'],
                 'credit_price' => $validated['credit_price'],
             ]);
 
@@ -146,8 +146,8 @@ class GymController extends Controller
 
         return response()->json([
             'message' => 'Cabang gym berhasil ditambahkan',
-            'gym'     => $result['gym'],
-            'mitra'   => $result['mitra'],
+            'gym' => $result['gym'],
+            'mitra' => $result['mitra'],
         ], 201);
     }
 
@@ -172,7 +172,6 @@ class GymController extends Controller
         }
 
         $validated = $request->validate([
-            'mitra_id' => 'sometimes|integer|exists:users,id',
             'name' => 'sometimes|string|max:255',
             'location' => 'sometimes|string',
             'facilities' => 'sometimes|array',

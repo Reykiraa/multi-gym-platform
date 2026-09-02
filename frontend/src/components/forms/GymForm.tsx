@@ -225,6 +225,48 @@ const GymForm: React.FC<GymFormProps> = ({
     });
   };
 
+  const handleUnifiedSubmit = (e: React.FormEvent) => {
+    if (isEdit) {
+      e.preventDefault();
+
+      const formValues = newMitraForm.getValues();
+      const name = formValues.name;
+      const location = formValues.location;
+      const facilities = formValues.facilities;
+      const creditPrice = formValues.credit_price;
+
+      if (!name || !location || !creditPrice) {
+        alert("Nama gym, lokasi, dan harga kredit wajib diisi.");
+        return;
+      }
+
+      if (!gym) return;
+
+      const payload = {
+        name,
+        location,
+        facilities: Array.isArray(facilities)
+          ? facilities
+          : typeof facilities === 'string'
+          ? (facilities as string).split(',').map((s) => s.trim()).filter(Boolean)
+          : [],
+        credit_price: Number(creditPrice),
+        mitra_id: gym.mitra_id,
+        mitra_name: gym.mitra_name || '',
+        mitra_email: '',
+      };
+
+      if (onSubmit) {
+        onSubmit(payload as any);
+      } else if (onSubmitBranch) {
+        onSubmitBranch(payload as any);
+      }
+      return;
+    }
+
+    newMitraForm.handleSubmit(handleNewMitraSubmit)(e);
+  };
+
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
       <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={onClose} />
@@ -266,7 +308,7 @@ const GymForm: React.FC<GymFormProps> = ({
         {(isEdit || mode === 'new') && (
           <form
             id="form-new-mitra"
-            onSubmit={newMitraForm.handleSubmit(handleNewMitraSubmit)}
+            onSubmit={handleUnifiedSubmit}
             className="px-6 py-5 flex flex-col gap-4 overflow-y-auto"
             noValidate
           >
