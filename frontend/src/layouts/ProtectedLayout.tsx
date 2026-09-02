@@ -55,7 +55,7 @@ const ProtectedLayout: React.FC<ProtectedLayoutProps> = ({ allowedRoles }) => {
   useEffect(() => {
     if (isUnauthorized && !hasShownToast.current) {
       hasShownToast.current = true;
-      addToast('error', 'Akses ditolak: Anda tidak memiliki izin untuk halaman ini.');
+      addToast('error', 'Access denied: You do not have permission for this page.');
     }
   }, [isUnauthorized, addToast]);
 
@@ -83,7 +83,7 @@ const ProtectedLayout: React.FC<ProtectedLayoutProps> = ({ allowedRoles }) => {
         <button
           onClick={() => setIsPinModalOpen(true)}
           className="fixed bottom-24 right-6 md:bottom-10 md:right-10 z-[100] flex h-14 w-14 items-center justify-center rounded-full shadow-[0_0_20px_rgba(234,179,8,0.4)] hover:scale-110 transition-all duration-300 group bg-yellow-500 text-black hover:bg-yellow-400"
-          title="Lihat PIN Check-in"
+          title="View Check-in PIN"
         >
           <Ticket size={28} className="animate-pulse" />
           <span className="absolute top-0 right-0 w-4 h-4 rounded-full bg-red-500 animate-bounce" />

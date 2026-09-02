@@ -51,24 +51,24 @@ const AdminDashboard: React.FC = () => {
       {/* Page header */}
       <div className="mb-8">
         <h1 className="text-2xl md:text-3xl font-bold text-white">Dashboard</h1>
-        <p className="text-zinc-400 mt-1">Ringkasan data platform ROAMFIT</p>
+        <p className="text-zinc-400 mt-1">ROAMFIT platform data summary</p>
       </div>
 
       {/* Stats grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4 mb-8">
         <StatCard
-          label="Total Gym"
+          label="Total Gyms"
           value={stats.total_gyms}
           icon={<Dumbbell size={22} />}
         />
         <StatCard
-          label="Total User"
+          label="Total Users"
           value={stats.total_users}
           icon={<Users size={22} />}
           accent="text-emerald-500"
         />
         <StatCard
-          label="Total Transaksi"
+          label="Total Transactions"
           value={stats.total_transactions}
           icon={<ArrowLeftRight size={22} />}
           accent="text-sky-500"
@@ -89,10 +89,10 @@ const AdminDashboard: React.FC = () => {
         >
           <div className="flex items-center gap-3 mb-3">
             <Building2 size={20} className="text-yellow-500" />
-            <h3 className="text-lg font-semibold text-white">Mitra Organisasi</h3>
+            <h3 className="text-lg font-semibold text-white">Partner Organizations</h3>
           </div>
           <p className="text-sm text-zinc-400">
-            Daftarkan & kelola brand gym partner (PT FTL, Gold's Gym, dll).
+            Register & manage gym partner brands (PT FTL, Gold's Gym, etc).
           </p>
         </Link>
 
@@ -105,7 +105,7 @@ const AdminDashboard: React.FC = () => {
             <h3 className="text-lg font-semibold text-white">Gym Network</h3>
           </div>
           <p className="text-sm text-zinc-400">
-            Kelola data gym partner, tambah lokasi baru, dan atur tarif kredit.
+            Manage gym partner data, add new locations, and set credit rates.
           </p>
         </Link>
 
@@ -118,7 +118,7 @@ const AdminDashboard: React.FC = () => {
             <h3 className="text-lg font-semibold text-white">Transactions</h3>
           </div>
           <p className="text-sm text-zinc-400">
-            Pantau seluruh transaksi check-in dan top-up kredit.
+            Monitor all check-in and credit top-up transactions.
           </p>
         </Link>
       </div>

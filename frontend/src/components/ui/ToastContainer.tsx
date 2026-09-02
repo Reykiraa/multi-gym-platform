@@ -49,7 +49,7 @@ const ToastContainer: React.FC = () => {
           <button
             onClick={() => removeToast(toast.id)}
             className="shrink-0 text-zinc-500 hover:text-white transition-colors"
-            aria-label="Tutup notifikasi"
+            aria-label="Close notification"
           >
             <X size={16} />
           </button>

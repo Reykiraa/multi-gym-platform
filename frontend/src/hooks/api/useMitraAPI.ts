@@ -25,10 +25,10 @@ export const useValidatePin = () => {
     },
     onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: ['transactions'] });
-      addToast('success', data.message || 'PIN berhasil divalidasi');
+      addToast('success', data.message || 'Validation Successful');
     },
     onError: (error: any) => {
-      addToast('error', error.response?.data?.message || 'Terjadi kesalahan saat memvalidasi PIN');
+      addToast('error', error.response?.data?.message || 'An error occurred while validating PIN');
     }
   });
 };

@@ -57,7 +57,7 @@ const Profile: React.FC = () => {
 
         {/* Menu List */}
         <div className="flex flex-col gap-3 mb-8">
-          <h2 className="text-lg font-bold text-white mb-2 px-2">Akun Saya</h2>
+          <h2 className="text-lg font-bold text-white mb-2 px-2">My Account</h2>
           {menuItems.map((item, idx) => (
             <Link key={idx} to={item.path}>
               <Card noPadding className="hover:bg-zinc-800/50 transition-colors cursor-pointer group">
@@ -87,10 +87,10 @@ const Profile: React.FC = () => {
 
         <ConfirmModal
           isOpen={isLogoutModalOpen}
-          title="Konfirmasi Logout"
-          description="Apakah Anda yakin ingin keluar dari akun ini?"
-          confirmText="Ya, Logout"
-          cancelText="Batal"
+          title="Confirm Logout"
+          description="Are you sure you want to log out of this account?"
+          confirmText="Yes, Logout"
+          cancelText="Cancel"
           onConfirm={handleLogout}
           onCancel={() => setIsLogoutModalOpen(false)}
         />

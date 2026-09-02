@@ -26,13 +26,13 @@ const Notifications: React.FC = () => {
       </header>
 
       <main className="flex-grow container mx-auto max-w-xl px-4 py-8">
-        <p className="text-zinc-400 mb-6">Atur preferensi notifikasi Anda untuk pengalaman terbaik.</p>
+        <p className="text-zinc-400 mb-6">Manage your notification preferences for the best experience.</p>
         
         <div className="flex flex-col gap-4">
           <Card className="flex items-center justify-between p-5">
             <div>
               <h3 className="font-bold text-white mb-1">Email Alerts</h3>
-              <p className="text-sm text-zinc-500">Pemberitahuan aktivitas akun via Email.</p>
+              <p className="text-sm text-zinc-500">Account activity notifications via Email.</p>
             </div>
             <button 
               onClick={() => toggle('emailAlerts')}
@@ -45,7 +45,7 @@ const Notifications: React.FC = () => {
           <Card className="flex items-center justify-between p-5">
             <div>
               <h3 className="font-bold text-white mb-1">Check-in Reminders</h3>
-              <p className="text-sm text-zinc-500">Pengingat kedaluwarsa PIN gym.</p>
+              <p className="text-sm text-zinc-500">Reminders for gym PIN expiration.</p>
             </div>
             <button 
               onClick={() => toggle('checkInReminders')}
@@ -58,7 +58,7 @@ const Notifications: React.FC = () => {
           <Card className="flex items-center justify-between p-5">
             <div>
               <h3 className="font-bold text-white mb-1">Promo Offers</h3>
-              <p className="text-sm text-zinc-500">Informasi diskon top up kredit.</p>
+              <p className="text-sm text-zinc-500">Information on credit top-up discounts.</p>
             </div>
             <button 
               onClick={() => toggle('promoOffers')}

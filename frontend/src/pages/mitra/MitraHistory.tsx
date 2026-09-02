@@ -32,13 +32,13 @@ const MitraHistory: React.FC = () => {
             Check-in History
           </h1>
           <p className="text-sm md:text-base text-zinc-400 mt-2">
-            Pantau riwayat kunjungan member ke gym Anda.
+            Monitor member visit history to your gym.
           </p>
         </div>
         <div className="bg-zinc-800/50 border border-zinc-700/50 rounded-xl p-4 md:p-5 flex items-center justify-between gap-8 md:gap-12 shrink-0">
           <div>
             <p className="text-xs text-zinc-400 font-medium tracking-wide uppercase mb-1">
-              Total Transaksi
+              Total Transactions
             </p>
             <p className="text-white text-lg font-semibold">
               Check-ins:{" "}
@@ -49,7 +49,7 @@ const MitraHistory: React.FC = () => {
           </div>
           <div className="text-right border-l border-zinc-700 pl-8">
             <p className="text-xs text-zinc-400 font-medium tracking-wide uppercase mb-1">
-              Total Kredit
+              Total Credit
             </p>
             <p className="text-yellow-500 text-xl md:text-2xl font-black tracking-tight">
               {totalCredits} CR
@@ -75,7 +75,7 @@ const MitraHistory: React.FC = () => {
         </div>
         <div className="bg-zinc-900 border border-zinc-800 rounded-2xl p-6 relative overflow-hidden">
           <div className="flex justify-between items-start mb-2">
-            <p className="text-sm font-medium text-zinc-400">Total Selesai</p>
+            <p className="text-sm font-medium text-zinc-400">Total Completed</p>
             <Clock size={40} className="text-zinc-800 absolute right-4 top-4" />
           </div>
           <div className="mt-4">
@@ -90,7 +90,7 @@ const MitraHistory: React.FC = () => {
         <div className="bg-zinc-900 border border-zinc-800 rounded-2xl p-6 relative overflow-hidden">
           <div className="flex justify-between items-start mb-2">
             <p className="text-sm font-medium text-zinc-400">
-              Total Kredit Dikumpulkan
+              Total Credit Collected
             </p>
             <CreditCard
               size={40}
@@ -142,7 +142,7 @@ const MitraHistory: React.FC = () => {
                     colSpan={5}
                     className="px-6 py-12 text-center text-zinc-500"
                   >
-                    Memuat riwayat...
+                    Loading history...
                   </td>
                 </tr>
               ) : entries.length === 0 ? (
@@ -151,7 +151,7 @@ const MitraHistory: React.FC = () => {
                     colSpan={5}
                     className="px-6 py-12 text-center text-zinc-500"
                   >
-                    Belum ada data transaksi.
+                    No transaction data yet.
                   </td>
                 </tr>
               ) : (

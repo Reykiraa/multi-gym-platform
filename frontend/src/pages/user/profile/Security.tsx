@@ -9,11 +9,11 @@ import Button from '../../../components/ui/Button';
 import apiClient from '../../../lib/axios';
 
 const securitySchema = z.object({
-  currentPassword: z.string().min(6, { message: "Password minimal 6 karakter" }),
-  newPassword: z.string().min(6, { message: "Password minimal 6 karakter" }),
+  currentPassword: z.string().min(6, { message: "Password must be at least 6 characters" }),
+  newPassword: z.string().min(6, { message: "Password must be at least 6 characters" }),
   confirmPassword: z.string()
 }).refine((data) => data.newPassword === data.confirmPassword, {
-  message: "Konfirmasi password tidak cocok",
+  message: "Password confirmation does not match",
   path: ["confirmPassword"],
 });
 
@@ -36,9 +36,9 @@ const Security: React.FC = () => {
       reset();
     } catch (error: any) {
       if (error.response?.status === 422) {
-        window.alert(error.response.data.message || "Validasi gagal");
+        window.alert(error.response.data.message || "Validation failed");
       } else {
-        window.alert("Terjadi kesalahan saat mengubah password");
+        window.alert("An error occurred while changing your password");
       }
     }
   };
@@ -53,22 +53,22 @@ const Security: React.FC = () => {
       </header>
 
       <main className="flex-grow container mx-auto max-w-xl px-4 py-8">
-        <h2 className="text-lg font-bold text-white mb-6">Ubah Password</h2>
+        <h2 className="text-lg font-bold text-white mb-6">Change Password</h2>
         <form className="flex flex-col gap-6" onSubmit={handleSubmit(onSubmit)}>
           <div>
-            <label className="block text-sm font-medium text-zinc-300 mb-1.5">Password Saat Ini</label>
+            <label className="block text-sm font-medium text-zinc-300 mb-1.5">Current Password</label>
             <Input type="password" placeholder="••••••••" {...register('currentPassword')} />
             {errors.currentPassword && <p className="text-rose-500 text-sm mt-1">{errors.currentPassword.message}</p>}
           </div>
           <div className="border-t border-zinc-800 my-2"></div>
           <div>
-            <label className="block text-sm font-medium text-zinc-300 mb-1.5">Password Baru</label>
-            <Input type="password" placeholder="Minimal 6 karakter" {...register('newPassword')} />
+            <label className="block text-sm font-medium text-zinc-300 mb-1.5">New Password</label>
+            <Input type="password" placeholder="Minimum 6 characters" {...register('newPassword')} />
             {errors.newPassword && <p className="text-rose-500 text-sm mt-1">{errors.newPassword.message}</p>}
           </div>
           <div>
-            <label className="block text-sm font-medium text-zinc-300 mb-1.5">Konfirmasi Password Baru</label>
-            <Input type="password" placeholder="Ketik ulang password baru" {...register('confirmPassword')} />
+            <label className="block text-sm font-medium text-zinc-300 mb-1.5">Confirm New Password</label>
+            <Input type="password" placeholder="Re-enter your new password" {...register('confirmPassword')} />
             {errors.confirmPassword && <p className="text-rose-500 text-sm mt-1">{errors.confirmPassword.message}</p>}
           </div>
 

@@ -10,8 +10,8 @@ import { useAuthStore } from '../../../store/authStore';
 import apiClient from '../../../lib/axios';
 
 const editProfileSchema = z.object({
-  name: z.string().min(3, { message: "Nama minimal 3 karakter" }),
-  email: z.string().email({ message: "Format email tidak valid" }),
+  name: z.string().min(3, { message: "Name must be at least 3 characters" }),
+  email: z.string().email({ message: "Invalid email format" }),
   phone: z.string().optional(),
 });
 
@@ -38,9 +38,9 @@ const EditProfile: React.FC = () => {
       navigate('/user/profile');
     } catch (error: any) {
       if (error.response?.status === 422) {
-        window.alert(error.response.data.message || "Validasi gagal");
+        window.alert(error.response.data.message || "Validation failed");
       } else {
-        window.alert("Terjadi kesalahan saat menyimpan profil");
+        window.alert("An error occurred while saving your profile");
       }
     }
   };
@@ -57,17 +57,17 @@ const EditProfile: React.FC = () => {
       <main className="flex-grow container mx-auto max-w-xl px-4 py-8">
         <form className="flex flex-col gap-6" onSubmit={handleSubmit(onSubmit)}>
           <div>
-            <label className="block text-sm font-medium text-zinc-300 mb-1.5">Nama Lengkap</label>
-            <Input type="text" placeholder="Masukkan nama" {...register('name')} />
+            <label className="block text-sm font-medium text-zinc-300 mb-1.5">Full Name</label>
+            <Input type="text" placeholder="Enter your name" {...register('name')} />
             {errors.name && <p className="text-rose-500 text-sm mt-1">{errors.name.message}</p>}
           </div>
           <div>
             <label className="block text-sm font-medium text-zinc-300 mb-1.5">Email</label>
-            <Input type="email" placeholder="contoh@email.com" {...register('email')} />
+            <Input type="email" placeholder="example@email.com" {...register('email')} />
             {errors.email && <p className="text-rose-500 text-sm mt-1">{errors.email.message}</p>}
           </div>
           <div>
-            <label className="block text-sm font-medium text-zinc-300 mb-1.5">No Handphone</label>
+            <label className="block text-sm font-medium text-zinc-300 mb-1.5">Phone Number</label>
             <Input type="tel" placeholder="081234567890" {...register('phone')} />
             {errors.phone && <p className="text-rose-500 text-sm mt-1">{errors.phone.message}</p>}
           </div>

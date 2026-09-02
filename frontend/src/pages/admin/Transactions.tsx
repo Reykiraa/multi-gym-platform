@@ -52,7 +52,7 @@ const Transactions: React.FC = () => {
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
         <div>
           <h1 className="text-2xl md:text-3xl font-bold text-white">Transactions</h1>
-          <p className="text-zinc-400 mt-1">Riwayat transaksi check-in & top-up kredit</p>
+          <p className="text-zinc-400 mt-1">Check-in & credit top-up transaction history</p>
         </div>
         <Button
           id="btn-manual-topup"
@@ -71,11 +71,11 @@ const Transactions: React.FC = () => {
             <thead>
               <tr className="border-b border-zinc-800 text-zinc-400 uppercase text-xs tracking-wider">
                 <th className="px-6 py-4 font-medium">ID</th>
-                <th className="px-6 py-4 font-medium">Waktu</th>
+                <th className="px-6 py-4 font-medium">Time</th>
                 <th className="px-6 py-4 font-medium">User</th>
                 <th className="px-6 py-4 font-medium">Gym</th>
-                <th className="px-6 py-4 font-medium">Tipe</th>
-                <th className="px-6 py-4 font-medium text-right">Kredit</th>
+                <th className="px-6 py-4 font-medium">Type</th>
+                <th className="px-6 py-4 font-medium text-right">Credit</th>
                 <th className="px-6 py-4 font-medium text-center">Status</th>
               </tr>
             </thead>
@@ -83,13 +83,13 @@ const Transactions: React.FC = () => {
               {isLoading ? (
                 <tr>
                   <td colSpan={7} className="px-6 py-12 text-center text-zinc-500">
-                    Memuat data transaksi...
+                    Loading transaction data...
                   </td>
                 </tr>
               ) : transactions.length === 0 ? (
                 <tr>
                   <td colSpan={7} className="px-6 py-12 text-center text-zinc-500">
-                    Belum ada transaksi.
+                    No transactions yet.
                   </td>
                 </tr>
               ) : (
