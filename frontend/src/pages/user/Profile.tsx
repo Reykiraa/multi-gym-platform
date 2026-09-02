@@ -1,6 +1,7 @@
-import React from 'react';
+import React, { useState } from 'react';
+import ConfirmModal from '../../components/modals/ConfirmModal';
 import { useNavigate, Link } from 'react-router-dom';
-import { Settings, CreditCard, Bell, Shield, LogOut, ChevronRight } from 'lucide-react';
+import { Settings, Bell, Shield, LogOut, ChevronRight } from 'lucide-react';
 import Navbar from '../../components/shared/Navbar';
 import Card from '../../components/ui/Card';
 import Button from '../../components/ui/Button';
@@ -12,6 +13,7 @@ const Profile: React.FC = () => {
   const navigate = useNavigate();
   const { user: rawUser, logout } = useAuthStore();
   const user = rawUser as User | null;
+  const [isLogoutModalOpen, setIsLogoutModalOpen] = useState(false);
 
   const handleLogout = () => {
     logout();
@@ -20,7 +22,6 @@ const Profile: React.FC = () => {
 
   const menuItems = [
     { icon: <Settings size={20} />, label: "Edit Profile", path: "/user/profile/edit" },
-    { icon: <CreditCard size={20} />, label: "Payment Methods", path: "/user/profile/payment" },
     { icon: <Bell size={20} />, label: "Notifications", path: "/user/profile/notifications" },
     { icon: <Shield size={20} />, label: "Security", path: "/user/profile/security" },
   ];
@@ -78,11 +79,21 @@ const Profile: React.FC = () => {
         <Button 
           variant="danger" 
           className="w-full text-lg py-4 mb-8"
-          onClick={handleLogout}
+          onClick={() => setIsLogoutModalOpen(true)}
         >
           <LogOut size={20} className="mr-2" />
           Logout
         </Button>
+
+        <ConfirmModal
+          isOpen={isLogoutModalOpen}
+          title="Konfirmasi Logout"
+          description="Apakah Anda yakin ingin keluar dari akun ini?"
+          confirmText="Ya, Logout"
+          cancelText="Batal"
+          onConfirm={handleLogout}
+          onCancel={() => setIsLogoutModalOpen(false)}
+        />
       </main>
     </div>
   );

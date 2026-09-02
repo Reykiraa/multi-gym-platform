@@ -1,5 +1,6 @@
 // src/layouts/MitraLayout.tsx
-import React from 'react';
+import React, { useState } from 'react';
+import ConfirmModal from '../components/modals/ConfirmModal';
 import { NavLink, Outlet, useNavigate } from 'react-router-dom';
 import { Bell, Package, ChevronDown, LogOut } from 'lucide-react';
 import { useAuthStore } from '../store/authStore';
@@ -9,6 +10,7 @@ const MitraLayout: React.FC = () => {
   const { logout } = useAuthStore();
   const { addToast } = useToastStore();
   const navigate = useNavigate();
+  const [isLogoutModalOpen, setIsLogoutModalOpen] = useState(false);
 
   const handleLogout = () => {
     logout();
@@ -46,7 +48,7 @@ const MitraLayout: React.FC = () => {
           </button>
           <div className="flex items-center gap-4 border-l border-zinc-700 pl-4">
             <button onClick={() => addToast('info', 'Belum ada notifikasi')} className="text-zinc-600 cursor-not-allowed transition-colors" aria-label="Notifications"><Bell size={20} /></button>
-            <button onClick={handleLogout} className="flex items-center gap-2 text-rose-500 hover:text-rose-400 font-medium transition-colors" aria-label="Logout"><LogOut size={18} /> Logout</button>
+            <button onClick={() => setIsLogoutModalOpen(true)} className="flex items-center gap-2 text-rose-500 hover:text-rose-400 font-medium transition-colors" aria-label="Logout"><LogOut size={18} /> Logout</button>
           </div>
         </div>
       </header>
@@ -55,6 +57,15 @@ const MitraLayout: React.FC = () => {
           <Outlet />
         </div>
       </main>
+      <ConfirmModal
+        isOpen={isLogoutModalOpen}
+        title="Konfirmasi Logout"
+        description="Apakah Anda yakin ingin keluar dari dashboard mitra?"
+        confirmText="Ya, Logout"
+        cancelText="Batal"
+        onConfirm={handleLogout}
+        onCancel={() => setIsLogoutModalOpen(false)}
+      />
     </div>
   );
 };
