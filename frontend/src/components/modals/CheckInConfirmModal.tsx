@@ -21,10 +21,10 @@ const CheckInConfirmModal: React.FC<CheckInConfirmModalProps> = ({
   return (
     <ConfirmModal
       isOpen={isOpen}
-      title="Konfirmasi Check-in"
-      description={`Anda akan memotong ${creditPrice} kredit untuk mengakses ${gymName}.`}
-      confirmText={isLoading ? "Memproses Check-in..." : "Lanjutkan"}
-      cancelText="Batal"
+      title="Confirm Check-in"
+      description={`You will spend ${creditPrice} credits to access ${gymName}.`}
+      confirmText={isLoading ? "Processing Check-in..." : "Continue"}
+      cancelText="Cancel"
       onConfirm={onConfirm}
       onCancel={onCancel}
       isLoading={isLoading}
