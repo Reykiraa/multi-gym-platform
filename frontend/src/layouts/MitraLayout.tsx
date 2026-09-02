@@ -51,10 +51,10 @@ const MitraLayout: React.FC = () => {
       </main>
       <ConfirmModal
         isOpen={isLogoutModalOpen}
-        title="Konfirmasi Logout"
-        description="Apakah Anda yakin ingin keluar dari dashboard mitra?"
-        confirmText="Ya, Logout"
-        cancelText="Batal"
+        title="Confirm Logout"
+        description="Are you sure you want to log out of the partner dashboard?"
+        confirmText="Yes, Logout"
+        cancelText="Cancel"
         onConfirm={handleLogout}
         onCancel={() => setIsLogoutModalOpen(false)}
       />

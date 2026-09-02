@@ -89,7 +89,7 @@ const GymManager: React.FC = () => {
           }}
         >
           <Plus size={18} className="mr-2" />
-          Tambah Gym
+          Add Gym
         </Button>
       </div>
 
@@ -99,12 +99,12 @@ const GymManager: React.FC = () => {
           <table className="w-full text-left text-sm">
             <thead>
               <tr className="border-b border-zinc-800 text-zinc-400 uppercase text-xs tracking-wider">
-                <th className="px-6 py-4 font-medium">Nama Gym</th>
-                <th className="px-6 py-4 font-medium">Lokasi</th>
-                <th className="px-6 py-4 font-medium">Mitra</th>
-                <th className="px-6 py-4 font-medium">Fasilitas</th>
-                <th className="px-6 py-4 font-medium text-right">Kredit</th>
-                <th className="px-6 py-4 font-medium text-center">Aksi</th>
+                <th className="px-6 py-4 font-medium">Gym Name</th>
+                <th className="px-6 py-4 font-medium">Location</th>
+                <th className="px-6 py-4 font-medium">Partner</th>
+                <th className="px-6 py-4 font-medium">Facilities</th>
+                <th className="px-6 py-4 font-medium text-right">Credit</th>
+                <th className="px-6 py-4 font-medium text-center">Actions</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-zinc-800">
