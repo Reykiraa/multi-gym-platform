@@ -2,7 +2,6 @@
 import React from "react";
 import {
   Search,
-  Calendar,
   UserCheck,
   Clock,
   CreditCard,
@@ -117,18 +116,9 @@ const MitraHistory: React.FC = () => {
               />
               <input
                 type="text"
-                placeholder="Cari nama gym..."
+                placeholder="Search Member Name..."
                 className="bg-zinc-800/50 border border-zinc-700 rounded-lg pl-9 pr-4 py-2 text-sm text-white placeholder:text-zinc-500 focus:outline-none focus:border-yellow-500 transition-colors w-full sm:w-64"
               />
-            </div>
-            <div className="relative hidden sm:block">
-              <Calendar
-                size={16}
-                className="absolute left-3 top-1/2 -translate-y-1/2 text-zinc-400"
-              />
-              <select className="bg-zinc-800/50 border border-zinc-700 rounded-lg pl-9 pr-8 py-2 text-sm text-white focus:outline-none focus:border-yellow-500 transition-colors appearance-none">
-                <option>Semua Waktu</option>
-              </select>
             </div>
           </div>
         </div>
@@ -141,7 +131,7 @@ const MitraHistory: React.FC = () => {
                 <th className="px-6 py-4 font-medium text-center">Credit</th>
                 <th className="px-6 py-4 font-medium text-center">Status</th>
                 <th className="px-6 py-4 font-medium">
-                  Exipred Time
+                  Expired Time
                 </th>
               </tr>
             </thead>
