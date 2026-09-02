@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import Card from '../ui/Card';
 import Badge from '../ui/Badge';
@@ -9,16 +9,25 @@ export interface GymCardProps {
 }
 
 const GymCard: React.FC<GymCardProps> = ({ gym }) => {
+  const [isImageLoaded, setIsImageLoaded] = useState(false);
+
   return (
     <Link to={`/user/gym/${gym.id}`} className="block transition-transform hover:scale-[1.02]">
       <Card noPadding className="overflow-hidden flex flex-col hover:border-zinc-700 transition-colors">
         {/* Image — fixed height, consistent across all cards */}
         {gym.photos && gym.photos.length > 0 ? (
-          <img 
-            src={gym.photos[0]} 
-            alt={gym.name}
-            className="h-40 w-full object-cover flex-shrink-0" 
-          />
+          <div className="relative h-40 w-full flex-shrink-0 bg-zinc-800 overflow-hidden">
+            {/* Skeleton Loader */}
+            {!isImageLoaded && (
+              <div className="absolute inset-0 bg-zinc-700/50 animate-pulse" />
+            )}
+            <img 
+              src={gym.photos[0]} 
+              alt={gym.name}
+              onLoad={() => setIsImageLoaded(true)}
+              className={`absolute inset-0 h-full w-full object-cover transition-opacity duration-300 ${isImageLoaded ? 'opacity-100' : 'opacity-0'}`} 
+            />
+          </div>
         ) : (
           <div className="h-40 bg-gradient-to-br from-zinc-800 to-zinc-900 w-full flex-shrink-0" />
         )}
