@@ -51,9 +51,9 @@ const WalletHistory: React.FC = () => {
       {
         onSuccess: (res) => {
           if (res.data?.status === "success" || res.user) {
-            addToast("success", "Top-up berhasil dan saldo telah bertambah!");
+            addToast("success", "Top-up successful! Your balance has been updated.");
           } else {
-            addToast("info", "Menunggu pembayaran diselesaikan.");
+            addToast("info", "Waiting for payment to be completed.");
           }
           queryClient.invalidateQueries({ queryKey: ["auth", "user"] });
           queryClient.invalidateQueries({
@@ -62,7 +62,7 @@ const WalletHistory: React.FC = () => {
           setSelectedTx(null);
         },
         onError: () => {
-          addToast("info", "Menunggu pembayaran diselesaikan.");
+          addToast("info", "Waiting for payment to be completed.");
           queryClient.invalidateQueries({
             queryKey: ["transactions", "history"],
           });
@@ -119,26 +119,26 @@ const WalletHistory: React.FC = () => {
       case "success":
         return (
           <span className="px-2 py-1 text-xs font-bold uppercase tracking-wider rounded border text-emerald-400 bg-emerald-500/10 border-emerald-500/30">
-            Berhasil
+            Successful
           </span>
         );
       case "pending":
         return (
           <span className="px-2 py-1 text-xs font-bold uppercase tracking-wider rounded border text-yellow-400 bg-yellow-500/10 border-yellow-500/30">
-            Menunggu Validasi
+            Awaiting Validation
           </span>
         );
       case "cancelled":
       case "failed":
         return (
           <span className="px-2 py-1 text-xs font-bold uppercase tracking-wider rounded border text-rose-400 bg-rose-500/10 border-rose-500/30">
-            Dibatalkan / Gagal
+            Cancelled / Failed
           </span>
         );
       case "expired":
         return (
           <span className="px-2 py-1 text-xs font-bold uppercase tracking-wider rounded border text-zinc-400 bg-zinc-800 border-zinc-700">
-            Kedaluwarsa
+            Expired
           </span>
         );
       default:
@@ -157,10 +157,10 @@ const WalletHistory: React.FC = () => {
       <main className="flex-grow container mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-6">
         <div className="mb-6 md:mb-10">
           <h1 className="text-3xl font-extrabold text-white tracking-tight mb-2">
-            Dompet Saya
+            My Wallet
           </h1>
           <p className="text-zinc-400">
-            Kelola saldo kredit dan riwayat transaksi Anda.
+            Manage your credit balance and transaction history.
           </p>
         </div>
 
@@ -173,7 +173,7 @@ const WalletHistory: React.FC = () => {
               </div>
               <div className="relative z-10 p-4">
                 <h2 className="text-zinc-400 font-medium mb-1">
-                  Saldo Tersedia
+                  Available Balance
                 </h2>
                 <div className="text-5xl font-bold text-yellow-500 mb-4 flex items-baseline gap-2">
                   {user?.available_credits ?? user?.credit_balance ?? 0}{" "}
@@ -182,13 +182,13 @@ const WalletHistory: React.FC = () => {
 
                 <div className="flex justify-between items-center bg-zinc-900/50 p-3 rounded-lg border border-zinc-700/50 mb-6 text-sm">
                   <div>
-                    <p className="text-zinc-500">Saldo Ditahan</p>
+                    <p className="text-zinc-500">Pending Balance</p>
                     <p className="text-white font-medium">
                       {user?.pending_credits ?? 0} CR
                     </p>
                   </div>
                   <div className="text-right">
-                    <p className="text-zinc-500">Total Saldo</p>
+                    <p className="text-zinc-500">Total Balance</p>
                     <p className="text-white font-medium">
                       {user?.credit_balance ?? 0} CR
                     </p>
@@ -209,16 +209,16 @@ const WalletHistory: React.FC = () => {
           {/* Right Column: Transaction History */}
           <div className="lg:w-2/3">
             <h2 className="text-xl font-bold text-white mb-4 border-b border-zinc-800 pb-3">
-              Riwayat Transaksi
+              Transaction History
             </h2>
 
             {isHistoryLoading ? (
               <div className="text-center text-zinc-500 py-10">
-                Memuat riwayat...
+                Loading history...
               </div>
             ) : transactions.length === 0 ? (
               <div className="text-center text-zinc-500 py-10 bg-zinc-900/50 rounded-2xl border border-zinc-800 border-dashed">
-                Belum ada transaksi.
+                No transactions yet.
               </div>
             ) : (
               <div className="flex flex-col gap-3">
@@ -261,7 +261,7 @@ const WalletHistory: React.FC = () => {
                               {!isTopup && (
                                 <Dumbbell size={14} className="text-zinc-400" />
                               )}
-                              {isTopup ? "Top Up Saldo" : tx.gym_name || "Gym"}
+                              {isTopup ? "Credit Top-Up" : tx.gym_name || "Gym"}
                             </h3>
                             <p className="text-xs text-zinc-500">
                               {formatDate(tx.created_at)}
@@ -312,32 +312,32 @@ const WalletHistory: React.FC = () => {
             </button>
 
             <h2 className="text-xl font-bold text-white mb-6 text-center border-b border-zinc-800 pb-4">
-              Detail Transaksi
+              Transaction Detail
             </h2>
 
             <div className="space-y-4 mb-6">
               <div className="flex justify-between items-center">
-                <span className="text-zinc-500 text-sm">Jenis</span>
+                <span className="text-zinc-500 text-sm">Type</span>
                 <span className="text-white font-medium">
                   {selectedTx.type === "topup"
-                    ? "Top Up Saldo"
-                    : "Check-in Gym"}
+                    ? "Credit Top-Up"
+                    : "Gym Check-in"}
                 </span>
               </div>
               <div className="flex justify-between items-center">
-                <span className="text-zinc-500 text-sm">Lokasi</span>
+                <span className="text-zinc-500 text-sm">Location</span>
                 <span className="text-white font-medium text-right max-w-[150px] truncate">
                   {selectedTx.gym_name || "—"}
                 </span>
               </div>
               <div className="flex justify-between items-center">
-                <span className="text-zinc-500 text-sm">Waktu</span>
+                <span className="text-zinc-500 text-sm">Time</span>
                 <span className="text-white font-medium">
                   {formatDate(selectedTx.created_at)}
                 </span>
               </div>
               <div className="flex justify-between items-center">
-                <span className="text-zinc-500 text-sm">Jumlah</span>
+                <span className="text-zinc-500 text-sm">Amount</span>
                 <span
                   className={`font-bold ${
                     selectedTx.type === "topup"
@@ -380,7 +380,7 @@ const WalletHistory: React.FC = () => {
                       }
                     }}
                   >
-                    Lanjutkan Pembayaran (Lihat VA / QRIS)
+                    Continue Payment (View VA / QRIS)
                   </button>
                 )}
 
@@ -431,8 +431,8 @@ const WalletHistory: React.FC = () => {
                   }}
                 >
                   {isCheckingOut
-                    ? "Membuka Metode Pembayaran..."
-                    : "Ganti Metode Pembayaran"}
+                    ? "Opening Payment Method..."
+                    : "Change Payment Method"}
                 </button>
 
                 {/* 3. Tombol Batalkan Transaksi */}
@@ -442,13 +442,12 @@ const WalletHistory: React.FC = () => {
                     className="w-full py-2 bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 border border-rose-500/30 font-medium rounded-xl transition-colors text-xs"
                     onClick={() => setIsConfirmingCancel(true)}
                   >
-                    Batalkan Transaksi Ini
+                    Cancel This Transaction
                   </button>
                 ) : (
                   <div className="p-3 bg-rose-950/40 border border-rose-500/30 rounded-xl space-y-2.5 animate-in fade-in zoom-in-95 duration-150">
                     <p className="text-xs text-rose-300 font-medium text-center">
-                      Yakin ingin membatalkan pesanan ini? Nomor pembayaran
-                      aktif akan dinonaktifkan.
+                      Are you sure you want to cancel this order? The active payment number will be deactivated.
                     </p>
                     <div className="flex gap-2">
                       <button
@@ -456,7 +455,7 @@ const WalletHistory: React.FC = () => {
                         className="flex-1 py-1.5 bg-zinc-800 hover:bg-zinc-700 text-zinc-300 font-semibold rounded-lg text-xs transition-colors"
                         onClick={() => setIsConfirmingCancel(false)}
                       >
-                        Tidak, Kembali
+                        No, Go Back
                       </button>
                       <button
                         disabled={isCancelling}
@@ -473,7 +472,7 @@ const WalletHistory: React.FC = () => {
                           );
                         }}
                       >
-                        {isCancelling ? "Membatalkan..." : "Ya, Batalkan"}
+                        {isCancelling ? "Cancelling..." : "Yes, Cancel"}
                       </button>
                     </div>
                   </div>
@@ -485,7 +484,7 @@ const WalletHistory: React.FC = () => {
               className="w-full mt-6 py-3 bg-zinc-800 hover:bg-zinc-700 text-white font-bold rounded-xl transition-colors"
               onClick={() => setSelectedTx(null)}
             >
-              Tutup
+              Close
             </button>
           </div>
         </div>

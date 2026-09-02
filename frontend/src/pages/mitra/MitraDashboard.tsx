@@ -28,7 +28,7 @@ const MitraDashboard: React.FC = () => {
       setPinError("");
       const trimmedPin = pin.replace(/\s/g, "");
       if (trimmedPin.length !== 4 || !/^\d{4}$/.test(trimmedPin)) {
-        setPinError("PIN harus terdiri dari 4 digit angka");
+        setPinError("PIN must be exactly 4 digits");
         return;
       }
       validatePin.mutate(
@@ -41,7 +41,7 @@ const MitraDashboard: React.FC = () => {
           onError: (error: any) => {
             setPinError(
               error.response?.data?.message ||
-                "PIN tidak valid atau sudah kedaluwarsa",
+                "Invalid or expired PIN",
             );
           },
         },
@@ -86,7 +86,7 @@ const MitraDashboard: React.FC = () => {
             isLoading={validatePin.isPending}
             className="w-full max-w-xs py-4 text-lg font-extrabold tracking-wide"
           >
-            {validatePin.isPending ? "Memvalidasi..." : "VALIDASI PIN"}
+            {validatePin.isPending ? "Validating..." : "VALIDATE PIN"}
           </Button>
         </form>
       </div>
@@ -103,8 +103,8 @@ const MitraDashboard: React.FC = () => {
                 <tr className="border-b border-zinc-800 text-zinc-400 uppercase text-xs tracking-wider text-center">
                   <th className="px-6 py-4 font-medium">Status</th>
                   <th className="px-6 py-4 font-medium">Member Name</th>
-                  <th className="px-6 py-4 font-medium">Kredit</th>
-                  <th className="px-6 py-4 font-medium">Waktu</th>
+                  <th className="px-6 py-4 font-medium">Credit</th>
+                  <th className="px-6 py-4 font-medium">Time</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-zinc-800 text-center">
@@ -114,7 +114,7 @@ const MitraDashboard: React.FC = () => {
                       colSpan={5}
                       className="px-6 py-12 text-center text-zinc-500"
                     >
-                      Memuat data...
+                      Loading data...
                     </td>
                   </tr>
                 ) : entries.length === 0 ? (
@@ -123,7 +123,7 @@ const MitraDashboard: React.FC = () => {
                       colSpan={5}
                       className="px-6 py-12 text-center text-zinc-500"
                     >
-                      Belum ada transaksi hari ini.
+                      No transactions today.
                     </td>
                   </tr>
                 ) : (

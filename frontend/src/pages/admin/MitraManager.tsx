@@ -21,8 +21,8 @@ import type { AdminMitra, MitraFormPayload } from '../../types/admin';
 // ---------------------------------------------------------------------------
 
 const mitraSchema = z.object({
-  name: z.string().min(3, 'Nama mitra minimal 3 karakter'),
-  contact_email: z.string().email('Email tidak valid').optional().or(z.literal('')),
+  name: z.string().min(3, 'Organization name must be at least 3 characters'),
+  contact_email: z.string().email('Invalid email').optional().or(z.literal('')),
   contact_phone: z.string().optional(),
   address: z.string().optional(),
   description: z.string().optional(),
@@ -73,7 +73,7 @@ const MitraFormModal: React.FC<MitraFormModalProps> = ({ mitra, onSubmit, onClos
           <div className="flex items-center gap-2">
             <Building2 size={18} className="text-yellow-500" />
             <h2 className="text-lg font-bold text-white">
-              {isEdit ? 'Edit Mitra' : 'Daftarkan Mitra Baru'}
+              {isEdit ? 'Edit Partner' : 'Register New Partner'}
             </h2>
           </div>
           <button onClick={onClose} className="text-zinc-400 hover:text-white transition-colors">
@@ -84,7 +84,7 @@ const MitraFormModal: React.FC<MitraFormModalProps> = ({ mitra, onSubmit, onClos
         <form onSubmit={handleSubmit(handleFormSubmit)} className="px-6 py-5 flex flex-col gap-4" noValidate>
           <Input
             id="mitra-org-name"
-            label="Nama Organisasi / Brand"
+            label="Organization / Brand Name"
             type="text"
             placeholder="PT FTL Sport Indonesia"
             error={errors.name?.message}
@@ -93,7 +93,7 @@ const MitraFormModal: React.FC<MitraFormModalProps> = ({ mitra, onSubmit, onClos
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <Input
               id="mitra-contact-email"
-              label="Email Kontak (Opsional)"
+              label="Contact Email (Optional)"
               type="email"
               placeholder="info@ftl.com"
               error={errors.contact_email?.message}
@@ -101,7 +101,7 @@ const MitraFormModal: React.FC<MitraFormModalProps> = ({ mitra, onSubmit, onClos
             />
             <Input
               id="mitra-contact-phone"
-              label="Telepon (Opsional)"
+              label="Phone (Optional)"
               type="text"
               placeholder="+62 21 xxxx xxxx"
               error={errors.contact_phone?.message}
@@ -110,18 +110,18 @@ const MitraFormModal: React.FC<MitraFormModalProps> = ({ mitra, onSubmit, onClos
           </div>
           <Input
             id="mitra-address"
-            label="Alamat Kantor (Opsional)"
+            label="Office Address (Optional)"
             type="text"
             placeholder="Jl. Sudirman No. 1, Jakarta"
             error={errors.address?.message}
             {...register('address')}
           />
           <div className="flex flex-col gap-1">
-            <label className="text-sm font-medium text-zinc-300">Deskripsi (Opsional)</label>
+            <label className="text-sm font-medium text-zinc-300">Description (Optional)</label>
             <textarea
               id="mitra-description"
               rows={3}
-              placeholder="Jaringan gym premium dengan 20+ cabang di seluruh Indonesia"
+              placeholder="Premium gym network with 20+ locations across Indonesia"
               className="w-full bg-zinc-800 border border-zinc-700 rounded-xl px-4 py-3 text-white text-sm placeholder:text-zinc-500 outline-none focus:border-yellow-500/60 transition-colors resize-none"
               {...register('description')}
             />
@@ -129,9 +129,9 @@ const MitraFormModal: React.FC<MitraFormModalProps> = ({ mitra, onSubmit, onClos
           </div>
 
           <div className="flex items-center justify-end gap-3 pt-1">
-            <Button type="button" variant="outline" onClick={onClose}>Batal</Button>
+            <Button type="button" variant="outline" onClick={onClose}>Cancel</Button>
             <Button type="submit" variant="primary" isLoading={isLoading}>
-              {isEdit ? 'Simpan Perubahan' : 'Daftarkan Mitra'}
+              {isEdit ? 'Save Changes' : 'Register Partner'}
             </Button>
           </div>
         </form>
@@ -168,20 +168,20 @@ const MitraManager: React.FC = () => {
   };
 
   const handleDelete = (mitra: AdminMitra) => {
-    if (!confirm(`Hapus mitra "${mitra.name}"? Cabang dan akun terkait akan dilepas dari organisasi ini.`)) return;
+    if (!confirm(`Delete partner "${mitra.name}"? Associated branches and accounts will be detached from this organization.`)) return;
     deleteMitra.mutate(mitra.id);
   };
 
   const formatDate = (iso: string) =>
-    new Date(iso).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' });
+    new Date(iso).toLocaleDateString('en-US', { day: 'numeric', month: 'short', year: 'numeric' });
 
   return (
     <div>
       {/* Page header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
         <div>
-          <h1 className="text-2xl md:text-3xl font-bold text-white">Mitra Organisasi</h1>
-          <p className="text-zinc-400 mt-1">Kelola brand & perusahaan gym partner platform</p>
+          <h1 className="text-2xl md:text-3xl font-bold text-white">Partner Organizations</h1>
+          <p className="text-zinc-400 mt-1">Manage gym partner brands & companies on the platform</p>
         </div>
         <Button
           id="btn-add-mitra-org"
@@ -189,7 +189,7 @@ const MitraManager: React.FC = () => {
           onClick={() => { setShowForm(true); setEditingMitra(null); }}
         >
           <Plus size={18} className="mr-2" />
-          Daftarkan Mitra
+          Register Partner
         </Button>
       </div>
 
@@ -201,7 +201,7 @@ const MitraManager: React.FC = () => {
           </div>
           <div>
             <p className="text-xl font-bold text-white">{mitras.length}</p>
-            <p className="text-xs text-zinc-400">Total Organisasi</p>
+            <p className="text-xs text-zinc-400">Total Organizations</p>
           </div>
         </div>
         <div className="bg-zinc-900 border border-zinc-800 rounded-xl p-4 flex items-center gap-3">
@@ -212,7 +212,7 @@ const MitraManager: React.FC = () => {
             <p className="text-xl font-bold text-white">
               {mitras.reduce((s, m) => s + m.gyms_count, 0)}
             </p>
-            <p className="text-xs text-zinc-400">Total Cabang Gym</p>
+            <p className="text-xs text-zinc-400">Total Gym Branches</p>
           </div>
         </div>
       </div>
@@ -223,12 +223,12 @@ const MitraManager: React.FC = () => {
           <table className="w-full text-left text-sm">
             <thead>
               <tr className="border-b border-zinc-800 text-zinc-400 uppercase text-xs tracking-wider">
-                <th className="px-6 py-4 font-medium">Nama Organisasi</th>
-                <th className="px-6 py-4 font-medium">Email Kontak</th>
-                <th className="px-6 py-4 font-medium text-center">Cabang</th>
-                <th className="px-6 py-4 font-medium text-center">Akun Pengelola</th>
-                <th className="px-6 py-4 font-medium">Terdaftar</th>
-                <th className="px-6 py-4 font-medium text-center">Aksi</th>
+                <th className="px-6 py-4 font-medium">Organization Name</th>
+                <th className="px-6 py-4 font-medium">Contact Email</th>
+                <th className="px-6 py-4 font-medium text-center">Branches</th>
+                <th className="px-6 py-4 font-medium text-center">Manager Accounts</th>
+                <th className="px-6 py-4 font-medium">Registered</th>
+                <th className="px-6 py-4 font-medium text-center">Actions</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-zinc-800">
@@ -243,12 +243,12 @@ const MitraManager: React.FC = () => {
                   <td colSpan={6} className="px-6 py-16 text-center">
                     <div className="flex flex-col items-center gap-3 text-zinc-500">
                       <Building2 size={40} className="opacity-30" />
-                      <p>Belum ada mitra terdaftar.</p>
+                      <p>No partners registered yet.</p>
                       <button
                         onClick={() => setShowForm(true)}
                         className="text-yellow-500 text-sm hover:underline"
                       >
-                        Daftarkan mitra pertama
+                        Register the first partner
                       </button>
                     </div>
                   </td>
@@ -299,7 +299,7 @@ const MitraManager: React.FC = () => {
                         <button
                           onClick={() => handleDelete(mitra)}
                           className="p-2 rounded-lg text-zinc-400 hover:text-rose-500 hover:bg-zinc-800 transition-colors"
-                          aria-label={`Hapus ${mitra.name}`}
+                          aria-label={`Delete ${mitra.name}`}
                         >
                           <Trash2 size={15} />
                         </button>

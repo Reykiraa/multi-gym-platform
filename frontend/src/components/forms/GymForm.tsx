@@ -14,28 +14,28 @@ import type { GymFormPayload, GymBranchPayload, AdminGym, AdminMitra } from '../
 // ---------------------------------------------------------------------------
 
 const newMitraSchema = z.object({
-  mitra_name: z.string().min(3, 'Nama Mitra minimal 3 karakter'),
-  mitra_email: z.string().email('Email tidak valid'),
+  mitra_name: z.string().min(3, 'Partner Name must be at least 3 characters'),
+  mitra_email: z.string().email('Invalid email format'),
   mitra_password: z.string().optional(),
-  name: z.string().min(3, 'Nama gym minimal 3 karakter'),
-  location: z.string().min(3, 'Lokasi minimal 3 karakter'),
-  facilities: z.string().min(1, 'Fasilitas wajib diisi (pisahkan dengan koma)'),
+  name: z.string().min(3, 'Gym Name must be at least 3 characters'),
+  location: z.string().min(3, 'Location must be at least 3 characters'),
+  facilities: z.string().min(1, 'Facilities are required (comma separated)'),
   credit_price: z
-    .number({ error: 'Harga kredit wajib diisi' })
-    .positive('Harga kredit harus lebih dari 0'),
+    .number({ error: 'Credit price is required' })
+    .positive('Credit price must be greater than 0'),
 });
 
 const branchSchema = z.object({
-  mitra_org_id: z.number({ error: 'Pilih organisasi mitra terlebih dahulu' }).positive('Pilih organisasi mitra'),
-  branch_name: z.string().min(3, 'Nama Pengelola Cabang minimal 3 karakter'),
-  branch_email: z.string().email('Email tidak valid'),
+  mitra_org_id: z.number({ error: 'Please select a partner organization first' }).positive('Please select a partner organization'),
+  branch_name: z.string().min(3, 'Branch Manager Name must be at least 3 characters'),
+  branch_email: z.string().email('Invalid email format'),
   branch_password: z.string().optional(),
-  name: z.string().min(3, 'Nama gym minimal 3 karakter'),
-  location: z.string().min(3, 'Lokasi minimal 3 karakter'),
-  facilities: z.string().min(1, 'Fasilitas wajib diisi (pisahkan dengan koma)'),
+  name: z.string().min(3, 'Gym Name must be at least 3 characters'),
+  location: z.string().min(3, 'Location must be at least 3 characters'),
+  facilities: z.string().min(1, 'Facilities are required (comma separated)'),
   credit_price: z
-    .number({ error: 'Harga kredit wajib diisi' })
-    .positive('Harga kredit harus lebih dari 0'),
+    .number({ error: 'Credit price is required' })
+    .positive('Credit price must be greater than 0'),
 });
 
 type NewMitraValues = z.infer<typeof newMitraSchema>;
@@ -100,7 +100,7 @@ const GymDetailFields: React.FC<GymDetailFieldsProps> = ({ idPrefix, register, e
   <>
     <Input
       id={`${idPrefix}-name`}
-      label="Nama Gym"
+      label="Gym Name"
       type="text"
       placeholder="FTL Sport Center - Sudirman"
       error={errors.name?.message as string | undefined}
@@ -108,15 +108,15 @@ const GymDetailFields: React.FC<GymDetailFieldsProps> = ({ idPrefix, register, e
     />
     <Input
       id={`${idPrefix}-location`}
-      label="Lokasi"
+      label="Location"
       type="text"
-      placeholder="Jakarta Selatan"
+      placeholder="South Jakarta"
       error={errors.location?.message as string | undefined}
       {...register('location')}
     />
     <Input
       id={`${idPrefix}-facilities`}
-      label="Fasilitas (pisahkan dengan koma)"
+      label="Facilities (comma separated)"
       type="text"
       placeholder="Free Weights, Cardio, Sauna"
       error={errors.facilities?.message as string | undefined}
@@ -124,7 +124,7 @@ const GymDetailFields: React.FC<GymDetailFieldsProps> = ({ idPrefix, register, e
     />
     <Input
       id={`${idPrefix}-credit`}
-      label="Harga Kredit"
+      label="Credit Price"
       type="number"
       placeholder="8"
       error={errors.credit_price?.message as string | undefined}
@@ -233,7 +233,7 @@ const GymForm: React.FC<GymFormProps> = ({
         {/* Header */}
         <div className="flex items-center justify-between px-6 py-4 border-b border-zinc-800 shrink-0">
           <h2 className="text-lg font-bold text-white">
-            {isEdit ? 'Edit Gym' : 'Tambah Gym Baru'}
+            {isEdit ? 'Edit Gym' : 'Add New Gym'}
           </h2>
           <button onClick={onClose} className="text-zinc-400 hover:text-white transition-colors">
             <X size={20} />
@@ -246,15 +246,15 @@ const GymForm: React.FC<GymFormProps> = ({
             <Tab
               active={mode === 'new'}
               icon={<UserPlus size={15} />}
-              label="Gym Baru"
-              sublabel="Gym baru & akun pengelola"
+              label="New Gym"
+              sublabel="New gym & manager account"
               onClick={() => setMode('new')}
             />
             <Tab
               active={mode === 'branch'}
               icon={<Building2 size={15} />}
-              label="Tambah Cabang"
-              sublabel="Cabang dari mitra yang sudah ada"
+              label="Add Branch"
+              sublabel="Branch of existing partner"
               onClick={() => setMode('branch')}
             />
           </div>
@@ -271,10 +271,10 @@ const GymForm: React.FC<GymFormProps> = ({
             noValidate
           >
             <div className="p-4 bg-zinc-800/50 border border-zinc-700 rounded-xl space-y-4">
-              <h3 className="text-sm font-bold text-white">Data Akun Pengelola</h3>
+              <h3 className="text-sm font-bold text-white">Manager Account Data</h3>
               <Input
                 id="mitra-name"
-                label="Nama Pengelola"
+                label="Manager Name"
                 type="text"
                 placeholder="John Doe"
                 error={newMitraForm.formState.errors.mitra_name?.message}
@@ -285,22 +285,22 @@ const GymForm: React.FC<GymFormProps> = ({
                 <>
                   <Input
                     id="mitra-email"
-                    label="Email Login"
+                    label="Login Email"
                     type="email"
-                    placeholder="pengelola@gym.com"
+                    placeholder="manager@gym.com"
                     error={newMitraForm.formState.errors.mitra_email?.message}
                     {...newMitraForm.register('mitra_email')}
                   />
                   <Input
                     id="mitra-password"
-                    label="Password (Opsional)"
+                    label="Password (Optional)"
                     type="password"
                     placeholder="Gym1234!"
                     error={newMitraForm.formState.errors.mitra_password?.message}
                     {...newMitraForm.register('mitra_password')}
                   />
                   <p className="text-xs text-zinc-500">
-                    * Jika kosong, password default:{' '}
+                    * If blank, default password:{' '}
                     <code className="text-yellow-500">Gym1234!</code>
                   </p>
                 </>
@@ -314,9 +314,9 @@ const GymForm: React.FC<GymFormProps> = ({
             />
 
             <div className="flex items-center justify-end gap-3 pt-2 shrink-0">
-              <Button type="button" variant="outline" onClick={onClose}>Batal</Button>
+              <Button type="button" variant="outline" onClick={onClose}>Cancel</Button>
               <Button type="submit" variant="primary" isLoading={isLoading}>
-                {isEdit ? 'Simpan Perubahan' : 'Buat Gym Baru'}
+                {isEdit ? 'Save Changes' : 'Create New Gym'}
               </Button>
             </div>
           </form>
@@ -336,7 +336,7 @@ const GymForm: React.FC<GymFormProps> = ({
             <div className="p-4 bg-zinc-800/50 border border-zinc-700 rounded-xl space-y-3">
               <h3 className="text-sm font-bold text-white flex items-center gap-2">
                 <span className="w-5 h-5 rounded-full bg-yellow-500/20 text-yellow-400 text-[10px] flex items-center justify-center font-bold shrink-0">1</span>
-                Pilih Organisasi Mitra
+                Select Partner Organization
               </h3>
 
               {/* Selected org pill */}
@@ -371,8 +371,8 @@ const GymForm: React.FC<GymFormProps> = ({
                   >
                     <span className="text-zinc-500">
                       {mitraOrgs.length === 0
-                        ? 'Belum ada mitra — daftarkan di halaman Mitra'
-                        : 'Cari & pilih organisasi mitra...'}
+                        ? 'No partners yet — register one in Partner page'
+                        : 'Search & select partner organization...'}
                     </span>
                     <ChevronDown
                       size={16}
@@ -387,14 +387,14 @@ const GymForm: React.FC<GymFormProps> = ({
                           type="text"
                           value={orgSearch}
                           onChange={(e) => setOrgSearch(e.target.value)}
-                          placeholder="Cari nama atau email..."
+                          placeholder="Search name or email..."
                           className="w-full bg-zinc-700 rounded-lg px-3 py-1.5 text-sm text-white placeholder:text-zinc-500 outline-none"
                           autoFocus
                         />
                       </div>
                       <div className="max-h-44 overflow-y-auto">
                         {filteredOrgs.length === 0 ? (
-                          <p className="text-center text-zinc-500 text-sm py-4">Tidak ditemukan</p>
+                          <p className="text-center text-zinc-500 text-sm py-4">Not found</p>
                         ) : (
                           filteredOrgs.map((org) => (
                             <button
@@ -410,7 +410,7 @@ const GymForm: React.FC<GymFormProps> = ({
                                 )}
                               </div>
                               <span className="text-xs text-zinc-500 shrink-0 ml-3">
-                                {org.gyms_count} cabang
+                                {org.gyms_count} branches
                               </span>
                             </button>
                           ))
@@ -430,11 +430,11 @@ const GymForm: React.FC<GymFormProps> = ({
             <div className="p-4 bg-zinc-800/50 border border-zinc-700 rounded-xl space-y-4">
               <h3 className="text-sm font-bold text-white flex items-center gap-2">
                 <span className="w-5 h-5 rounded-full bg-yellow-500/20 text-yellow-400 text-[10px] flex items-center justify-center font-bold shrink-0">2</span>
-                Akun Pengelola Cabang
+                Branch Manager Account
               </h3>
               <Input
                 id="branch-name"
-                label="Nama Pengelola Cabang"
+                label="Branch Manager Name"
                 type="text"
                 placeholder="Andi Prasetyo"
                 error={branchForm.formState.errors.branch_name?.message}
@@ -442,22 +442,22 @@ const GymForm: React.FC<GymFormProps> = ({
               />
               <Input
                 id="branch-email"
-                label="Email Login"
+                label="Login Email"
                 type="email"
-                placeholder="cabang.sudirman@ftl.com"
+                placeholder="branch.sudirman@ftl.com"
                 error={branchForm.formState.errors.branch_email?.message}
                 {...branchForm.register('branch_email')}
               />
               <Input
                 id="branch-password"
-                label="Password (Opsional)"
+                label="Password (Optional)"
                 type="password"
                 placeholder="Gym1234!"
                 error={branchForm.formState.errors.branch_password?.message}
                 {...branchForm.register('branch_password')}
               />
               <p className="text-xs text-zinc-500">
-                * Jika kosong, password default:{' '}
+                * If blank, default password:{' '}
                 <code className="text-yellow-500">Gym1234!</code>
               </p>
             </div>
@@ -470,9 +470,9 @@ const GymForm: React.FC<GymFormProps> = ({
             />
 
             <div className="flex items-center justify-end gap-3 pt-2 shrink-0">
-              <Button type="button" variant="outline" onClick={onClose}>Batal</Button>
+              <Button type="button" variant="outline" onClick={onClose}>Cancel</Button>
               <Button type="submit" variant="primary" isLoading={isLoading}>
-                Tambah Cabang Gym
+                Add Gym Branch
               </Button>
             </div>
           </form>

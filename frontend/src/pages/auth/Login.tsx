@@ -12,8 +12,8 @@ import { useToastStore } from '../../store/toastStore';
 import { GoogleLogin } from '@react-oauth/google';
 
 const loginSchema = z.object({
-  email: z.string().email('Format email tidak valid'),
-  password: z.string().min(1, 'Password harus diisi'),
+  email: z.string().email('Invalid email format'),
+  password: z.string().min(1, 'Password is required'),
 });
 
 type LoginFormValues = z.infer<typeof loginSchema>;
@@ -51,7 +51,7 @@ const Login: React.FC = () => {
       }
     } catch (error) {
       console.error('Login failed', error);
-      setError('root', { message: 'Login gagal. Silakan periksa email dan password Anda.' });
+      setError('root', { message: 'Login failed. Please check your email and password.' });
     }
   };
 
@@ -63,7 +63,7 @@ const Login: React.FC = () => {
 
       const { user, token } = response.data;
       setAuth(user, token);
-      addToast('success', `Selamat datang, ${user.name}!`);
+      addToast('success', `Welcome, ${user.name}!`);
       
       if (user.role === 'admin') {
         navigate('/admin/dashboard');
@@ -73,7 +73,7 @@ const Login: React.FC = () => {
         navigate('/user/gyms');
       }
     } catch (error: any) {
-      addToast('error', error.response?.data?.message || 'Login Google gagal.');
+      addToast('error', error.response?.data?.message || 'Google Sign-In failed.');
     }
   };
 
@@ -84,7 +84,7 @@ const Login: React.FC = () => {
           <Link to="/" className="text-3xl font-black text-white tracking-widest">
             ROAM<span className="text-yellow-500">FIT</span>
           </Link>
-          <p className="text-zinc-400 mt-2">Masuk ke akun Anda</p>
+          <p className="text-zinc-400 mt-2">Sign in to your account</p>
         </div>
 
         <Card className="p-6 md:p-8">
@@ -110,7 +110,7 @@ const Login: React.FC = () => {
               <Input 
                 id="login-password"
                 type="password" 
-                placeholder="Min. 8 karakter" 
+                placeholder="Min. 8 characters" 
                 error={errors.password?.message}
                 {...register('password')} 
               />
@@ -123,14 +123,14 @@ const Login: React.FC = () => {
               className="w-full py-3 mt-2"
               isLoading={isSubmitting}
             >
-              {isSubmitting ? 'Memproses...' : 'Login'}
+              {isSubmitting ? 'Processing...' : 'Sign In'}
             </Button>
           </form>
 
           <div className="my-6 flex items-center">
             <div className="flex-grow border-t border-zinc-800"></div>
             <span className="flex-shrink mx-4 text-xs font-semibold text-zinc-500 uppercase tracking-wider">
-              atau
+              or
             </span>
             <div className="flex-grow border-t border-zinc-800"></div>
           </div>
@@ -138,17 +138,18 @@ const Login: React.FC = () => {
           <div className="flex justify-center w-full">
             <GoogleLogin
               onSuccess={handleGoogleSuccess}
-              onError={() => addToast('error', 'Gagal memuat Google Sign-In')}
+              onError={() => addToast('error', 'Failed to load Google Sign-In')}
               theme="filled_black"
               shape="pill"
               width="100%"
+              locale="en"
             />
           </div>
 
           <p className="text-center text-sm text-zinc-500 mt-6">
-            Belum punya akun?{' '}
+            Don't have an account?{' '}
             <Link to="/register" className="text-yellow-500 hover:underline">
-              Daftar sekarang
+              Sign up now
             </Link>
           </p>
         </Card>

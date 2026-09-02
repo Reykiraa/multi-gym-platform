@@ -13,11 +13,11 @@ import TermsModal from '../../components/modals/TermsModal';
 import { GoogleLogin } from '@react-oauth/google';
 
 const registerSchema = z.object({
-  name: z.string().min(3, 'Nama minimal 3 karakter'),
-  email: z.string().email('Format email tidak valid'),
-  password: z.string().min(6, 'Password minimal 6 karakter'),
+  name: z.string().min(3, 'Name must be at least 3 characters'),
+  email: z.string().email('Invalid email format'),
+  password: z.string().min(6, 'Password must be at least 6 characters'),
   terms: z.literal(true, {
-    message: 'Anda harus menyetujui Syarat & Ketentuan',
+    message: 'You must agree to the Terms & Conditions',
   }),
 });
 
@@ -58,7 +58,7 @@ const Register: React.FC = () => {
       }
     } catch (error) {
       console.error('Register failed', error);
-      setError('root', { message: 'Pendaftaran gagal. Silakan coba lagi.' });
+      setError('root', { message: 'Registration failed. Please try again.' });
     }
   };
 
@@ -70,7 +70,7 @@ const Register: React.FC = () => {
 
       const { user, token } = response.data;
       setAuth(user, token);
-      addToast('success', `Selamat datang, ${user.name}!`);
+      addToast('success', `Welcome, ${user.name}!`);
       
       if (user.role === 'admin') {
         navigate('/admin/dashboard', { replace: true });
@@ -80,7 +80,7 @@ const Register: React.FC = () => {
         navigate('/user/gyms', { replace: true });
       }
     } catch (error: any) {
-      addToast('error', error.response?.data?.message || 'Login Google gagal.');
+      addToast('error', error.response?.data?.message || 'Google Sign-In failed.');
     }
   };
 
@@ -89,7 +89,7 @@ const Register: React.FC = () => {
       <div className="w-full max-w-md">
         <div className="text-center mb-8">
           <Link to="/" className="text-3xl font-black text-white tracking-widest">ROAMFIT</Link>
-          <p className="text-zinc-400 mt-2">Daftar akun baru</p>
+          <p className="text-zinc-400 mt-2">Create a new account</p>
         </div>
 
         <Card className="p-6 md:p-8">
@@ -99,7 +99,7 @@ const Register: React.FC = () => {
             )}
 
             <div>
-              <label className="block text-sm font-medium text-zinc-300 mb-1.5">Nama Lengkap</label>
+              <label className="block text-sm font-medium text-zinc-300 mb-1.5">Full Name</label>
               <Input 
                 id="register-name"
                 type="text" 
@@ -125,7 +125,7 @@ const Register: React.FC = () => {
               <Input 
                 id="register-password"
                 type="password" 
-                placeholder="Min. 8 karakter" 
+                placeholder="Min. 8 characters" 
                 error={errors.password?.message}
                 {...register('password')} 
               />
@@ -140,7 +140,7 @@ const Register: React.FC = () => {
                   {...register('terms')}
                 />
                 <label htmlFor="terms" className="text-sm text-zinc-400">
-                  Saya setuju dengan <span onClick={() => setIsTermsOpen(true)} className="text-yellow-500 hover:underline cursor-pointer">Syarat & Ketentuan</span> serta Kebijakan Privasi.
+                  I agree to the <span onClick={() => setIsTermsOpen(true)} className="text-yellow-500 hover:underline cursor-pointer">Terms & Conditions</span> and Privacy Policy.
                 </label>
               </div>
               {errors.terms && <span className="text-xs text-rose-500">{errors.terms.message}</span>}
@@ -152,14 +152,14 @@ const Register: React.FC = () => {
               className="w-full py-3 mt-4" 
               isLoading={isSubmitting}
             >
-              {isSubmitting ? 'Memproses...' : 'Buat Akun'}
+              {isSubmitting ? 'Processing...' : 'Create Account'}
             </Button>
           </form>
 
           <div className="my-6 flex items-center">
             <div className="flex-grow border-t border-zinc-800"></div>
             <span className="flex-shrink mx-4 text-xs font-semibold text-zinc-500 uppercase tracking-wider">
-              atau
+              or
             </span>
             <div className="flex-grow border-t border-zinc-800"></div>
           </div>
@@ -167,21 +167,22 @@ const Register: React.FC = () => {
           <div className="flex justify-center w-full">
             <GoogleLogin
               onSuccess={handleGoogleSuccess}
-              onError={() => addToast('error', 'Gagal memuat Google Sign-In')}
+              onError={() => addToast('error', 'Failed to load Google Sign-In')}
               theme="filled_black"
               shape="pill"
               width="100%"
+              locale="en"
             />
           </div>
 
           <p className="text-center text-sm text-zinc-500 mt-6">
-            Sudah punya akun? <Link to="/login" className="text-yellow-500 hover:underline">Login di sini</Link>
+            Already have an account? <Link to="/login" className="text-yellow-500 hover:underline">Sign in here</Link>
           </p>
 
           <hr className="my-4 border-zinc-800" />
           <div className="mt-4">
             <p className="text-sm text-zinc-400 text-center font-light">
-              Memiliki fasilitas Gym? <a href="https://wa.me/6281315792492" className="text-yellow-500 hover:underline">Hubungi Kami</a> untuk menjadi Mitra.
+              Own a Gym facility? <a href="https://wa.me/6281315792492" className="text-yellow-500 hover:underline">Contact Us</a> to become a Partner.
             </p>
           </div>
         </Card>
