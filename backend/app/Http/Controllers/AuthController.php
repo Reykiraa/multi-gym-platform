@@ -8,6 +8,8 @@ use App\Models\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Str;
 
 class AuthController extends Controller
 {
@@ -70,6 +72,58 @@ class AuthController extends Controller
         return response()->json([
             'token' => $token,
             'user' => $user,
+        ], 200);
+    }
+
+    /**
+     * Authenticate user with Google.
+     *
+     * @param Request $request
+     * @return JsonResponse
+     */
+    public function googleLogin(Request $request): JsonResponse
+    {
+        $request->validate([
+            'credential' => 'required|string',
+        ]);
+
+        $idToken = $request->credential;
+        $response = Http::get("https://oauth2.googleapis.com/tokeninfo?id_token={$idToken}");
+
+        if (!$response->successful()) {
+            return response()->json(['message' => 'Token Google tidak valid.'], 401);
+        }
+
+        $payload = $response->json();
+
+        // Validasi audience
+        if ($payload['aud'] !== config('services.google.client_id')) {
+            return response()->json(['message' => 'Audience token tidak cocok.'], 401);
+        }
+
+        // Validasi email verified
+        if (isset($payload['email_verified']) && $payload['email_verified'] !== 'true' && $payload['email_verified'] !== true) {
+            return response()->json(['message' => 'Email belum diverifikasi oleh Google.'], 401);
+        }
+
+        $user = User::where('email', $payload['email'])->first();
+
+        if (!$user) {
+            $user = User::create([
+                'name' => $payload['name'],
+                'email' => $payload['email'],
+                'password' => Hash::make(Str::random(32)),
+                'role' => 'user',
+                'credit_balance' => 0,
+            ]);
+        }
+
+        $token = $user->createToken('auth-token')->plainTextToken;
+
+        return response()->json([
+            'message' => 'Login Google berhasil.',
+            'user' => $user->fresh(),
+            'token' => $token,
         ], 200);
     }
 
