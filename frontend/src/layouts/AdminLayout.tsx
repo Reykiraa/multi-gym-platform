@@ -1,5 +1,6 @@
 // src/layouts/AdminLayout.tsx
 import React, { useState } from 'react';
+import ConfirmModal from '../components/modals/ConfirmModal';
 import { NavLink, Outlet, useNavigate } from 'react-router-dom';
 import {
   LayoutDashboard,
@@ -42,6 +43,7 @@ const linkClass = ({ isActive }: { isActive: boolean }): string =>
  */
 const AdminLayout: React.FC = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [isLogoutModalOpen, setIsLogoutModalOpen] = useState(false);
   const { user, logout } = useAuthStore();
   const navigate = useNavigate();
 
@@ -80,7 +82,7 @@ const AdminLayout: React.FC = () => {
           <p className="text-xs text-zinc-500 truncate">{user?.email}</p>
         </div>
         <button
-          onClick={handleLogout}
+          onClick={() => setIsLogoutModalOpen(true)}
           className="flex items-center gap-3 w-full px-4 py-3 rounded-lg text-sm font-medium text-rose-400 hover:text-rose-300 hover:bg-rose-500/10 transition-colors"
         >
           <LogOut size={20} />
@@ -147,6 +149,16 @@ const AdminLayout: React.FC = () => {
           </div>
         </main>
       </div>
+
+      <ConfirmModal
+        isOpen={isLogoutModalOpen}
+        title="Konfirmasi Logout"
+        description="Apakah Anda yakin ingin keluar dari panel admin?"
+        confirmText="Ya, Logout"
+        cancelText="Batal"
+        onConfirm={handleLogout}
+        onCancel={() => setIsLogoutModalOpen(false)}
+      />
     </div>
   );
 };
