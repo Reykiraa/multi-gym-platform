@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { Camera, X, Upload } from 'lucide-react';
+import { Camera, X, Upload, Info } from 'lucide-react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import apiClient from '../../lib/axios';
 import Input from '../../components/ui/Input';
@@ -15,6 +15,7 @@ const gymProfileSchema = z.object({
   location: z.string().min(10, 'Alamat lengkap minimal 10 karakter'),
   facilities: z.array(z.string()).min(1, 'Pilih minimal satu fasilitas'),
   photos: z.array(z.any()).optional(),
+  maps_url: z.string().optional(),
 });
 
 type GymProfileFormValues = z.infer<typeof gymProfileSchema>;
@@ -55,6 +56,7 @@ const MitraGymProfile: React.FC = () => {
       location: '',
       facilities: [],
       photos: [],
+      maps_url: '',
     }
   });
 
@@ -65,6 +67,7 @@ const MitraGymProfile: React.FC = () => {
         location: gymData.location || '',
         facilities: gymData.facilities || [],
         photos: gymData.photos || [], 
+        maps_url: gymData.maps_url || '',
       });
       if (gymData.photos && gymData.photos.length > 0) {
         setPreviewUrls(gymData.photos);
@@ -171,11 +174,20 @@ const MitraGymProfile: React.FC = () => {
       })
     );
 
+    let finalMapsUrl = data.maps_url || '';
+    if (finalMapsUrl.includes('<iframe') && finalMapsUrl.includes('src="')) {
+      const match = finalMapsUrl.match(/src="([^"]+)"/);
+      if (match && match[1]) {
+        finalMapsUrl = match[1];
+      }
+    }
+
     const payload = {
       name: data.name,
       location: data.location,
       facilities: data.facilities,
       photos: processedPhotos,
+      maps_url: finalMapsUrl,
     };
     mutation.mutate(payload);
   };
@@ -214,6 +226,38 @@ const MitraGymProfile: React.FC = () => {
               {...register('location')}
             />
             {errors.location && <p className="text-rose-500 text-sm mt-1">{errors.location.message}</p>}
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-zinc-300 mb-1.5 flex items-center justify-between">
+              <span>Google Maps Embed Link (Opsional)</span>
+            </label>
+            <Input 
+              type="text" 
+              placeholder="Paste URL atau seluruh kode <iframe...> dari Google Maps" 
+              {...register('maps_url')} 
+            />
+            {errors.maps_url && <p className="text-rose-500 text-sm mt-1">{errors.maps_url.message}</p>}
+
+            <div className="mt-4 bg-zinc-950/50 border border-zinc-800 rounded-xl p-5">
+              <div className="flex items-start gap-3 mb-4">
+                <Info className="text-yellow-500 shrink-0 mt-0.5" size={20} />
+                <div>
+                  <h4 className="text-white font-medium mb-1">Cara mendapatkan link Embed Peta:</h4>
+                  <ol className="list-decimal pl-4 space-y-1.5 text-sm text-zinc-400">
+                    <li>Cari gym Anda di <a href="https://maps.google.com" target="_blank" rel="noreferrer" className="text-yellow-500 hover:underline">Google Maps</a>.</li>
+                    <li>Klik tombol <strong>Share</strong> (Bagikan).</li>
+                    <li>Pilih tab <strong>Embed a map</strong> (Sematkan peta).</li>
+                    <li>Klik <strong>COPY HTML</strong> dan langsung <i>paste</i> ke kolom di atas. Sistem kami akan mengambil link-nya secara otomatis.</li>
+                  </ol>
+                </div>
+              </div>
+              <img 
+                src="https://placehold.co/800x250/18181b/eab308?text=1.+Klik+Share+%0A+2.+Pilih+Embed+a+map+%0A+3.+Copy+HTML" 
+                alt="Tutorial Embed Google Maps" 
+                className="w-full rounded-lg border border-zinc-800 shadow-md opacity-80"
+              />
+            </div>
           </div>
         </Card>
 
