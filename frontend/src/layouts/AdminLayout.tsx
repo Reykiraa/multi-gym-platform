@@ -20,7 +20,7 @@ interface NavItem {
 
 const NAV_ITEMS: NavItem[] = [
   { label: 'Dashboard', to: '/admin/dashboard', icon: <LayoutDashboard size={20} /> },
-  { label: 'Mitra Organisasi', to: '/admin/mitras', icon: <Building2 size={20} /> },
+  { label: 'Partner Organizations', to: '/admin/mitras', icon: <Building2 size={20} /> },
   { label: 'Gym Network', to: '/admin/gyms', icon: <Dumbbell size={20} /> },
   { label: 'Transactions', to: '/admin/transactions', icon: <ArrowLeftRight size={20} /> },
 ];
@@ -115,7 +115,7 @@ const AdminLayout: React.FC = () => {
             <button
               onClick={() => setIsMobileMenuOpen(false)}
               className="absolute top-5 right-4 text-zinc-400 hover:text-white"
-              aria-label="Tutup menu"
+              aria-label="Close menu"
             >
               <X size={20} />
             </button>
@@ -133,7 +133,7 @@ const AdminLayout: React.FC = () => {
           <button
             onClick={() => setIsMobileMenuOpen(true)}
             className="text-zinc-400 hover:text-white"
-            aria-label="Buka menu"
+            aria-label="Open menu"
           >
             <Menu size={24} />
           </button>
@@ -151,10 +151,10 @@ const AdminLayout: React.FC = () => {
 
       <ConfirmModal
         isOpen={isLogoutModalOpen}
-        title="Konfirmasi Logout"
-        description="Apakah Anda yakin ingin keluar dari panel admin?"
-        confirmText="Ya, Logout"
-        cancelText="Batal"
+        title="Confirm Logout"
+        description="Are you sure you want to log out of the admin panel?"
+        confirmText="Yes, Logout"
+        cancelText="Cancel"
         onConfirm={handleLogout}
         onCancel={() => setIsLogoutModalOpen(false)}
       />

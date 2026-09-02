@@ -13,8 +13,8 @@ import type { TopUpPayload } from '../../types/admin';
 // ---------------------------------------------------------------------------
 
 const topUpSchema = z.object({
-  user_id: z.coerce.number().int().positive('User ID wajib diisi'),
-  amount: z.coerce.number().int().positive('Jumlah kredit harus lebih dari 0'),
+  user_id: z.coerce.number().int().positive('User ID is required'),
+  amount: z.coerce.number().int().positive('Credit amount must be greater than 0'),
 });
 
 type TopUpFormValues = z.infer<typeof topUpSchema>;
@@ -54,7 +54,7 @@ const TopUpForm: React.FC<TopUpFormProps> = ({ onSubmit, onClose, isLoading = fa
         {/* Header */}
         <div className="flex items-center justify-between px-6 py-4 border-b border-zinc-800">
           <h2 className="text-lg font-bold text-white">Manual Top-Up</h2>
-          <button onClick={onClose} className="text-zinc-400 hover:text-white transition-colors" aria-label="Tutup modal">
+          <button onClick={onClose} className="text-zinc-400 hover:text-white transition-colors" aria-label="Close modal">
             <X size={20} />
           </button>
         </div>
@@ -71,7 +71,7 @@ const TopUpForm: React.FC<TopUpFormProps> = ({ onSubmit, onClose, isLoading = fa
           />
           <Input
             id="topup-amount"
-            label="Jumlah Kredit"
+            label="Credit Amount"
             type="number"
             placeholder="50"
             error={errors.amount?.message}
@@ -80,10 +80,10 @@ const TopUpForm: React.FC<TopUpFormProps> = ({ onSubmit, onClose, isLoading = fa
 
           <div className="flex items-center justify-end gap-3 pt-2">
             <Button type="button" variant="outline" onClick={onClose}>
-              Batal
+              Cancel
             </Button>
             <Button type="submit" variant="primary" isLoading={isLoading}>
-              Proses Top-Up
+              Process Top-Up
             </Button>
           </div>
         </form>
