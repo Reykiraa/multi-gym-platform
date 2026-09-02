@@ -2,13 +2,11 @@
 import React, { useState } from 'react';
 import ConfirmModal from '../components/modals/ConfirmModal';
 import { NavLink, Outlet, useNavigate } from 'react-router-dom';
-import { Bell, Package, ChevronDown, LogOut } from 'lucide-react';
+import { LogOut } from 'lucide-react';
 import { useAuthStore } from '../store/authStore';
-import { useToastStore } from '../store/toastStore';
 
 const MitraLayout: React.FC = () => {
   const { logout } = useAuthStore();
-  const { addToast } = useToastStore();
   const navigate = useNavigate();
   const [isLogoutModalOpen, setIsLogoutModalOpen] = useState(false);
 
@@ -35,11 +33,6 @@ const MitraLayout: React.FC = () => {
           </nav>
         </div>
         <div className="flex items-center gap-4 py-3">
-          <div className="hidden lg:flex items-center gap-2 px-3 py-1.5 rounded-lg border border-zinc-700 bg-zinc-800/50 cursor-pointer">
-            <Package size={16} className="text-zinc-400" />
-            <span className="text-xs font-medium text-white">Elite Fitness - Downtown</span>
-            <ChevronDown size={14} className="text-zinc-400" />
-          </div>
           <button onClick={() => navigate('/mitra/dashboard')} className="hidden sm:block bg-yellow-500 text-black px-4 py-1.5 rounded-md text-sm font-bold hover:bg-yellow-400 transition-colors">
             Check-in
           </button>
@@ -47,7 +40,6 @@ const MitraLayout: React.FC = () => {
             Profile Gym
           </button>
           <div className="flex items-center gap-4 border-l border-zinc-700 pl-4">
-            <button onClick={() => addToast('info', 'Belum ada notifikasi')} className="text-zinc-600 cursor-not-allowed transition-colors" aria-label="Notifications"><Bell size={20} /></button>
             <button onClick={() => setIsLogoutModalOpen(true)} className="flex items-center gap-2 text-rose-500 hover:text-rose-400 font-medium transition-colors" aria-label="Logout"><LogOut size={18} /> Logout</button>
           </div>
         </div>
