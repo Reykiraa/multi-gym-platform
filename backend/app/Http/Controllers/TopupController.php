@@ -10,6 +10,8 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Log;
 
 class TopupController extends Controller
 {
@@ -108,6 +110,12 @@ class TopupController extends Controller
                     'status' => 'success',
                     'payment_type' => $request->payment_type
                 ]);
+
+                try {
+                    Mail::to($user->email)->send(new \App\Mail\TopupSuccessEmail($user, $trx));
+                } catch (\Throwable $e) {
+                    Log::error('Gagal mengirim topup receipt email: ' . $e->getMessage());
+                }
             } elseif (in_array($status, ['cancel', 'deny', 'expire'])) {
                 $trx->update([
                     'status' => 'failed',
@@ -151,6 +159,12 @@ class TopupController extends Controller
                     'status' => 'success',
                     'payment_type' => $paymentType,
                 ]);
+
+                try {
+                    Mail::to($user->email)->send(new \App\Mail\TopupSuccessEmail($user, $trx));
+                } catch (\Throwable $e) {
+                    Log::error('Gagal mengirim topup receipt email: ' . $e->getMessage());
+                }
 
                 return response()->json([
                     'message' => 'Pembayaran berhasil dikonfirmasi!',
