@@ -26,6 +26,7 @@ class Gym extends Model
         'facilities',
         'photos',
         'credit_price',
+        'maps_url',
     ];
 
     /**
