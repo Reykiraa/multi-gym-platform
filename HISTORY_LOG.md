@@ -216,3 +216,19 @@
   - **ID-Token Verification:** Backend memvalidasi `aud` (Audience) dan status `email_verified` secara langsung ke server Google sebelum membuat/mengambil data user di PostgreSQL untuk mencegah pemalsuan token.
   - **Credential Isolation:** Akun yang mendaftar via Google diberikan password hash acak 32-karakter, mencegah serangan brute-force pada form login email/password konvensional.
   - **SPA Seamless Flow:** Menghilangkan redirect URL yang lambat dengan memanfaatkan pop-up Google One Tap / Sign-In langsung di browser.
+
+  ## [2026-09-02] - Phase: Automated Email Notification System
+- **Fitur Selesai:** 
+  - Sistem pengiriman email otomatis menggunakan driver SMTP (Welcome Email & Top-Up Invoice Receipt).
+  - Template email HTML responsif bertema Dark/Gold Gymnox (`welcome.blade.php` dan `topup_receipt.blade.php`).
+  - Integrasi Mailable triggers pada `AuthController` (Registrasi manual & Google OAuth) dan `TopupController` (Instant Verification & Webhook).
+- **File Dibuat/Dimodifikasi:**
+  - `app/Mail/WelcomeEmail.php`
+  - `app/Mail/TopupSuccessEmail.php`
+  - `resources/views/emails/welcome.blade.php`
+  - `resources/views/emails/topup_receipt.blade.php`
+  - `app/Http/Controllers/AuthController.php`
+  - `app/Http/Controllers/TopupController.php`
+- **Keputusan Arsitektur & Keamanan:**
+  - **Fail-Safe Try-Catch:** Seluruh proses `Mail::send` diisolasi dalam blok `try-catch` dan pencatatan log error agar kegagalan jaringan SMTP tidak pernah membatalkan eksekusi `DB::transaction()` penambahan saldo atau pembuatan akun.
+  - **Cross-Client Email Styling:** Menggunakan *inline CSS* standar tabel email agar tampilan struk invoice dan welcome email tampil rapi di aplikasi Gmail, Apple Mail, dan Outlook.

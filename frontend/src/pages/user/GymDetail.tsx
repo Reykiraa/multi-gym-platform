@@ -1,5 +1,3 @@
-// frontend/src/pages/user/GymDetail.tsx
-
 import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { ChevronLeft, ChevronRight, MapPin, ExternalLink } from 'lucide-react';
 import { useParams } from 'react-router-dom';

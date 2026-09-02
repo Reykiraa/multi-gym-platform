@@ -10,6 +10,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Log;
 
 class AuthController extends Controller
 {
@@ -35,6 +37,12 @@ class AuthController extends Controller
             'password' => $validated['password'],
             'role' => 'user',
         ]);
+
+        try {
+            Mail::to($user->email)->send(new \App\Mail\WelcomeEmail($user));
+        } catch (\Throwable $e) {
+            Log::error('Gagal mengirim welcome email: ' . $e->getMessage());
+        }
 
         $token = $user->createToken('auth_token')->plainTextToken;
 
@@ -116,6 +124,12 @@ class AuthController extends Controller
                 'role' => 'user',
                 'credit_balance' => 0,
             ]);
+
+            try {
+                Mail::to($user->email)->send(new \App\Mail\WelcomeEmail($user));
+            } catch (\Throwable $e) {
+                Log::error('Gagal mengirim welcome email: ' . $e->getMessage());
+            }
         }
 
         $token = $user->createToken('auth-token')->plainTextToken;
