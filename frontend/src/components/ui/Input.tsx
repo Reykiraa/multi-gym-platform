@@ -1,19 +1,14 @@
-import React, { type InputHTMLAttributes } from 'react';
+import React, { type InputHTMLAttributes, useId } from 'react';
 
 export interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
-  /**
-   * Optional label for the input field.
-   */
   label?: string;
-  /**
-   * Error message to display below the input.
-   */
   error?: string;
 }
 
 const Input: React.FC<InputProps> = ({ label, error, className = '', id, ...props }) => {
-  const inputId = id || Math.random().toString(36).substring(7);
-  
+  const generatedId = useId();
+  const inputId = id ?? generatedId;
+
   return (
     <div className="flex flex-col gap-1.5 w-full">
       {label && (
@@ -23,7 +18,7 @@ const Input: React.FC<InputProps> = ({ label, error, className = '', id, ...prop
       )}
       <input
         id={inputId}
-        className={`bg-zinc-800 text-white border border-zinc-700 focus:border-yellow-500 focus:ring-1 focus:ring-yellow-500 rounded-lg px-4 py-3 outline-none transition-all placeholder:text-zinc-500 disabled:opacity-50 disabled:cursor-not-allowed ${
+        className={`bg-zinc-800 text-white border border-zinc-700 focus:border-yellow-500 focus:ring-1 focus:ring-yellow-500 rounded-lg px-4 py-3 outline-none transition-all placeholder:text-zinc-400 ${
           error ? 'border-rose-500 focus:border-rose-500 focus:ring-rose-500' : ''
         } ${className}`}
         {...props}
