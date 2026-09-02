@@ -52,7 +52,7 @@ const GymManager: React.FC = () => {
   };
 
   const handleDelete = (id: number) => {
-    if (!confirm('Yakin ingin menghapus gym ini?')) return;
+    if (!confirm('Are you sure you want to delete this gym?')) return;
     deleteGym.mutate(id);
   };
 
@@ -67,7 +67,7 @@ const GymManager: React.FC = () => {
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
         <div>
           <h1 className="text-2xl md:text-3xl font-bold text-white">Gym Network</h1>
-          <p className="text-zinc-400 mt-1">Kelola data gym partner platform</p>
+          <p className="text-zinc-400 mt-1">Manage platform gym partner data</p>
         </div>
         <Button
           id="btn-add-gym"
@@ -75,7 +75,7 @@ const GymManager: React.FC = () => {
           onClick={() => { setShowForm(true); setEditingGym(null); }}
         >
           <Plus size={18} className="mr-2" />
-          Tambah Gym
+          Add Gym
         </Button>
       </div>
 
@@ -85,25 +85,25 @@ const GymManager: React.FC = () => {
           <table className="w-full text-left text-sm">
             <thead>
               <tr className="border-b border-zinc-800 text-zinc-400 uppercase text-xs tracking-wider">
-                <th className="px-6 py-4 font-medium">Nama Gym</th>
-                <th className="px-6 py-4 font-medium">Lokasi</th>
-                <th className="px-6 py-4 font-medium">Mitra</th>
-                <th className="px-6 py-4 font-medium">Fasilitas</th>
-                <th className="px-6 py-4 font-medium text-right">Kredit</th>
-                <th className="px-6 py-4 font-medium text-center">Aksi</th>
+                <th className="px-6 py-4 font-medium">Gym Name</th>
+                <th className="px-6 py-4 font-medium">Location</th>
+                <th className="px-6 py-4 font-medium">Partner</th>
+                <th className="px-6 py-4 font-medium">Facilities</th>
+                <th className="px-6 py-4 font-medium text-right">Credit</th>
+                <th className="px-6 py-4 font-medium text-center">Actions</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-zinc-800">
               {isLoading ? (
                 <tr>
                   <td colSpan={6} className="px-6 py-12 text-center text-zinc-500">
-                    Memuat data gym...
+                    Loading gym data...
                   </td>
                 </tr>
               ) : gyms.length === 0 ? (
                 <tr>
                   <td colSpan={6} className="px-6 py-12 text-center text-zinc-500">
-                    Belum ada data gym.
+                    No gym data available.
                   </td>
                 </tr>
               ) : (
@@ -126,7 +126,7 @@ const GymManager: React.FC = () => {
                       </div>
                     </td>
                     <td className="px-6 py-4 text-right text-yellow-500 font-semibold whitespace-nowrap">
-                      {gym.credit_price} Kredit
+                      {gym.credit_price} Credit
                     </td>
                     <td className="px-6 py-4">
                       <div className="flex items-center justify-center gap-2">
@@ -140,7 +140,7 @@ const GymManager: React.FC = () => {
                         <button
                           onClick={() => handleDelete(gym.id)}
                           className="p-2 rounded-lg text-zinc-400 hover:text-rose-500 hover:bg-zinc-800 transition-colors"
-                          aria-label={`Hapus ${gym.name}`}
+                          aria-label={`Delete ${gym.name}`}
                         >
                           <Trash2 size={16} />
                         </button>

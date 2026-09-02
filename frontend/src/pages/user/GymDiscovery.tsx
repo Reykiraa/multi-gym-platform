@@ -61,7 +61,7 @@ const GymDiscovery: React.FC = () => {
             Stay <span className='text-yellow-500'>Fit</span>,<br />Anywhere.
           </h1>
           <Input 
-            placeholder="Cari nama gym atau lokasi..." 
+            placeholder="Search gym name or location..." 
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             className="md:text-lg"
@@ -69,7 +69,7 @@ const GymDiscovery: React.FC = () => {
         </div>
 
         {isLoading && gyms.length === 0 ? (
-          <div className="text-center text-zinc-500 py-20">Memuat data gym...</div>
+          <div className="text-center text-zinc-500 py-20">Loading gyms...</div>
         ) : (
           <>
             <div className={`grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 transition-opacity duration-200 ${isFetching ? 'opacity-50' : 'opacity-100'}`}>
@@ -86,7 +86,7 @@ const GymDiscovery: React.FC = () => {
                 ))
               ) : (
                 <div className="col-span-full text-center text-zinc-500 py-20 bg-zinc-900/50 rounded-2xl border border-zinc-800 border-dashed">
-                  Gym tidak ditemukan.
+                  No gyms found.
                 </div>
               )}
             </div>

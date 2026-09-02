@@ -75,7 +75,7 @@ const GymDetail: React.FC = () => {
       queryClient.invalidateQueries({ queryKey: ['auth', 'user'] });
     },
     onError: (error: any) => {
-      addToast('error', error.response?.data?.message || 'Gagal melakukan check-in');
+      addToast('error', error.response?.data?.message || 'Check-in failed');
       setIsModalOpen(false);
     }
   });
@@ -117,11 +117,11 @@ const GymDetail: React.FC = () => {
   };
 
   if (isGymLoading) {
-    return <div className="text-white text-center py-20 min-h-screen flex items-center justify-center">Memuat detail gym...</div>;
+    return <div className="text-white text-center py-20 min-h-screen flex items-center justify-center">Loading gym details...</div>;
   }
 
   if (!gym) {
-    return <div className="text-white text-center py-20 min-h-screen flex items-center justify-center">Gym tidak ditemukan.</div>;
+    return <div className="text-white text-center py-20 min-h-screen flex items-center justify-center">Gym not found.</div>;
   }
 
   return (
@@ -162,7 +162,7 @@ const GymDetail: React.FC = () => {
                           ? 'w-5 h-2 bg-yellow-500'
                           : 'w-2 h-2 bg-white/40 hover:bg-white/70'
                       }`}
-                      aria-label={`Foto ${idx + 1}`}
+                      aria-label={`Photo ${idx + 1}`}
                     />
                   ))}
                 </div>
@@ -170,7 +170,7 @@ const GymDetail: React.FC = () => {
                 <button
                   type="button"
                   onClick={handlePrev}
-                  aria-label="Foto sebelumnya"
+                  aria-label="Previous photo"
                   className="absolute left-3 top-1/2 -translate-y-1/2 bg-black/30 hover:bg-black/80 backdrop-blur-sm text-white rounded-full p-2 transition-all duration-200 hover:scale-130"
                 >
                   <ChevronLeft size={25} />
@@ -179,7 +179,7 @@ const GymDetail: React.FC = () => {
                 <button
                   type="button"
                   onClick={handleNext}
-                  aria-label="Foto berikutnya"
+                  aria-label="Next photo"
                   className="absolute right-3 top-1/2 -translate-y-1/2 bg-black/50 hover:bg-black/80 backdrop-blur-sm text-white rounded-full p-2 transition-all duration-200 hover:scale-130"
                 >
                   <ChevronRight size={25} />
@@ -204,7 +204,7 @@ const GymDetail: React.FC = () => {
               <h1 className="text-3xl md:text-5xl font-extrabold text-white mb-3">{gym.name}</h1>
               <p className="text-zinc-400 text-lg mb-8">{gym.location}</p>
 
-              <h2 className="text-xl font-bold text-white mb-4 border-b border-zinc-800 pb-2">Fasilitas</h2>
+              <h2 className="text-xl font-bold text-white mb-4 border-b border-zinc-800 pb-2">Facilities</h2>
               <div className="flex flex-wrap gap-3 mb-8">
                 {gym.facilities.map((facility, index) => (
                   <Badge key={index} variant="info" className="px-4 py-2 text-sm">
@@ -226,13 +226,13 @@ const GymDetail: React.FC = () => {
               {/* Check-in Card */}
               <div className="p-4 md:p-6 bg-zinc-900/50 border border-zinc-800 rounded-2xl">
               <div className="hidden md:block mb-4">
-                <h3 className="text-zinc-300 font-medium mb-1">Akses Masuk</h3>
-                <p className="text-sm text-zinc-500">Tukarkan kredit Anda untuk mendapatkan PIN masuk ke gym ini.</p>
+                <h3 className="text-zinc-300 font-medium mb-1">Gym Access</h3>
+                <p className="text-sm text-zinc-500">Redeem your credits to get an entry PIN for this gym.</p>
               </div>
               
               <div className="flex justify-between items-center mb-4 md:mb-6">
-                <span className="text-zinc-400 font-medium hidden md:inline">Harga:</span>
-                <span className="text-yellow-500 font-bold text-xl md:text-2xl">{gym.credit_price} KREDIT</span>
+                <span className="text-zinc-400 font-medium hidden md:inline">Price:</span>
+                <span className="text-yellow-500 font-bold text-xl md:text-2xl">{gym.credit_price} CREDITS</span>
               </div>
 
               <Button
@@ -240,13 +240,13 @@ const GymDetail: React.FC = () => {
                 className="w-full text-lg py-4 shadow-lg shadow-yellow-500/20"
                 onClick={() => {
                   if (activeTx && activeTx.status === 'pending') {
-                    addToast('error', 'Anda sudah memiliki 1 check-in pending');
+                    addToast('error', 'You already have 1 pending check-in');
                     return;
                   }
                   setIsModalOpen(true);
                 }}
               >
-                CHECK-IN SEKARANG
+                CHECK-IN NOW
               </Button>
             </div>
 
@@ -254,7 +254,7 @@ const GymDetail: React.FC = () => {
               {gym.maps_url && (
                 <div className="bg-zinc-900/50 border border-zinc-800 rounded-2xl overflow-hidden p-4">
                   <h3 className="text-zinc-300 font-medium mb-3 flex items-center gap-2">
-                    <MapPin size={18} className="text-yellow-500" /> Lokasi Gym
+                    <MapPin size={18} className="text-yellow-500" /> Gym Location
                   </h3>
                   <div className="w-full h-40 bg-zinc-800 rounded-xl mb-4 overflow-hidden relative">
                     <iframe 

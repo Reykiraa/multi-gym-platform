@@ -32,11 +32,18 @@ const LandingPage: React.FC = () => {
           <div className="flex items-center gap-2">
             <span className="font-black text-white tracking-widest text-xl">ROAMFIT</span>
           </div>
-          <Link to="/register">
-            <button className="bg-yellow-500 hover:bg-yellow-400 text-black text-xs font-bold px-5 py-2 rounded-full uppercase tracking-widest transition-colors">
-              Join Now
-            </button>
-          </Link>
+          <div className="flex items-center gap-3">
+            <Link to="/register">
+              <button className="bg-yellow-500 hover:bg-yellow-400 text-black text-xs font-bold px-5 py-2 rounded-full uppercase tracking-widest transition-colors">
+                Join Now
+              </button>
+            </Link>
+            <Link to="/login">
+              <button className="bg-zinc-800 hover:bg-zinc-700 text-white text-xs font-bold px-5 py-2 rounded-full uppercase tracking-widest transition-colors border border-zinc-700">
+                Sign In
+              </button>
+            </Link>
+          </div>
         </header>
 
         {/* Hero Content */}

@@ -11,9 +11,9 @@ import Card from '../../components/ui/Card';
 import { useToastStore } from '../../store/toastStore';
 
 const gymProfileSchema = z.object({
-  name: z.string().min(3, 'Nama gym minimal 3 karakter'),
-  location: z.string().min(10, 'Alamat lengkap minimal 10 karakter'),
-  facilities: z.array(z.string()).min(1, 'Pilih minimal satu fasilitas'),
+  name: z.string().min(3, 'Gym name must be at least 3 characters'),
+  location: z.string().min(10, 'Full address must be at least 10 characters'),
+  facilities: z.array(z.string()).min(1, 'Please add at least one facility'),
   photos: z.array(z.any()).optional(),
   maps_url: z.string().optional(),
 });
@@ -145,17 +145,17 @@ const MitraGymProfile: React.FC = () => {
   const mutation = useMutation({
     mutationFn: (data: any) => updateMyGym(data),
     onSuccess: () => {
-      addToast('success', 'Profil Gym berhasil diperbarui');
+      addToast('success', 'Gym profile updated successfully');
       queryClient.invalidateQueries({ queryKey: ['my-gym'] });
     },
     onError: (error: any) => {
-      addToast('error', error.response?.data?.message || 'Gagal menyimpan profil gym');
+      addToast('error', error.response?.data?.message || 'Failed to save gym profile');
     }
   });
 
   const onSubmit = async (data: GymProfileFormValues) => {
     if (!gymData?.id) {
-       addToast('error', 'Data Gym tidak ditemukan');
+       addToast('error', 'Gym data not found');
        return;
     }
     
@@ -193,36 +193,36 @@ const MitraGymProfile: React.FC = () => {
   };
 
   if (isFetching) {
-    return <div className="text-zinc-500 text-center py-20">Memuat data...</div>;
+    return <div className="text-zinc-500 text-center py-20">Loading data...</div>;
   }
 
   return (
     <div className="max-w-4xl mx-auto p-6 bg-zinc-950 min-h-screen">
       <div className="mb-8">
-        <h1 className="text-3xl font-bold text-white mb-2">Pengaturan Profil Gym</h1>
-        <p className="text-zinc-400">Kelola informasi fasilitas dan foto gym Anda di platform.</p>
+        <h1 className="text-3xl font-bold text-white mb-2">Gym Profile Settings</h1>
+        <p className="text-zinc-400">Manage your gym's facilities and photo information on the platform.</p>
       </div>
 
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-8">
         {/* Basic Info */}
         <Card className="bg-zinc-900 border-zinc-800 p-6 space-y-4">
-          <h2 className="text-xl font-semibold text-white mb-4">Informasi Dasar</h2>
+          <h2 className="text-xl font-semibold text-white mb-4">Basic Information</h2>
           
           <div>
-            <label className="block text-sm font-medium text-zinc-300 mb-1.5">Nama Gym</label>
+            <label className="block text-sm font-medium text-zinc-300 mb-1.5">Gym Name</label>
             <Input 
               type="text" 
-              placeholder="Masukkan nama gym" 
+              placeholder="Enter gym name" 
               {...register('name')} 
             />
             {errors.name && <p className="text-rose-500 text-sm mt-1">{errors.name.message}</p>}
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-zinc-300 mb-1.5">Lokasi Lengkap</label>
+            <label className="block text-sm font-medium text-zinc-300 mb-1.5">Full Address</label>
             <textarea 
               className="w-full bg-zinc-950 border border-zinc-800 rounded-lg px-4 py-3 text-white placeholder:text-zinc-600 focus:outline-none focus:ring-2 focus:ring-yellow-500/50 focus:border-yellow-500 transition-all resize-none h-24"
-              placeholder="Alamat lengkap gym"
+              placeholder="Full gym address"
               {...register('location')}
             />
             {errors.location && <p className="text-rose-500 text-sm mt-1">{errors.location.message}</p>}
@@ -230,11 +230,11 @@ const MitraGymProfile: React.FC = () => {
 
           <div>
             <label className="block text-sm font-medium text-zinc-300 mb-1.5 flex items-center justify-between">
-              <span>Google Maps Embed Link (Opsional)</span>
+              <span>Google Maps Embed Link (Optional)</span>
             </label>
             <Input 
               type="text" 
-              placeholder="Paste URL atau seluruh kode <iframe...> dari Google Maps" 
+              placeholder="Paste URL or full <iframe...> code from Google Maps" 
               {...register('maps_url')} 
             />
             {errors.maps_url && <p className="text-rose-500 text-sm mt-1">{errors.maps_url.message}</p>}
@@ -243,18 +243,18 @@ const MitraGymProfile: React.FC = () => {
               <div className="flex items-start gap-3 mb-4">
                 <Info className="text-yellow-500 shrink-0 mt-0.5" size={20} />
                 <div>
-                  <h4 className="text-white font-medium mb-1">Cara mendapatkan link Embed Peta:</h4>
+                  <h4 className="text-white font-medium mb-1">How to get the Map Embed link:</h4>
                   <ol className="list-decimal pl-4 space-y-1.5 text-sm text-zinc-400">
-                    <li>Cari gym Anda di <a href="https://maps.google.com" target="_blank" rel="noreferrer" className="text-yellow-500 hover:underline">Google Maps</a>.</li>
-                    <li>Klik tombol <strong>Share</strong> (Bagikan).</li>
-                    <li>Pilih tab <strong>Embed a map</strong> (Sematkan peta).</li>
-                    <li>Klik <strong>COPY HTML</strong> dan langsung <i>paste</i> ke kolom di atas. Sistem kami akan mengambil link-nya secara otomatis.</li>
+                    <li>Search for your gym on <a href="https://maps.google.com" target="_blank" rel="noreferrer" className="text-yellow-500 hover:underline">Google Maps</a>.</li>
+                    <li>Click the <strong>Share</strong> button.</li>
+                    <li>Select the <strong>Embed a map</strong> tab.</li>
+                    <li>Click <strong>COPY HTML</strong> and paste it directly into the field above. Our system will extract the link automatically.</li>
                   </ol>
                 </div>
               </div>
               <img 
-                src="https://placehold.co/800x250/18181b/eab308?text=1.+Klik+Share+%0A+2.+Pilih+Embed+a+map+%0A+3.+Copy+HTML" 
-                alt="Tutorial Embed Google Maps" 
+                src="https://placehold.co/800x250/18181b/eab308?text=1.+Click+Share+%0A+2.+Select+Embed+a+map+%0A+3.+Copy+HTML" 
+                alt="Google Maps Embed Tutorial" 
                 className="w-full rounded-lg border border-zinc-800 shadow-md opacity-80"
               />
             </div>
@@ -263,13 +263,13 @@ const MitraGymProfile: React.FC = () => {
 
         {/* Facilities */}
         <Card className="bg-zinc-900 border-zinc-800 p-6 space-y-4">
-          <h2 className="text-xl font-semibold text-white mb-4">Fasilitas</h2>
+          <h2 className="text-xl font-semibold text-white mb-4">Facilities</h2>
           
           <div>
-            <label className="block text-sm font-medium text-zinc-300 mb-1.5">Tambah Fasilitas</label>
+            <label className="block text-sm font-medium text-zinc-300 mb-1.5">Add Facility</label>
             <Input 
               type="text" 
-              placeholder="Ketik fasilitas (pisahkan dengan koma atau tekan Enter)" 
+              placeholder="Type facility name (separate with commas or press Enter)" 
               value={facilityInput}
               onChange={handleFacilityChange}
               onKeyDown={handleAddFacility}
@@ -292,14 +292,14 @@ const MitraGymProfile: React.FC = () => {
               </div>
             ))}
             {facilities.length === 0 && (
-              <span className="text-zinc-500 text-sm">Belum ada fasilitas yang ditambahkan.</span>
+              <span className="text-zinc-500 text-sm">No facilities added yet.</span>
             )}
           </div>
         </Card>
 
         {/* Gallery */}
         <Card className="bg-zinc-900 border-zinc-800 p-6 space-y-4">
-          <h2 className="text-xl font-semibold text-white mb-4">Galeri Foto</h2>
+          <h2 className="text-xl font-semibold text-white mb-4">Photo Gallery</h2>
           
           <div className="border-2 border-dashed border-zinc-700 rounded-xl p-8 flex flex-col items-center justify-center text-center bg-zinc-950/50 hover:bg-zinc-800/50 transition-colors cursor-pointer relative">
             <input 
@@ -312,7 +312,7 @@ const MitraGymProfile: React.FC = () => {
             <div className="bg-zinc-800 p-4 rounded-full text-zinc-400 mb-4">
               <Camera size={32} />
             </div>
-            <p className="text-white font-medium mb-1">Klik atau seret foto ke sini</p>
+            <p className="text-white font-medium mb-1">Click or drag photos here</p>
             <p className="text-zinc-500 text-sm">PNG, JPG, WEBP (Max 5MB)</p>
           </div>
 
@@ -344,7 +344,7 @@ const MitraGymProfile: React.FC = () => {
             disabled={mutation.isPending}
             className="px-8 py-3 font-bold"
           >
-            {mutation.isPending ? 'Menyimpan...' : 'Simpan Perubahan'}
+            {mutation.isPending ? 'Saving...' : 'Save Changes'}
           </Button>
         </div>
       </form>
