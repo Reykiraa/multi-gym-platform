@@ -1,18 +1,22 @@
-// src/pages/admin/GymManager.tsx
-import React, { useState } from 'react';
-import { Plus, Pencil, Trash2 } from 'lucide-react';
-import Button from '../../components/ui/Button';
-import Badge from '../../components/ui/Badge';
-import GymForm from '../../components/forms/GymForm';
+import React, { useState } from "react";
+import { Plus, Pencil, Trash2 } from "lucide-react";
+import Button from "../../components/ui/Button";
+import Badge from "../../components/ui/Badge";
+import GymForm from "../../components/forms/GymForm";
+import ConfirmModal from "../../components/modals/ConfirmModal";
 import {
   useGyms,
   useCreateGym,
   useUpdateGym,
   useDeleteGym,
   useCreateGymBranch,
-} from '../../hooks/api/useGyms';
-import { useMitraOrgs } from '../../hooks/api/useMitrasOrg';
-import type { AdminGym, GymFormPayload, GymBranchPayload } from '../../types/admin';
+} from "../../hooks/api/useGyms";
+import { useMitraOrgs } from "../../hooks/api/useMitrasOrg";
+import type {
+  AdminGym,
+  GymFormPayload,
+  GymBranchPayload,
+} from "../../types/admin";
 
 /**
  * Admin Gym Management page — full CRUD table for gym partners.
@@ -21,7 +25,9 @@ import type { AdminGym, GymFormPayload, GymBranchPayload } from '../../types/adm
  *  - "Tambah Cabang" → POST /gyms/branch (links gym to existing mitra)
  */
 const GymManager: React.FC = () => {
-  const { data: gyms = [], isLoading } = useGyms();
+  const { data: rawGymsData, isLoading } = useGyms();
+  const rawList = (rawGymsData as any)?.data || rawGymsData || [];
+  const gyms: AdminGym[] = Array.isArray(rawList) ? rawList : [];
   const { data: mitraOrgs = [] } = useMitraOrgs();
   const createGym = useCreateGym();
   const createBranch = useCreateGymBranch();
@@ -30,6 +36,7 @@ const GymManager: React.FC = () => {
 
   const [showForm, setShowForm] = useState(false);
   const [editingGym, setEditingGym] = useState<AdminGym | null>(null);
+  const [gymToDelete, setGymToDelete] = useState<AdminGym | null>(null);
 
   const handleCreate = (payload: GymFormPayload) => {
     createGym.mutate(payload, {
@@ -44,6 +51,7 @@ const GymManager: React.FC = () => {
   };
 
   const handleUpdate = (payload: GymFormPayload) => {
+    console.log("Payload Update Gym:", payload);
     if (!editingGym) return;
     updateGym.mutate(
       { id: editingGym.id, payload },
@@ -52,8 +60,9 @@ const GymManager: React.FC = () => {
   };
 
   const handleDelete = (id: number) => {
-    if (!confirm('Are you sure you want to delete this gym?')) return;
-    deleteGym.mutate(id);
+    deleteGym.mutate(id, {
+      onSuccess: () => setGymToDelete(null),
+    });
   };
 
   const openEdit = (gym: AdminGym) => {
@@ -66,13 +75,18 @@ const GymManager: React.FC = () => {
       {/* Page header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
         <div>
-          <h1 className="text-2xl md:text-3xl font-bold text-white">Gym Network</h1>
-          <p className="text-zinc-400 mt-1">Manage platform gym partner data</p>
+          <h1 className="text-2xl md:text-3xl font-bold text-white">
+            Gym Network
+          </h1>
+          <p className="text-zinc-400 mt-1">Kelola data gym partner platform</p>
         </div>
         <Button
           id="btn-add-gym"
           variant="primary"
-          onClick={() => { setShowForm(true); setEditingGym(null); }}
+          onClick={() => {
+            setShowForm(true);
+            setEditingGym(null);
+          }}
         >
           <Plus size={18} className="mr-2" />
           Add Gym
@@ -96,58 +110,75 @@ const GymManager: React.FC = () => {
             <tbody className="divide-y divide-zinc-800">
               {isLoading ? (
                 <tr>
-                  <td colSpan={6} className="px-6 py-12 text-center text-zinc-500">
-                    Loading gym data...
+                  <td
+                    colSpan={6}
+                    className="px-6 py-12 text-center text-zinc-500"
+                  >
+                    Memuat data gym...
                   </td>
                 </tr>
               ) : gyms.length === 0 ? (
                 <tr>
-                  <td colSpan={6} className="px-6 py-12 text-center text-zinc-500">
-                    No gym data available.
+                  <td
+                    colSpan={6}
+                    className="px-6 py-12 text-center text-zinc-500"
+                  >
+                    Belum ada data gym.
                   </td>
                 </tr>
               ) : (
-                gyms.map((gym) => (
-                  <tr key={gym.id} className="hover:bg-zinc-800/50 transition-colors">
-                    <td className="px-6 py-4 font-medium text-white whitespace-nowrap">
-                      {gym.name}
-                    </td>
-                    <td className="px-6 py-4 text-zinc-300 whitespace-nowrap">
-                      {gym.location}
-                    </td>
-                    <td className="px-6 py-4 text-zinc-400 whitespace-nowrap">
-                      {gym.mitra_name}
-                    </td>
-                    <td className="px-6 py-4">
-                      <div className="flex flex-wrap gap-1.5">
-                        {gym.facilities.map((f) => (
-                          <Badge key={f}>{f}</Badge>
-                        ))}
-                      </div>
-                    </td>
-                    <td className="px-6 py-4 text-right text-yellow-500 font-semibold whitespace-nowrap">
-                      {gym.credit_price} Credit
-                    </td>
-                    <td className="px-6 py-4">
-                      <div className="flex items-center justify-center gap-2">
-                        <button
-                          onClick={() => openEdit(gym)}
-                          className="p-2 rounded-lg text-zinc-400 hover:text-yellow-500 hover:bg-zinc-800 transition-colors"
-                          aria-label={`Edit ${gym.name}`}
-                        >
-                          <Pencil size={16} />
-                        </button>
-                        <button
-                          onClick={() => handleDelete(gym.id)}
-                          className="p-2 rounded-lg text-zinc-400 hover:text-rose-500 hover:bg-zinc-800 transition-colors"
-                          aria-label={`Delete ${gym.name}`}
-                        >
-                          <Trash2 size={16} />
-                        </button>
-                      </div>
-                    </td>
-                  </tr>
-                ))
+                gyms.map((gym) => {
+                  const facilityList = Array.isArray(gym.facilities)
+                    ? gym.facilities
+                    : typeof gym.facilities === "string"
+                      ? JSON.parse(gym.facilities || "[]")
+                      : [];
+
+                  return (
+                    <tr
+                      key={gym.id}
+                      className="hover:bg-zinc-800/50 transition-colors"
+                    >
+                      <td className="px-6 py-4 font-medium text-white whitespace-nowrap">
+                        {gym.name}
+                      </td>
+                      <td className="px-6 py-4 text-zinc-300 whitespace-nowrap">
+                        {gym.location}
+                      </td>
+                      <td className="px-6 py-4 text-zinc-400 whitespace-nowrap">
+                        {gym.mitra_name || "—"}
+                      </td>
+                      <td className="px-6 py-4">
+                        <div className="flex flex-wrap gap-1.5">
+                          {facilityList.map((f: string) => (
+                            <Badge key={f}>{f}</Badge>
+                          ))}
+                        </div>
+                      </td>
+                      <td className="px-6 py-4 text-right text-yellow-500 font-semibold whitespace-nowrap">
+                        {gym.credit_price} Kredit
+                      </td>
+                      <td className="px-6 py-4">
+                        <div className="flex items-center justify-center gap-2">
+                          <button
+                            onClick={() => openEdit(gym)}
+                            className="p-2 rounded-lg text-zinc-400 hover:text-yellow-500 hover:bg-zinc-800 transition-colors"
+                            aria-label={`Edit ${gym.name}`}
+                          >
+                            <Pencil size={16} />
+                          </button>
+                          <button
+                            onClick={() => setGymToDelete(gym)}
+                            className="p-2 rounded-lg text-zinc-400 hover:text-rose-500 hover:bg-zinc-800 transition-colors"
+                            aria-label={`Hapus ${gym.name}`}
+                          >
+                            <Trash2 size={16} />
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  );
+                })
               )}
             </tbody>
           </table>
@@ -175,6 +206,18 @@ const GymManager: React.FC = () => {
           mitraOrgs={mitraOrgs}
         />
       )}
+
+      {/* Confirm Delete Modal */}
+      <ConfirmModal
+        isOpen={!!gymToDelete}
+        title="Hapus Gym"
+        description={`Apakah Anda yakin ingin menghapus gym "${gymToDelete?.name}"? Tindakan ini tidak dapat dibatalkan.`}
+        confirmText="Hapus"
+        cancelText="Batal"
+        onConfirm={() => gymToDelete && handleDelete(gymToDelete.id)}
+        onCancel={() => setGymToDelete(null)}
+        isLoading={deleteGym.isPending}
+      />
     </div>
   );
 };

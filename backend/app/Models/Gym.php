@@ -28,6 +28,7 @@ class Gym extends Model
         'credit_price',
         'maps_url',
     ];
+    protected $appends = ['mitra_name', 'pengelola_name'];
 
     /**
      * Get the attributes that should be cast.
@@ -64,5 +65,24 @@ class Gym extends Model
     public function transactions(): HasMany
     {
         return $this->hasMany(Transaction::class);
+    }
+
+    /**
+     * Smart Accessor: Brand Organisasi B2B -> Fallback Nama Pengelola
+     */
+    public function getMitraNameAttribute(): string
+    {
+        // 1. Jika terhubung ke Organisasi Mitra B2B (tabel mitras via mitra_org_id)
+        if ($this->mitra && $this->mitra->mitraOrg) {
+            return $this->mitra->mitraOrg->name;
+        }
+
+        // 2. Jika Standalone, gunakan nama akun pengelola
+        return $this->mitra?->name ?? 'Stand-Alone';
+    }
+
+    public function getPengelolaNameAttribute(): string
+    {
+        return $this->mitra?->name ?? '—';
     }
 }
