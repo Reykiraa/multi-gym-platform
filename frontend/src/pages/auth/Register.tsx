@@ -88,7 +88,9 @@ const Register: React.FC = () => {
     <div className="min-h-screen flex items-center justify-center px-4 py-12">
       <div className="w-full max-w-md">
         <div className="text-center mb-8">
-          <Link to="/" className="text-3xl font-black text-white tracking-widest">ROAMFIT</Link>
+          <Link to="/" className="text-3xl font-black text-white tracking-widest">
+            ROAM<span className="text-yellow-500">FIT</span>
+          </Link>
           <p className="text-zinc-400 mt-2">Create a new account</p>
         </div>
 
@@ -171,7 +173,6 @@ const Register: React.FC = () => {
               theme="filled_black"
               shape="pill"
               width="100%"
-              locale="en"
             />
           </div>
 
