@@ -232,3 +232,40 @@
 - **Keputusan Arsitektur & Keamanan:**
   - **Fail-Safe Try-Catch:** Seluruh proses `Mail::send` diisolasi dalam blok `try-catch` dan pencatatan log error agar kegagalan jaringan SMTP tidak pernah membatalkan eksekusi `DB::transaction()` penambahan saldo atau pembuatan akun.
   - **Cross-Client Email Styling:** Menggunakan *inline CSS* standar tabel email agar tampilan struk invoice dan welcome email tampil rapi di aplikasi Gmail, Apple Mail, dan Outlook.
+
+  ## [2026-09-02] - Phase: Admin Gym Network, B2B Hierarchy & Modal UX Polish
+- **Fitur Selesai:** 
+  - Perbaikan bug submit form Edit Gym (memisahkan validasi mode edit dari Zod schema registrasi mitra baru).
+  - Smart B2B Mitra Hierarchy Accessor pada model `Gym.php` (memprioritaskan nama Brand Organisasi dari tabel `mitras`, dengan fallback ke nama pengelola untuk gym standalone).
+  - Eager-loading relasi bersarang `mitra.mitraOrg` pada `GymController@index`.
+  - Peningkatan UX penghapusan Gym: Mengganti dialog native `confirm()` browser dengan komponen kustom `ConfirmModal`.
+- **File Dibuat/Dimodifikasi:**
+  - **Backend:**
+    - `app/Models/Gym.php` (Aksesor `mitra_name` dan `pengelola_name`)
+    - `app/Http/Controllers/GymController.php` (Eager loading relasi `mitra.mitraOrg`)
+  - **Frontend:**
+    - `src/components/forms/GymForm.tsx` (Perbaikan handler form edit)
+    - `src/pages/admin/GymManager.tsx` (Integrasi `ConfirmModal` dan penanganan safe payload)
+- **Keputusan Arsitektur & Keamanan:**
+  - **Separation of Form Concerns:** Form edit tidak memvalidasi ulang kredensial akun mitra, melainkan fokus murni pada pembaruan entitas gym (`name`, `location`, `facilities`, `credit_price`).
+  - **Hierarchical Accessor Pattern:** Memastikan kolom tabel admin menampilkan entitas bisnis yang relevan tanpa memerlukan query manual berulang di frontend.
+
+  ## [2026-09-02] - Phase: Executive Admin Dashboard, Master Audit Ledger & Metric Precision
+- **Fitur Selesai:** 
+  - **Executive Admin Dashboard:** 4 kartu KPI terpadu (*Total Gym Partners, Registered Members, Gross Credits Sold, Total Gym Visits*).
+  - **Akurasi Metrik Pengguna:** Penyempurnaan kalkulasi *Registered Members* agar mengambil total seluruh basis data pengguna dari `GET /api/users` (bukan hanya pengguna yang pernah bertransaksi).
+  - **Visual Activity Chart:** Integrasi grafik Recharts (*AreaChart*) untuk memantau tren volume Top-Up vs Kunjungan Check-in 7 hari terakhir.
+  - **Master Audit Ledger Table:** Tabel audit transaksi admin lengkap dengan filter tabs (*All, Top-Ups Only, Gym Visits Only*), live search (nama, email, order ID), dan format nominal IDR/kredit yang rapi.
+  - **Order ID Parser:** Utilitas `formatShortOrderId` untuk menyederhanakan tampilan ID unik yang panjang menjadi format ringkas (misal: `#1788321746`).
+  - **Interactive Detail Modal:** Modal rincian mendalam yang terbuka otomatis saat baris transaksi diklik.
+  - **English Localization:** Pelokalan seluruh teks dan status badge di modul Admin ke Bahasa Inggris secara konsisten.
+- **File Dibuat/Dimodifikasi:**
+  - **Backend:**
+    - `app/Http/Controllers/TransactionController.php` (Agregasi master audit trail gabungan check-in & top-up khusus role admin)
+  - **Frontend:**
+    - `src/pages/admin/AdminDashboard.tsx` (Dashboard UI, Recharts integration, 4 KPI cards, query users live)
+    - `src/pages/admin/Transactions.tsx` (Master audit table, filters, helper parser, interactive modal)
+- **Keputusan Arsitektur & Keamanan:**
+  - **Master Audit Trail Security:** Penghapusan total tombol suntik saldo manual admin demi integritas dan kepatuhan finansial (*Financial Compliance*).
+  - **Zero-Crash Data Parsing:** Normalisasi data paginator dan fallback array pada seluruh kartu metrik dan tabel.
+  - **Type-Safety:** 100% lulus kompilasi statis TypeScript (`npx tsc --noEmit`).
