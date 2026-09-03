@@ -73,10 +73,14 @@ const GymDiscovery: React.FC = () => {
     sort: sortOrder,
   };
 
-  // Reset page to 1 when filters or perPage changes
-  React.useEffect(() => {
+  // Reset page to 1 when filters or perPage changes without triggering cascading renders in effect
+  const filterKey = `${debouncedSearchTerm}-${facility}-${sortOrder}-${perPage}`;
+  const [prevFilterKey, setPrevFilterKey] = React.useState(filterKey);
+  
+  if (filterKey !== prevFilterKey) {
+    setPrevFilterKey(filterKey);
     setCurrentPage(1);
-  }, [debouncedSearchTerm, facility, sortOrder, perPage]);
+  }
 
   const { data: gymData, isLoading, isFetching } = useQuery({
     queryKey: ['gyms', filters, currentPage, perPage],

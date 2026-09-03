@@ -6,9 +6,10 @@ import { useToastStore } from '../../store/toastStore';
 import { useAuthStore } from '../../store/authStore';
 import { useCheckInStore } from '../../store/checkInStore';
 import type { TransactionHistory } from '../../types';
+import { AxiosError } from 'axios';
 
 interface PinDisplayModalProps {
-  transaction: TransactionHistory | any;
+  transaction: TransactionHistory;
   onClose: () => void;
 }
 
@@ -65,7 +66,7 @@ const PinDisplayModal: React.FC<PinDisplayModalProps> = ({ transaction, onClose 
   }, [txStatus?.status, addToast, setIsPinModalOpen, updateUser, queryClient]);
 
   const cancelMutation = useMutation({
-    mutationFn: () => cancelCheckIn(transaction.id),
+    mutationFn: () => cancelCheckIn(Number(transaction.id)),
     onSuccess: () => {
       setIsPinModalOpen(false);
       queryClient.setQueryData(['transactions', 'active-pending'], null);
@@ -77,7 +78,7 @@ const PinDisplayModal: React.FC<PinDisplayModalProps> = ({ transaction, onClose 
       queryClient.invalidateQueries({ queryKey: ['transactions'] });
       addToast('success', 'Check-in berhasil dibatalkan. Saldo telah dikembalikan.');
     },
-    onError: (error: any) => {
+    onError: (error: AxiosError<{ message?: string }>) => {
       addToast('error', error.response?.data?.message || 'Gagal membatalkan check-in');
     }
   });

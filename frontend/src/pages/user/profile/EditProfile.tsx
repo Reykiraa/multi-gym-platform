@@ -36,9 +36,10 @@ const EditProfile: React.FC = () => {
       updateUser(response.data.user);
       window.alert("Profile updated!");
       navigate('/user/profile');
-    } catch (error: any) {
-      if (error.response?.status === 422) {
-        window.alert(error.response.data.message || "Validation failed");
+    } catch (error) {
+      const axiosError = error as import('axios').AxiosError<{ message?: string }>;
+      if (axiosError.response?.status === 422) {
+        window.alert(axiosError.response.data.message || "Validation failed");
       } else {
         window.alert("An error occurred while saving your profile");
       }
