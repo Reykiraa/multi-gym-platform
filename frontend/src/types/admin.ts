@@ -86,15 +86,21 @@ export interface MitraOption {
  * Represents a Transaction record as returned by GET /api/transactions.
  */
 export interface AdminTransaction {
-  id: number;
-  user_id: number;
-  user_name: string;
-  user_email: string;
-  gym_name: string;
-  type: 'check-in' | 'topup';
-  credit_amount: number;
-  status: 'completed' | 'pending' | 'failed' | 'expired';
+  id: number | string;
+  user_id?: number;
+  user_name?: string;
+  user_email?: string;
+  gym_name?: string;
+  title?: string;
+  type: string;
+  credit_amount?: number;
+  amount?: number;
+  amount_idr?: number;
+  status: string;
   created_at: string;
+  order_id?: string;
+  user?: { name: string; email: string };
+  [key: string]: unknown;
 }
 
 /**

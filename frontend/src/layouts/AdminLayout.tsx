@@ -55,7 +55,7 @@ const AdminLayout: React.FC = () => {
     <>
       {/* Brand */}
       <div className="px-6 py-6 border-b border-zinc-800">
-        <h1 className="text-xl font-black text-white tracking-widest">ROAMFIT</h1>
+        <h1 className="text-xl font-black text-white tracking-widest">ROAM<span className="text-yellow-500">FIT</span></h1>
         <p className="text-xs text-zinc-500 mt-1">Admin Panel</p>
       </div>
 

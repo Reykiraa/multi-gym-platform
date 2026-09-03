@@ -3,6 +3,7 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import type { AdminMitra, MitraFormPayload } from '../../types/admin';
 import apiClient from '../../lib/axios';
+import { AxiosError } from 'axios';
 import { useToastStore } from '../../store/toastStore';
 
 const MITRA_ORG_KEY = ['admin', 'mitra-orgs'] as const;
@@ -27,7 +28,7 @@ export const useCreateMitraOrg = () => {
   const queryClient = useQueryClient();
   const { addToast } = useToastStore();
 
-  return useMutation<AdminMitra, Error, MitraFormPayload>({
+  return useMutation<AdminMitra, AxiosError<{ message?: string }>, MitraFormPayload>({
     mutationFn: async (payload) => {
       const res = await apiClient.post('/mitras', payload);
       return res.data.mitra ?? res.data;
@@ -36,7 +37,7 @@ export const useCreateMitraOrg = () => {
       queryClient.invalidateQueries({ queryKey: MITRA_ORG_KEY });
       addToast('success', 'Mitra berhasil didaftarkan');
     },
-    onError: (err: any) => {
+    onError: (err) => {
       addToast('error', err.response?.data?.message || 'Gagal mendaftarkan mitra');
     },
   });
@@ -49,7 +50,7 @@ export const useUpdateMitraOrg = () => {
   const queryClient = useQueryClient();
   const { addToast } = useToastStore();
 
-  return useMutation<AdminMitra, Error, { id: number; payload: MitraFormPayload }>({
+  return useMutation<AdminMitra, AxiosError<{ message?: string }>, { id: number; payload: MitraFormPayload }>({
     mutationFn: async ({ id, payload }) => {
       const res = await apiClient.put(`/mitras/${id}`, payload);
       return res.data;
@@ -58,7 +59,7 @@ export const useUpdateMitraOrg = () => {
       queryClient.invalidateQueries({ queryKey: MITRA_ORG_KEY });
       addToast('success', 'Mitra berhasil diperbarui');
     },
-    onError: (err: any) => {
+    onError: (err) => {
       addToast('error', err.response?.data?.message || 'Gagal memperbarui mitra');
     },
   });
@@ -71,7 +72,7 @@ export const useDeleteMitraOrg = () => {
   const queryClient = useQueryClient();
   const { addToast } = useToastStore();
 
-  return useMutation<void, Error, number>({
+  return useMutation<void, AxiosError<{ message?: string }>, number>({
     mutationFn: async (id) => {
       await apiClient.delete(`/mitras/${id}`);
     },
@@ -79,7 +80,7 @@ export const useDeleteMitraOrg = () => {
       queryClient.invalidateQueries({ queryKey: MITRA_ORG_KEY });
       addToast('success', 'Mitra berhasil dihapus');
     },
-    onError: (err: any) => {
+    onError: (err) => {
       addToast('error', err.response?.data?.message || 'Gagal menghapus mitra');
     },
   });

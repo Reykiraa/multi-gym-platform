@@ -1,5 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import apiClient from '../../lib/axios';
+import { AxiosError } from 'axios';
 import { useToastStore } from '../../store/toastStore';
 import { useAuthStore } from '../../store/authStore';
 import type { TopupPackage } from '../../types';
@@ -17,7 +18,7 @@ export const useCheckoutTopup = () => {
   const queryClient = useQueryClient();
   const { addToast } = useToastStore();
   
-  return useMutation<{ snap_token: string; order_id: string }, Error, { topup_package_id: string }>({
+  return useMutation<{ snap_token: string; order_id: string }, AxiosError<{ message?: string }>, { topup_package_id: string }>({
     mutationFn: async (payload) => {
       const response = await apiClient.post('/topups', payload);
       return response.data;
@@ -25,7 +26,7 @@ export const useCheckoutTopup = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['transactions', 'history'] });
     },
-    onError: (error: any) => {
+    onError: (error) => {
       addToast('error', error.response?.data?.message || 'Gagal memulai top-up');
     },
   });
@@ -35,7 +36,7 @@ export const useCancelTopup = () => {
   const queryClient = useQueryClient();
   const { addToast } = useToastStore();
 
-  return useMutation<any, Error, { id: string; silent?: boolean }>({
+  return useMutation<unknown, AxiosError<{ message?: string }>, { id: string; silent?: boolean }>({
     mutationFn: async ({ id }) => {
       const response = await apiClient.post(`/topups/${id}/cancel`);
       return response.data;
@@ -47,7 +48,7 @@ export const useCancelTopup = () => {
       }
       queryClient.invalidateQueries({ queryKey: ['transactions', 'history'] });
     },
-    onError: (error: any, variables) => {
+    onError: (error, variables) => {
       if (!variables.silent) {
         addToast('error', error.response?.data?.message || 'Gagal membatalkan transaksi.');
       }
@@ -57,10 +58,9 @@ export const useCancelTopup = () => {
 
 export const useVerifyTopup = () => {
   const queryClient = useQueryClient();
-  const { addToast } = useToastStore();
   const { setUser } = useAuthStore.getState();
 
-  return useMutation<any, Error, { orderId: string }>({
+  return useMutation<{ user?: import('../../types').User, data?: { status?: string } }, Error, { orderId: string }>({
     mutationFn: async ({ orderId }) => {
       const response = await apiClient.post(`/topups/${orderId}/verify`);
       return response.data;

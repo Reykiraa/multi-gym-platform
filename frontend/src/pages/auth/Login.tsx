@@ -10,6 +10,8 @@ import apiClient from '../../lib/axios';
 import { useAuthStore } from '../../store/authStore';
 import { useToastStore } from '../../store/toastStore';
 import { GoogleLogin } from '@react-oauth/google';
+import type { CredentialResponse } from '@react-oauth/google';
+import { AxiosError } from 'axios';
 
 const loginSchema = z.object({
   email: z.string().email('Invalid email format'),
@@ -55,7 +57,7 @@ const Login: React.FC = () => {
     }
   };
 
-  const handleGoogleSuccess = async (credentialResponse: any) => {
+  const handleGoogleSuccess = async (credentialResponse: CredentialResponse) => {
     try {
       const response = await apiClient.post('/auth/google', {
         credential: credentialResponse.credential,
@@ -72,8 +74,9 @@ const Login: React.FC = () => {
       } else {
         navigate('/user/gyms');
       }
-    } catch (error: any) {
-      addToast('error', error.response?.data?.message || 'Google Sign-In failed.');
+    } catch (error) {
+      const axiosError = error as AxiosError<{ message?: string }>;
+      addToast('error', axiosError.response?.data?.message || 'Google Sign-In failed.');
     }
   };
 

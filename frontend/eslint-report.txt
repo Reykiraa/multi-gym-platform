@@ -1,0 +1,155 @@
+
+D:\LOMBA\multi-gym-platform\frontend\src\components\forms\GymForm.tsx
+   95:29  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   96:23  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  260:29  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  262:35  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+D:\LOMBA\multi-gym-platform\frontend\src\components\modals\PinDisplayModal.tsx
+  11:37  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  80:22  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+D:\LOMBA\multi-gym-platform\frontend\src\components\ui\Skeleton.tsx
+  3:18  error  An interface declaring no members is equivalent to its supertype  @typescript-eslint/no-empty-object-type
+
+D:\LOMBA\multi-gym-platform\frontend\src\hooks\api\useGyms.ts
+   54:22  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   77:22  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   99:22  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  120:22  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+D:\LOMBA\multi-gym-platform\frontend\src\hooks\api\useMitraAPI.ts
+  30:22  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+D:\LOMBA\multi-gym-platform\frontend\src\hooks\api\useMitrasOrg.ts
+  39:20  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  61:20  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  82:20  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+D:\LOMBA\multi-gym-platform\frontend\src\hooks\api\useTopup.ts
+  28:22  error  Unexpected any. Specify a different type       @typescript-eslint/no-explicit-any
+  38:22  error  Unexpected any. Specify a different type       @typescript-eslint/no-explicit-any
+  50:22  error  Unexpected any. Specify a different type       @typescript-eslint/no-explicit-any
+  60:11  error  'addToast' is assigned a value but never used  @typescript-eslint/no-unused-vars
+  63:22  error  Unexpected any. Specify a different type       @typescript-eslint/no-explicit-any
+
+D:\LOMBA\multi-gym-platform\frontend\src\hooks\api\useTransactions.ts
+  44:22  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+D:\LOMBA\multi-gym-platform\frontend\src\layouts\ProtectedLayout.tsx
+  28:44  error  Unexpected any. Specify a different type                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         @typescript-eslint/no-explicit-any
+  48:7   error  Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+D:\LOMBA\multi-gym-platform\frontend\src\layouts\ProtectedLayout.tsx:48:7
+  46 |   useEffect(() => {
+  47 |     if (activeTx) {
+> 48 |       setCachedTx(activeTx);
+     |       ^^^^^^^^^^^ Avoid calling setState() directly within an effect
+  49 |     }
+  50 |   }, [activeTx]);
+  51 |  react-hooks/set-state-in-effect
+
+D:\LOMBA\multi-gym-platform\frontend\src\pages\admin\AdminDashboard.tsx
+    8:3   error    'Building2' is defined but never used                                                                                                                                                  @typescript-eslint/no-unused-vars
+   53:14  error    Unexpected any. Specify a different type                                                                                                                                               @typescript-eslint/no-explicit-any
+   54:52  error    Unexpected any. Specify a different type                                                                                                                                               @typescript-eslint/no-explicit-any
+   56:9   warning  The 'txList' conditional could make the dependencies of useMemo Hook (at line 120) change on every render. To fix this, wrap the initialization of 'txList' in its own useMemo() Hook  react-hooks/exhaustive-deps
+   56:17  error    Unexpected any. Specify a different type                                                                                                                                               @typescript-eslint/no-explicit-any
+   58:27  error    Unexpected any. Specify a different type                                                                                                                                               @typescript-eslint/no-explicit-any
+   81:20  error    Unexpected any. Specify a different type                                                                                                                                               @typescript-eslint/no-explicit-any
+   85:17  error    Unexpected any. Specify a different type                                                                                                                                               @typescript-eslint/no-explicit-any
+  269:44  error    Unexpected any. Specify a different type                                                                                                                                               @typescript-eslint/no-explicit-any
+
+D:\LOMBA\multi-gym-platform\frontend\src\pages\admin\GymManager.tsx
+  29:35  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+D:\LOMBA\multi-gym-platform\frontend\src\pages\admin\Transactions.tsx
+   5:14  error  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+  39:48  error  Unexpected any. Specify a different type                                                                                        @typescript-eslint/no-explicit-any
+  41:23  error  Unexpected any. Specify a different type                                                                                        @typescript-eslint/no-explicit-any
+  42:83  error  Unexpected any. Specify a different type                                                                                        @typescript-eslint/no-explicit-any
+
+D:\LOMBA\multi-gym-platform\frontend\src\pages\auth\Login.tsx
+  58:58  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  75:21  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+D:\LOMBA\multi-gym-platform\frontend\src\pages\auth\Register.tsx
+  65:58  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  82:21  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+D:\LOMBA\multi-gym-platform\frontend\src\pages\mitra\MitraDashboard.tsx
+   41:28  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  131:46  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  169:38  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+D:\LOMBA\multi-gym-platform\frontend\src\pages\mitra\MitraGymProfile.tsx
+    5:21  error    'Upload' is defined but never used                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            @typescript-eslint/no-unused-vars
+   28:34  error    Unexpected any. Specify a different type                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      @typescript-eslint/no-explicit-any
+  129:29  warning  Compilation Skipped: Use of incompatible library
+
+This API returns functions which cannot be memoized without leading to stale UI. To prevent this, by default React Compiler will skip memoizing this component/hook. However, you may see issues if values from this API are passed to other components/hooks that are memoized.
+
+D:\LOMBA\multi-gym-platform\frontend\src\pages\mitra\MitraGymProfile.tsx:129:29
+  127 |       setPreviewUrls(prev => [...prev, ...urls]);
+  128 |       
+> 129 |       const currentPhotos = watch('photos') || [];
+      |                             ^^^^^ React Hook Form's `useForm()` API returns a `watch()` function which cannot be memoized safely.
+  130 |       setValue('photos', [...currentPhotos, ...files]);
+  131 |     }
+  132 |   };  react-hooks/incompatible-library
+  146:24  error    Unexpected any. Specify a different type                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      @typescript-eslint/no-explicit-any
+  151:22  error    Unexpected any. Specify a different type                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      @typescript-eslint/no-explicit-any
+  164:45  error    Unexpected any. Specify a different type                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      @typescript-eslint/no-explicit-any
+
+D:\LOMBA\multi-gym-platform\frontend\src\pages\mitra\MitraHistory.tsx
+   19:14  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   24:28  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   84:47  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  159:44  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+D:\LOMBA\multi-gym-platform\frontend\src\pages\user\GymDetail.tsx
+   2:45  error  'ExternalLink' is defined but never used  @typescript-eslint/no-unused-vars
+  40:19  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  47:28  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  77:22  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+D:\LOMBA\multi-gym-platform\frontend\src\pages\user\GymDiscovery.tsx
+  78:5  error  Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+D:\LOMBA\multi-gym-platform\frontend\src\pages\user\GymDiscovery.tsx:78:5
+  76 |   // Reset page to 1 when filters or perPage changes
+  77 |   React.useEffect(() => {
+> 78 |     setCurrentPage(1);
+     |     ^^^^^^^^^^^^^^ Avoid calling setState() directly within an effect
+  79 |   }, [debouncedSearchTerm, facility, sortOrder, perPage]);
+  80 |
+  81 |   const { data: gymData, isLoading, isFetching } = useQuery({  react-hooks/set-state-in-effect
+
+D:\LOMBA\multi-gym-platform\frontend\src\pages\user\WalletHistory.tsx
+  48:9  error  'handlePaymentSync' is assigned a value but never used  @typescript-eslint/no-unused-vars
+
+D:\LOMBA\multi-gym-platform\frontend\src\pages\user\profile\EditProfile.tsx
+  39:21  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+D:\LOMBA\multi-gym-platform\frontend\src\pages\user\profile\Security.tsx
+  37:21  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+D:\LOMBA\multi-gym-platform\frontend\src\types\index.ts
+  69:32  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  70:32  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  71:30  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+✖ 65 problems (63 errors, 2 warnings)
+
