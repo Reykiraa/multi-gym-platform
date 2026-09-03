@@ -214,11 +214,54 @@ class TransactionController extends Controller
             return response()->json($transactions, 200);
 
         } elseif ($user->role === 'admin') {
-            $transactions = Transaction::with(['gym', 'user'])
+            // 1. Ambil seluruh Check-in Gym dari semua user
+            $checkins = Transaction::with(['gym', 'user'])
                 ->latest()
-                ->paginate(15);
+                ->get()
+                ->map(function ($tx) {
+                    return [
+                        'id'          => (string) $tx->id,
+                        'order_id'    => 'CHKIN-' . substr((string) $tx->id, 0, 8),
+                        'user_id'     => $tx->user_id,
+                        'user_name'   => $tx->user?->name ?? 'User Terhapus',
+                        'user_email'  => $tx->user?->email ?? '—',
+                        'gym_id'      => $tx->gym_id,
+                        'title'       => $tx->gym?->name ?? 'Gym',
+                        'type'        => 'deduction',
+                        'amount'      => (int) $tx->amount,
+                        'amount_idr'  => (int) ($tx->amount * 1000), // Rasio 1 Credit = Rp 1.000
+                        'status'      => $tx->status,
+                        'created_at'  => $tx->created_at->toIso8601String(),
+                    ];
+                });
 
-            return response()->json($transactions, 200);
+            // 2. Ambil seluruh Top-up Midtrans dari semua user
+            $topups = TopupTransaction::with(['user', 'topupPackage'])
+                ->latest()
+                ->get()
+                ->map(function ($tp) {
+                    return [
+                        'id'          => (string) $tp->id,
+                        'order_id'    => $tp->order_id,
+                        'user_id'     => $tp->user_id,
+                        'user_name'   => $tp->user?->name ?? 'User Terhapus',
+                        'user_email'  => $tp->user?->email ?? '—',
+                        'gym_id'      => null,
+                        'title'       => $tp->topupPackage?->name ?? 'Top Up Saldo',
+                        'type'        => 'topup',
+                        'amount'      => (int) $tp->total_credits,
+                        'amount_idr'  => (int) $tp->amount_idr,
+                        'status'      => $tp->status,
+                        'created_at'  => $tp->created_at->toIso8601String(),
+                    ];
+                });
+
+            // 3. Gabungkan dan Urutkan Descending
+            $merged = $checkins->concat($topups)
+                ->sortByDesc('created_at')
+                ->values();
+
+            return response()->json(['data' => $merged], 200);
 
         } else {
             return response()->json(['message' => 'Unauthorized'], 403);

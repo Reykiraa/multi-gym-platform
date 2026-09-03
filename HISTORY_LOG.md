@@ -249,3 +249,23 @@
 - **Keputusan Arsitektur & Keamanan:**
   - **Separation of Form Concerns:** Form edit tidak memvalidasi ulang kredensial akun mitra, melainkan fokus murni pada pembaruan entitas gym (`name`, `location`, `facilities`, `credit_price`).
   - **Hierarchical Accessor Pattern:** Memastikan kolom tabel admin menampilkan entitas bisnis yang relevan tanpa memerlukan query manual berulang di frontend.
+
+  ## [2026-09-02] - Phase: Executive Admin Dashboard, Master Audit Ledger & Metric Precision
+- **Fitur Selesai:** 
+  - **Executive Admin Dashboard:** 4 kartu KPI terpadu (*Total Gym Partners, Registered Members, Gross Credits Sold, Total Gym Visits*).
+  - **Akurasi Metrik Pengguna:** Penyempurnaan kalkulasi *Registered Members* agar mengambil total seluruh basis data pengguna dari `GET /api/users` (bukan hanya pengguna yang pernah bertransaksi).
+  - **Visual Activity Chart:** Integrasi grafik Recharts (*AreaChart*) untuk memantau tren volume Top-Up vs Kunjungan Check-in 7 hari terakhir.
+  - **Master Audit Ledger Table:** Tabel audit transaksi admin lengkap dengan filter tabs (*All, Top-Ups Only, Gym Visits Only*), live search (nama, email, order ID), dan format nominal IDR/kredit yang rapi.
+  - **Order ID Parser:** Utilitas `formatShortOrderId` untuk menyederhanakan tampilan ID unik yang panjang menjadi format ringkas (misal: `#1788321746`).
+  - **Interactive Detail Modal:** Modal rincian mendalam yang terbuka otomatis saat baris transaksi diklik.
+  - **English Localization:** Pelokalan seluruh teks dan status badge di modul Admin ke Bahasa Inggris secara konsisten.
+- **File Dibuat/Dimodifikasi:**
+  - **Backend:**
+    - `app/Http/Controllers/TransactionController.php` (Agregasi master audit trail gabungan check-in & top-up khusus role admin)
+  - **Frontend:**
+    - `src/pages/admin/AdminDashboard.tsx` (Dashboard UI, Recharts integration, 4 KPI cards, query users live)
+    - `src/pages/admin/Transactions.tsx` (Master audit table, filters, helper parser, interactive modal)
+- **Keputusan Arsitektur & Keamanan:**
+  - **Master Audit Trail Security:** Penghapusan total tombol suntik saldo manual admin demi integritas dan kepatuhan finansial (*Financial Compliance*).
+  - **Zero-Crash Data Parsing:** Normalisasi data paginator dan fallback array pada seluruh kartu metrik dan tabel.
+  - **Type-Safety:** 100% lulus kompilasi statis TypeScript (`npx tsc --noEmit`).
