@@ -142,7 +142,6 @@ const Login: React.FC = () => {
               theme="filled_black"
               shape="pill"
               width="100%"
-              locale="en"
             />
           </div>
 
