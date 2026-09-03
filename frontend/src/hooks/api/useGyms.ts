@@ -3,6 +3,7 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import type { AdminGym, GymFormPayload, GymBranchPayload, MitraOption } from '../../types/admin';
 import apiClient from '../../lib/axios';
+import { AxiosError } from 'axios';
 import { useToastStore } from '../../store/toastStore';
 
 /** Query key namespace for Gym data. */
@@ -42,7 +43,7 @@ export const useCreateGym = () => {
   const queryClient = useQueryClient();
   const { addToast } = useToastStore();
 
-  return useMutation<AdminGym, Error, GymFormPayload>({
+  return useMutation<AdminGym, AxiosError<{ message?: string }>, GymFormPayload>({
     mutationFn: async (payload) => {
       const response = await apiClient.post('/gyms', payload);
       return response.data;
@@ -51,7 +52,7 @@ export const useCreateGym = () => {
       queryClient.invalidateQueries({ queryKey: GYM_QUERY_KEY });
       addToast('success', 'Gym berhasil ditambahkan');
     },
-    onError: (error: any) => {
+    onError: (error) => {
       addToast('error', error.response?.data?.message || 'Gagal menambahkan gym');
     }
   });
@@ -65,7 +66,7 @@ export const useCreateGymBranch = () => {
   const queryClient = useQueryClient();
   const { addToast } = useToastStore();
 
-  return useMutation<AdminGym, Error, GymBranchPayload>({
+  return useMutation<AdminGym, AxiosError<{ message?: string }>, GymBranchPayload>({
     mutationFn: async (payload) => {
       const response = await apiClient.post('/gyms/branch', payload);
       return response.data;
@@ -74,7 +75,7 @@ export const useCreateGymBranch = () => {
       queryClient.invalidateQueries({ queryKey: GYM_QUERY_KEY });
       addToast('success', 'Cabang gym berhasil ditambahkan');
     },
-    onError: (error: any) => {
+    onError: (error) => {
       addToast('error', error.response?.data?.message || 'Gagal menambahkan cabang gym');
     }
   });
@@ -87,7 +88,7 @@ export const useUpdateGym = () => {
   const queryClient = useQueryClient();
   const { addToast } = useToastStore();
 
-  return useMutation<AdminGym, Error, { id: number; payload: GymFormPayload }>({
+  return useMutation<AdminGym, AxiosError<{ message?: string }>, { id: number; payload: GymFormPayload }>({
     mutationFn: async ({ id, payload }) => {
       const response = await apiClient.put(`/gyms/${id}`, payload);
       return response.data;
@@ -96,7 +97,7 @@ export const useUpdateGym = () => {
       queryClient.invalidateQueries({ queryKey: GYM_QUERY_KEY });
       addToast('success', 'Gym berhasil diperbarui');
     },
-    onError: (error: any) => {
+    onError: (error) => {
       addToast('error', error.response?.data?.message || 'Gagal memperbarui gym');
     }
   });
@@ -109,7 +110,7 @@ export const useDeleteGym = () => {
   const queryClient = useQueryClient();
   const { addToast } = useToastStore();
 
-  return useMutation<void, Error, number>({
+  return useMutation<void, AxiosError<{ message?: string }>, number>({
     mutationFn: async (id) => {
       await apiClient.delete(`/gyms/${id}`);
     },
@@ -117,7 +118,7 @@ export const useDeleteGym = () => {
       queryClient.invalidateQueries({ queryKey: GYM_QUERY_KEY });
       addToast('success', 'Gym berhasil dihapus');
     },
-    onError: (error: any) => {
+    onError: (error) => {
       addToast('error', error.response?.data?.message || 'Gagal menghapus gym');
     }
   });

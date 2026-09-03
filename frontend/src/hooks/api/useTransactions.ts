@@ -3,6 +3,7 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import type { AdminTransaction, TopUpPayload } from '../../types/admin';
 import apiClient from '../../lib/axios';
+import { AxiosError } from 'axios';
 import { useToastStore } from '../../store/toastStore';
 
 /** Query key namespace for Transaction data. */
@@ -28,7 +29,7 @@ export const useManualTopUp = () => {
   const queryClient = useQueryClient();
   const { addToast } = useToastStore();
 
-  return useMutation<AdminTransaction, Error, TopUpPayload>({
+  return useMutation<AdminTransaction, AxiosError<{ message?: string }>, TopUpPayload>({
     mutationFn: async (payload) => {
       const response = await apiClient.post(`/users/${payload.user_id}/topup`, {
         amount: payload.amount,
@@ -41,7 +42,7 @@ export const useManualTopUp = () => {
       queryClient.invalidateQueries({ queryKey: ['admin', 'users'] });
       addToast('success', 'Top-Up berhasil!');
     },
-    onError: (error: any) => {
+    onError: (error) => {
       addToast('error', error.response?.data?.message || 'Gagal melakukan top-up');
     }
   });

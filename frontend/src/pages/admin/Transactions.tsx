@@ -1,18 +1,8 @@
 import React, { useState, useMemo } from 'react';
 import { useTransactions } from '../../hooks/api/useTransactions';
 import { Search, X } from 'lucide-react';
-
-export const formatShortOrderId = (orderId?: string): string => {
-  if (!orderId) return '—';
-  const parts = orderId.split('-');
-  if (parts.length >= 4 && parts[0] === 'TOPUP') {
-    return `#${parts[2]}`;
-  }
-  if (parts.length >= 2 && parts[0] === 'CHKIN') {
-    return `#${parts[1]}`;
-  }
-  return `#${orderId.slice(-8)}`;
-};
+import type { AdminTransaction } from '../../types/admin';
+import { formatShortOrderId } from '../../utils/formatters';
 
 const getStatusDisplay = (status: string): string => {
   if (status === 'completed' || status === 'success' || status === 'settlement') return 'Success';
@@ -36,10 +26,10 @@ const Transactions: React.FC = () => {
   const { data: transactionsRes = [], isLoading } = useTransactions();
   const [filterType, setFilterType] = useState<'all' | 'topup' | 'deduction'>('all');
   const [searchQuery, setSearchQuery] = useState('');
-  const [selectedTx, setSelectedTx] = useState<any | null>(null);
+  const [selectedTx, setSelectedTx] = useState<AdminTransaction | null>(null);
 
-  const transactions: any[] = useMemo(() => {
-    return Array.isArray(transactionsRes) ? transactionsRes : (transactionsRes as any)?.data || [];
+  const transactions: AdminTransaction[] = useMemo(() => {
+    return Array.isArray(transactionsRes) ? transactionsRes : (transactionsRes as Record<string, unknown>)?.data as AdminTransaction[] || [];
   }, [transactionsRes]);
 
   const filteredTransactions = useMemo(() => {
@@ -47,9 +37,9 @@ const Transactions: React.FC = () => {
       if (filterType !== 'all' && txn.type !== filterType) return false;
       if (searchQuery) {
         const query = searchQuery.toLowerCase();
-        const userName = (txn.user_name || '').toLowerCase();
-        const userEmail = (txn.user_email || '').toLowerCase();
-        const orderId = (txn.order_id || txn.id || '').toLowerCase();
+        const userName = String(txn.user_name || '').toLowerCase();
+        const userEmail = String(txn.user_email || '').toLowerCase();
+        const orderId = String(txn.order_id || txn.id || '').toLowerCase();
         if (!userName.includes(query) && !userEmail.includes(query) && !orderId.includes(query)) {
           return false;
         }
@@ -155,14 +145,14 @@ const Transactions: React.FC = () => {
                   </td>
                 </tr>
               ) : (
-                filteredTransactions.map((txn) => (
+                filteredTransactions.map((txn: AdminTransaction) => (
                   <tr 
                     key={txn.id} 
                     onClick={() => setSelectedTx(txn)}
                     className="cursor-pointer hover:bg-zinc-800/60 transition-colors"
                   >
                     <td className="px-6 py-4 font-mono text-zinc-300 font-semibold whitespace-nowrap">
-                      {formatShortOrderId(txn.order_id || txn.id)}
+                      {formatShortOrderId(String(txn.order_id || txn.id))}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div>
