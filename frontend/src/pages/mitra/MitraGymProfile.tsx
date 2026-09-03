@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { Camera, X, Upload, Info } from 'lucide-react';
+import { Camera, X, Info } from 'lucide-react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import apiClient from '../../lib/axios';
 import Input from '../../components/ui/Input';
@@ -25,7 +25,7 @@ const fetchMyGym = async () => {
   return response.data?.data || response.data;
 };
 
-const updateMyGym = async (data: any) => {
+const updateMyGym = async (data: Record<string, unknown>) => {
   const response = await apiClient.put(`/mitra/my-gym`, data);
   return response.data;
 };
@@ -143,12 +143,12 @@ const MitraGymProfile: React.FC = () => {
   };
 
   const mutation = useMutation({
-    mutationFn: (data: any) => updateMyGym(data),
+    mutationFn: (data: Record<string, unknown>) => updateMyGym(data),
     onSuccess: () => {
       addToast('success', 'Gym profile updated successfully');
       queryClient.invalidateQueries({ queryKey: ['my-gym'] });
     },
-    onError: (error: any) => {
+    onError: (error: import('axios').AxiosError<{ message?: string }>) => {
       addToast('error', error.response?.data?.message || 'Failed to save gym profile');
     }
   });
@@ -161,7 +161,7 @@ const MitraGymProfile: React.FC = () => {
     
     // Convert new File objects to base64
     const processedPhotos = await Promise.all(
-      (data.photos || []).map(async (photo: any) => {
+      (data.photos || []).map(async (photo: unknown) => {
         if (photo instanceof File) {
           return new Promise<string>((resolve, reject) => {
             const reader = new FileReader();
