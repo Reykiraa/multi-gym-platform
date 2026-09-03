@@ -23,8 +23,31 @@ class GymController extends Controller
         
         if ($request->has('search') && $request->query('search') !== '') {
             $searchTerm = $request->query('search');
-            $query->where('name', 'ilike', '%' . $searchTerm . '%')
+            $query->where(function ($q) use ($searchTerm) {
+                $q->where('name', 'ilike', '%' . $searchTerm . '%')
                   ->orWhere('location', 'ilike', '%' . $searchTerm . '%');
+            });
+        }
+        
+        if ($request->has('max_price') && $request->query('max_price') !== '') {
+            $query->where('credit_price', '<=', $request->query('max_price'));
+        }
+
+        if ($request->has('facility') && $request->query('facility') !== '') {
+            $query->whereJsonContains('facilities', $request->query('facility'));
+        }
+
+        if ($request->has('sort') && $request->query('sort') !== '') {
+            $sort = $request->query('sort');
+            if ($sort === 'price_asc') {
+                $query->orderBy('credit_price', 'asc');
+            } elseif ($sort === 'price_desc') {
+                $query->orderBy('credit_price', 'desc');
+            } else {
+                $query->orderBy('created_at', 'desc');
+            }
+        } else {
+            $query->orderBy('created_at', 'desc');
         }
         
         $perPage = $request->query('per_page', 8);
