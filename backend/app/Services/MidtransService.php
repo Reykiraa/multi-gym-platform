@@ -37,6 +37,12 @@ class MidtransService
             'duration' => 15
         ];
 
+        $params['callbacks'] = [
+            'finish' => env('FRONTEND_URL', 'https://multi-gym-platform.vercel.app') . '/user/wallet',
+            'unfinish' => env('FRONTEND_URL', 'https://multi-gym-platform.vercel.app') . '/user/wallet',
+            'error' => env('FRONTEND_URL', 'https://multi-gym-platform.vercel.app') . '/user/wallet',
+        ];
+
         $response = Http::timeout(4)->connectTimeout(2)->withHeaders([
             'Authorization' => 'Basic ' . base64_encode($serverKey . ':'),
             'Content-Type' => 'application/json',
