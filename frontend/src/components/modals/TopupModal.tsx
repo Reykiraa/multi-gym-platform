@@ -1,4 +1,3 @@
-// /frontend/src/components/modals/TopupModal.tsx
 import React, { useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { X, CheckCircle, Zap } from "lucide-react";
@@ -56,13 +55,16 @@ export const TopupModal: React.FC<TopupModalProps> = ({ isOpen, onClose }) => {
       {
         onSuccess: (data) => {
           if (data.snap_token && window.snap) {
+            // 1. TUTUP MODAL KITA DULU AGAR TIDAK MENUTUPI POP-UP MIDTRANS
+            onClose();
+
+            // 2. MUNCULKAN POP-UP MIDTRANS SNAP SECARA BERSIH
             window.snap.pay(data.snap_token, {
               onSuccess: () => handlePaymentSync(data.order_id),
               onPending: () => handlePaymentSync(data.order_id),
               onClose: () => handlePaymentSync(data.order_id),
               onError: () => {
-                addToast("error", "Payment failed.");
-                onClose();
+                addToast('error', 'Payment failed.');
               },
             });
           } else {
