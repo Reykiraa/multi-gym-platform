@@ -113,9 +113,10 @@ class TopupController extends Controller
 
                 defer(function () use ($user, $trx) {
                     try {
+                        config(['mail.mailers.smtp.timeout' => 3]);
                         Mail::to($user->email)->send(new \App\Mail\TopupSuccessEmail($user, $trx));
                     } catch (\Throwable $e) {
-                        Log::error('Gagal mengirim topup receipt email: ' . $e->getMessage());
+                        \Log::error('Mail Delivery Error: ' . $e->getMessage());
                     }
                 });
             } elseif (in_array($status, ['cancel', 'deny', 'expire'])) {
@@ -164,9 +165,10 @@ class TopupController extends Controller
 
                 defer(function () use ($user, $trx) {
                     try {
+                        config(['mail.mailers.smtp.timeout' => 3]);
                         Mail::to($user->email)->send(new \App\Mail\TopupSuccessEmail($user, $trx));
                     } catch (\Throwable $e) {
-                        Log::error('Gagal mengirim topup receipt email: ' . $e->getMessage());
+                        \Log::error('Mail Delivery Error: ' . $e->getMessage());
                     }
                 });
 

@@ -37,7 +37,7 @@ class MidtransService
             'duration' => 15
         ];
 
-        $response = Http::withHeaders([
+        $response = Http::timeout(4)->connectTimeout(2)->withHeaders([
             'Authorization' => 'Basic ' . base64_encode($serverKey . ':'),
             'Content-Type' => 'application/json',
             'Accept' => 'application/json',
@@ -83,7 +83,7 @@ class MidtransService
 
         $serverKey = config('services.midtrans.server_key');
 
-        $response = Http::withHeaders([
+        $response = Http::timeout(4)->connectTimeout(2)->withHeaders([
             'Authorization' => 'Basic ' . base64_encode($serverKey . ':'),
             'Accept' => 'application/json',
         ])->post($baseUrl . $orderId . '/cancel');

@@ -40,9 +40,10 @@ class AuthController extends Controller
 
         defer(function () use ($user) {
             try {
+                config(['mail.mailers.smtp.timeout' => 3]);
                 Mail::to($user->email)->send(new \App\Mail\WelcomeEmail($user));
             } catch (\Throwable $e) {
-                Log::error('Gagal mengirim welcome email: ' . $e->getMessage());
+                \Log::error('Mail Delivery Error: ' . $e->getMessage());
             }
         });
 
@@ -97,8 +98,13 @@ class AuthController extends Controller
             'credential' => 'required|string',
         ]);
 
+        $startTime = microtime(true);
         $idToken = $request->credential;
-        $response = Http::get("https://oauth2.googleapis.com/tokeninfo?id_token={$idToken}");
+        try {
+            $response = Http::timeout(3)->get("https://oauth2.googleapis.com/tokeninfo?id_token={$idToken}");
+        } catch (\Throwable $e) {
+            return response()->json(['message' => 'Koneksi ke Google OAuth gagal / timeout.'], 504);
+        }
 
         if (!$response->successful()) {
             return response()->json(['message' => 'Token Google tidak valid.'], 401);
@@ -131,9 +137,10 @@ class AuthController extends Controller
 
             defer(function () use ($user) {
                 try {
+                    config(['mail.mailers.smtp.timeout' => 3]);
                     Mail::to($user->email)->send(new \App\Mail\WelcomeEmail($user));
                 } catch (\Throwable $e) {
-                    Log::error('Gagal mengirim welcome email: ' . $e->getMessage());
+                    \Log::error('Mail Delivery Error: ' . $e->getMessage());
                 }
             });
         } else {
@@ -144,6 +151,9 @@ class AuthController extends Controller
         }
 
         $token = $user->createToken('auth-token')->plainTextToken;
+
+        $duration = round((microtime(true) - $startTime) * 1000);
+        \Log::info('Google Auth Success', ['user_id' => $user->id, 'duration_ms' => $duration]);
 
         return response()->json([
             'message' => 'Login Google berhasil.',
