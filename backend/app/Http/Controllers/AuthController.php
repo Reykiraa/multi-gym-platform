@@ -117,18 +117,25 @@ class AuthController extends Controller
         $user = User::where('email', $payload['email'])->first();
 
         if (!$user) {
+            // 1. Jika User Baru
             $user = User::create([
-                'name' => $payload['name'],
+                'name' => $payload['name'] ?? 'User RoamFit',
                 'email' => $payload['email'],
                 'password' => Hash::make(Str::random(32)),
                 'role' => 'user',
                 'credit_balance' => 0,
+                'is_oauth_user' => true, // Flag OAuth Aktif
             ]);
 
             try {
                 Mail::to($user->email)->send(new \App\Mail\WelcomeEmail($user));
             } catch (\Throwable $e) {
                 Log::error('Gagal mengirim welcome email: ' . $e->getMessage());
+            }
+        } else {
+            // Set is_oauth_user = true agar menu "Buat Password" langsung muncul di profilnya
+            if (!$user->is_oauth_user) {
+                $user->update(['is_oauth_user' => true]);
             }
         }
 
@@ -182,28 +189,37 @@ class AuthController extends Controller
         /** @var \App\Models\User $user */
         $user = $request->user();
 
-        $validated = $request->validate([
-            'name' => 'sometimes|string|max:255',
-            'current_password' => 'required_with:new_password|string',
-            'new_password' => 'sometimes|string|min:8',
-        ]);
+        if ($request->filled('new_password')) {
+            // Jika BUKAN user OAuth (user biasa), wajib verifikasi password saat ini
+            if (!$user->is_oauth_user) {
+                $request->validate([
+                    'current_password' => 'required|string',
+                    'new_password' => 'required|string|min:8',
+                ]);
 
-        if (isset($validated['new_password'])) {
-            if (!Hash::check($validated['current_password'], $user->password)) {
-                return response()->json(['message' => 'Password saat ini salah'], 422);
+                if (!Hash::check($request->current_password, $user->password)) {
+                    return response()->json(['message' => 'Password saat ini salah'], 422);
+                }
+            } else {
+                // Jika user OAuth (Google), langsung buat password baru tanpa current_password
+                $request->validate([
+                    'new_password' => 'required|string|min:8',
+                ]);
             }
-            $user->password = $validated['new_password'];
+
+            $user->password = $request->new_password; // akan di hash otomatis oleh model cast
+            $user->is_oauth_user = false; // Sekarang user resmi memiliki password manual!
         }
 
-        if (isset($validated['name'])) {
-            $user->name = $validated['name'];
+        if ($request->filled('name')) {
+            $user->name = $request->name;
         }
 
         $user->save();
 
         return response()->json([
-            'message' => 'Profile updated successfully',
-            'user'    => $user,
+            'message' => 'Profil dan kata sandi berhasil diperbarui.',
+            'user' => $user->fresh(),
         ], 200);
     }
 

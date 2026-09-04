@@ -24,7 +24,7 @@ class WelcomeEmail extends Mailable
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: 'Selamat Datang di GYMNOX - Akses Multi-Gym Dimulai!',
+            subject: 'Selamat Datang di ROAMFIT - Akses Multi-Gym Dimulai!',
         );
     }
 

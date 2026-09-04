@@ -60,13 +60,18 @@
 <body>
     <div class="container">
         <div class="header">
-            <h1>GYMNOX</h1>
+            <h1>ROAMFIT</h1>
         </div>
         <div class="content">
             <p>Halo <strong>{{ $user->name }}</strong>,</p>
             <p>Selamat bergabung di ROAMFIT! Kami sangat senang melihatmu memulai perjalanan fitness bersama kami.</p>
             <p>Dengan ROAMFIT, kamu sekarang bisa mengakses berbagai gym di satu platform dengan mudah. Mulai jelajahi gym di sekitarmu, lakukan top-up kredit, dan mulai latihanmu hari ini!</p>
             
+            <div style="background-color: #27272a; border-left: 4px solid #eab308; padding: 15px; margin: 20px 0; border-radius: 4px; font-size: 13px; color: #d4d4d8;">
+                <strong>💡 Tips Masuk ke RoamFit:</strong><br>
+                Jika kamu mendaftar menggunakan Google Sign-In, kamu bisa selalu login kembali hanya dengan 1-klik tombol <em>"Masuk dengan Google"</em>. Kamu juga bisa membuat kata sandi manual kapan saja melalui menu Profil.
+            </div>
+
             <div class="btn-container">
                 <a href="{{ config('app.frontend_url', config('app.url')) }}" class="btn">Mulai Jelajahi</a>
             </div>
