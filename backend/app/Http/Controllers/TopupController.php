@@ -111,11 +111,13 @@ class TopupController extends Controller
                     'payment_type' => $request->payment_type
                 ]);
 
-                try {
-                    Mail::to($user->email)->send(new \App\Mail\TopupSuccessEmail($user, $trx));
-                } catch (\Throwable $e) {
-                    Log::error('Gagal mengirim topup receipt email: ' . $e->getMessage());
-                }
+                defer(function () use ($user, $trx) {
+                    try {
+                        Mail::to($user->email)->send(new \App\Mail\TopupSuccessEmail($user, $trx));
+                    } catch (\Throwable $e) {
+                        Log::error('Gagal mengirim topup receipt email: ' . $e->getMessage());
+                    }
+                });
             } elseif (in_array($status, ['cancel', 'deny', 'expire'])) {
                 $trx->update([
                     'status' => 'failed',
@@ -160,11 +162,13 @@ class TopupController extends Controller
                     'payment_type' => $paymentType,
                 ]);
 
-                try {
-                    Mail::to($user->email)->send(new \App\Mail\TopupSuccessEmail($user, $trx));
-                } catch (\Throwable $e) {
-                    Log::error('Gagal mengirim topup receipt email: ' . $e->getMessage());
-                }
+                defer(function () use ($user, $trx) {
+                    try {
+                        Mail::to($user->email)->send(new \App\Mail\TopupSuccessEmail($user, $trx));
+                    } catch (\Throwable $e) {
+                        Log::error('Gagal mengirim topup receipt email: ' . $e->getMessage());
+                    }
+                });
 
                 return response()->json([
                     'message' => 'Pembayaran berhasil dikonfirmasi!',

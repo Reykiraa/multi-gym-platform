@@ -38,11 +38,13 @@ class AuthController extends Controller
             'role' => 'user',
         ]);
 
-        try {
-            Mail::to($user->email)->send(new \App\Mail\WelcomeEmail($user));
-        } catch (\Throwable $e) {
-            Log::error('Gagal mengirim welcome email: ' . $e->getMessage());
-        }
+        defer(function () use ($user) {
+            try {
+                Mail::to($user->email)->send(new \App\Mail\WelcomeEmail($user));
+            } catch (\Throwable $e) {
+                Log::error('Gagal mengirim welcome email: ' . $e->getMessage());
+            }
+        });
 
         $token = $user->createToken('auth_token')->plainTextToken;
 
@@ -127,11 +129,13 @@ class AuthController extends Controller
                 'is_oauth_user' => true, // Flag OAuth Aktif
             ]);
 
-            try {
-                Mail::to($user->email)->send(new \App\Mail\WelcomeEmail($user));
-            } catch (\Throwable $e) {
-                Log::error('Gagal mengirim welcome email: ' . $e->getMessage());
-            }
+            defer(function () use ($user) {
+                try {
+                    Mail::to($user->email)->send(new \App\Mail\WelcomeEmail($user));
+                } catch (\Throwable $e) {
+                    Log::error('Gagal mengirim welcome email: ' . $e->getMessage());
+                }
+            });
         } else {
             // Set is_oauth_user = true agar menu "Buat Password" langsung muncul di profilnya
             if (!$user->is_oauth_user) {
