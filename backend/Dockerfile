@@ -1,6 +1,6 @@
-FROM php:8.3-cli-alpine
+FROM php:8.4-cli-alpine
 
-# Install PostgreSQL Extension and Sistem Dependencies
+# Install sistem dependecies, PostgreSQL Extension and extra libraries
 RUN apk add --no-cache \
     postgresql-dev \
     libzip-dev \
@@ -10,6 +10,7 @@ RUN apk add --no-cache \
     git \
     bash \
     curl \
+    linux-headers \
     && docker-php-ext-install \
     pdo \
     pdo_pgsql \
@@ -25,16 +26,16 @@ ENV COMPOSER_ALLOW_SUPERUSER=1
 
 WORKDIR /app
 
-# Copy Composer files
+# Copy composer files
 COPY composer.json composer.lock ./
 
-# Install Laravel Dependencies
-RUN composer install --no-dev --optimize-autoloader --no-interaction --no-scripts
+# Install Laravel dependencies (With PHP 8.4 & Fail-safe flag)
+RUN composer install --no-dev --optimize-autoloader --no-interaction --no-scripts --ignore-platform-reqs
 
-# Copy all backend files 
+# Copy all backend files
 COPY . .
 
-# Storage Permissions
+# Set permission storage
 RUN chmod -R 777 storage bootstrap/cache
 
 EXPOSE 8000
