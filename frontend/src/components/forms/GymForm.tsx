@@ -1,4 +1,3 @@
-// filepath: frontend/src/components/forms/GymForm.tsx
 import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import type { SubmitHandler, UseFormRegister, FieldErrors, FieldValues } from 'react-hook-form';
@@ -104,7 +103,7 @@ const GymDetailFields = <T extends FieldValues>({ idPrefix, register, errors }: 
       type="text"
       placeholder="FTL Sport Center - Sudirman"
       error={errors.name?.message as string | undefined}
-      {...register('name')}
+      {...register('name' as any)}
     />
     <Input
       id={`${idPrefix}-location`}
@@ -112,7 +111,7 @@ const GymDetailFields = <T extends FieldValues>({ idPrefix, register, errors }: 
       type="text"
       placeholder="South Jakarta"
       error={errors.location?.message as string | undefined}
-      {...register('location')}
+      {...register('location' as any)}
     />
     <Input
       id={`${idPrefix}-facilities`}
@@ -120,7 +119,7 @@ const GymDetailFields = <T extends FieldValues>({ idPrefix, register, errors }: 
       type="text"
       placeholder="Free Weights, Cardio, Sauna"
       error={errors.facilities?.message as string | undefined}
-      {...register('facilities')}
+      {...register('facilities' as any)}
     />
     <Input
       id={`${idPrefix}-credit`}
@@ -128,7 +127,7 @@ const GymDetailFields = <T extends FieldValues>({ idPrefix, register, errors }: 
       type="number"
       placeholder="8"
       error={errors.credit_price?.message as string | undefined}
-      {...register('credit_price', { valueAsNumber: true })}
+      {...register('credit_price' as any, { valueAsNumber: true })}
     />
   </>
 );
