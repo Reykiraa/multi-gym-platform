@@ -38,7 +38,7 @@ const MitraDashboard: React.FC = () => {
             setPin("");
             setPinError("");
           },
-          onError: (error: any) => {
+          onError: (error: import('axios').AxiosError<{ message?: string }>) => {
             setPinError(
               error.response?.data?.message ||
                 "Invalid or expired PIN",
@@ -128,7 +128,7 @@ const MitraDashboard: React.FC = () => {
                   </tr>
                 ) : (
                   entries.map((entry) => {
-                    const status = (entry as any).status as string;
+                    const status = entry.status;
                     return (
                       <tr
                         key={entry.id}
@@ -166,7 +166,7 @@ const MitraDashboard: React.FC = () => {
                           </div>
                         </td>
                         <td className="px-6 py-4 text-zinc-400">
-                          {(entry as any).user?.name ?? "—"}
+                          {entry.user?.name ?? "—"}
                         </td>
                         <td className="px-6 py-4 text-yellow-500 font-semibold whitespace-nowrap">
                           -{entry.amount}

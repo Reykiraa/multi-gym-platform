@@ -11,6 +11,8 @@ import { useAuthStore } from '../../store/authStore';
 import { useToastStore } from '../../store/toastStore';
 import TermsModal from '../../components/modals/TermsModal';
 import { GoogleLogin } from '@react-oauth/google';
+import type { CredentialResponse } from '@react-oauth/google';
+import { AxiosError } from 'axios';
 
 const registerSchema = z.object({
   name: z.string().min(3, 'Name must be at least 3 characters'),
@@ -62,7 +64,7 @@ const Register: React.FC = () => {
     }
   };
 
-  const handleGoogleSuccess = async (credentialResponse: any) => {
+  const handleGoogleSuccess = async (credentialResponse: CredentialResponse) => {
     try {
       const response = await apiClient.post('/auth/google', {
         credential: credentialResponse.credential,
@@ -79,8 +81,9 @@ const Register: React.FC = () => {
       } else {
         navigate('/user/gyms', { replace: true });
       }
-    } catch (error: any) {
-      addToast('error', error.response?.data?.message || 'Google Sign-In failed.');
+    } catch (error) {
+      const axiosError = error as AxiosError<{ message?: string }>;
+      addToast('error', axiosError.response?.data?.message || 'Google Sign-In failed.');
     }
   };
 
@@ -88,7 +91,9 @@ const Register: React.FC = () => {
     <div className="min-h-screen flex items-center justify-center px-4 py-12">
       <div className="w-full max-w-md">
         <div className="text-center mb-8">
-          <Link to="/" className="text-3xl font-black text-white tracking-widest">ROAMFIT</Link>
+          <Link to="/" className="text-3xl font-black text-white tracking-widest">
+            ROAM<span className="text-yellow-500">FIT</span>
+          </Link>
           <p className="text-zinc-400 mt-2">Create a new account</p>
         </div>
 

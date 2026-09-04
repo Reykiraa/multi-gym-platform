@@ -5,12 +5,12 @@ import {
   Users,
   ArrowLeftRight,
   TrendingUp,
-  Building2,
   ChevronRight,
 } from "lucide-react";
 import { useGyms } from "../../hooks/api/useGyms";
 import { useTransactions } from "../../hooks/api/useTransactions";
-import { formatShortOrderId } from "./Transactions";
+import { formatShortOrderId } from "../../utils/formatters";
+import type { AdminTransaction } from "../../types/admin";
 import {
   AreaChart,
   Area,
@@ -50,17 +50,19 @@ const AdminDashboard: React.FC = () => {
   const { data: transactionsRes = [] } = useTransactions();
 
   const totalGymsCount =
-    (gyms as any)?.total ??
-    (Array.isArray(gyms) ? gyms.length : ((gyms as any)?.data?.length ?? 0));
+    (gyms as unknown as Record<string, unknown>)?.total ??
+    (Array.isArray(gyms) ? gyms.length : ((gyms as unknown as Record<string, unknown>)?.data as unknown[])?.length ?? 0);
 
-  const txList: any[] = Array.isArray(transactionsRes)
-    ? transactionsRes
-    : (transactionsRes as any)?.data || [];
+  const txList: AdminTransaction[] = React.useMemo(() => {
+    return Array.isArray(transactionsRes)
+      ? (transactionsRes as AdminTransaction[])
+      : ((transactionsRes as Record<string, unknown>)?.data as AdminTransaction[]) || [];
+  }, [transactionsRes]);
 
   const totalKreditTerjual = txList
     .filter(
       (t) =>
-        t.type === "topup" &&
+        t && t.type === "topup" &&
         (t.status === "success" ||
           t.status === "completed" ||
           t.status === "settlement"),
@@ -68,7 +70,7 @@ const AdminDashboard: React.FC = () => {
     .reduce((sum, t) => sum + (Number(t.amount) || 0), 0);
 
   const totalVisits = txList.filter(
-    (t) => t.type === "deduction" && t.status === "completed",
+    (t) => t && t.type === "deduction" && t.status === "completed",
   ).length;
 
   const { data: rawUsersData } = useQuery({
@@ -78,11 +80,11 @@ const AdminDashboard: React.FC = () => {
       return res.data?.data || res.data || [];
     },
   });
-  const usersList: any[] = Array.isArray(rawUsersData) ? rawUsersData : [];
-  const totalRegisteredMembers = usersList.filter((u) => u.role === 'user').length || usersList.length;
+  const usersList = Array.isArray(rawUsersData) ? rawUsersData : [];
+  const totalRegisteredMembers = usersList.filter((u: { role?: string }) => u.role === 'user').length || usersList.length;
 
   const chartData = useMemo(() => {
-    const days: any[] = [];
+    const days: { date: string; displayDate: string; topupVolume: number; visitVolume: number }[] = [];
     for (let i = 6; i >= 0; i--) {
       const d = new Date();
       d.setDate(d.getDate() - i);
@@ -150,7 +152,7 @@ const AdminDashboard: React.FC = () => {
       <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
         <StatCard
           label="Total Gym Partners"
-          value={totalGymsCount}
+          value={Number(totalGymsCount) || 0}
           icon={<Dumbbell size={22} />}
         />
         <StatCard
@@ -266,13 +268,13 @@ const AdminDashboard: React.FC = () => {
               </tr>
             </thead>
             <tbody className="divide-y divide-zinc-800">
-              {recentTransactions.map((tx: any, idx) => (
+              {recentTransactions.map((tx: AdminTransaction, idx: number) => (
                 <tr
-                  key={tx.id || idx}
+                  key={String(tx.id || idx)}
                   className="hover:bg-zinc-800/30 transition-colors"
                 >
                   <td className="px-5 py-3 text-zinc-300 font-mono text-xs">
-                    {formatShortOrderId(tx.order_id || tx.id)}
+                    {formatShortOrderId(String(tx.order_id || tx.id))}
                   </td>
                   <td className="px-5 py-3 text-zinc-300">{tx.user_name}</td>
                   <td className="px-5 py-3">
