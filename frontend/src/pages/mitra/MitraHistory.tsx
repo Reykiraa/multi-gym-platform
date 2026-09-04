@@ -16,12 +16,12 @@ const MitraHistory: React.FC = () => {
 
   const completedToday = entries.filter(
     (tx) =>
-      (tx as any).status === "completed" &&
+      tx.status === "completed" &&
       new Date(tx.created_at).toDateString() === new Date().toDateString(),
   ).length;
 
   const totalCredits = entries
-    .filter((tx) => (tx as any).status === "completed")
+    .filter((tx) => tx.status === "completed")
     .reduce((sum, tx) => sum + tx.amount, 0);
 
   return (
@@ -81,7 +81,7 @@ const MitraHistory: React.FC = () => {
           <div className="mt-4">
             <p className="text-4xl font-black text-white tracking-tight">
               {
-                entries.filter((tx) => (tx as any).status === "completed")
+                entries.filter((tx) => tx.status === "completed")
                   .length
               }
             </p>
@@ -156,7 +156,7 @@ const MitraHistory: React.FC = () => {
                 </tr>
               ) : (
                 entries.map((entry) => {
-                  const status = (entry as any).status as string;
+                  const status = entry.status;
                   const isCompleted = status === "completed";
                   return (
                     <tr

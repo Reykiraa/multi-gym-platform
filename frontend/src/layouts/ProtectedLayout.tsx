@@ -8,6 +8,7 @@ import { Ticket } from 'lucide-react';
 import type { Role } from '../types/auth';
 import apiClient from '../lib/axios';
 import PinDisplayModal from '../components/modals/PinDisplayModal';
+import type { TransactionHistory } from '../types';
 
 interface ProtectedLayoutProps {
   allowedRoles: Role[];
@@ -25,8 +26,6 @@ const ProtectedLayout: React.FC<ProtectedLayoutProps> = ({ allowedRoles }) => {
   const { isPinModalOpen, setIsPinModalOpen } = useCheckInStore();
   const location = useLocation();
   const hasShownToast = useRef(false);
-  const [cachedTx, setCachedTx] = useState<any>(null);
-
   const isUnauthorized =
     isAuthenticated && user && !allowedRoles.includes(user.role as Role);
 
@@ -42,12 +41,11 @@ const ProtectedLayout: React.FC<ProtectedLayoutProps> = ({ allowedRoles }) => {
     staleTime: 1000 * 10,
   });
 
-  // Simpan data transaksi aktif untuk modal agar tidak hilang saat transisi unmount
-  useEffect(() => {
-    if (activeTx) {
-      setCachedTx(activeTx);
-    }
-  }, [activeTx]);
+  const [cachedTx, setCachedTx] = useState<TransactionHistory | null>(null);
+
+  if (activeTx && activeTx !== cachedTx) {
+    setCachedTx(activeTx);
+  }
 
   const hasActiveSession = Boolean(activeTx && activeTx.status === 'pending');
   const shouldShowFab = hasActiveSession && !isPinModalOpen;

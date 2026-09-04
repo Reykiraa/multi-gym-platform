@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
-import { ChevronLeft, ChevronRight, MapPin, ExternalLink } from 'lucide-react';
+import { ChevronLeft, ChevronRight, MapPin } from 'lucide-react';
 import { useParams } from 'react-router-dom';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { motion } from 'framer-motion';
@@ -37,17 +37,25 @@ const GymDetail: React.FC = () => {
   });
 
   // Cek apakah user sudah punya sesi pending aktif
-  const activeTx: any = queryClient.getQueryData(['transactions', 'active-pending']);
+  const activeTx = queryClient.getQueryData<{ status?: string }>(['transactions', 'active-pending']);
 
   const mutation = useMutation({
     mutationFn: async () => {
       const res = await apiClient.post('/transactions/checkin', { gym_id: gymId });
       return res.data;
     },
-    onSuccess: async (res: any) => {
+    onSuccess: async (res: Record<string, unknown>) => {
       setIsModalOpen(false);
 
-      const payload = res?.data ?? res;
+      const payload = (res?.data ?? res) as {
+        id?: string | number;
+        transaction_id?: string | number;
+        gym_id?: string | number;
+        gym_name?: string;
+        pin_code?: string;
+        amount?: number;
+        expires_at?: string;
+      };
       const normalizedTx = {
         id: Number(payload.id || payload.transaction_id),
         gym_id: Number(payload.gym_id || gymId),
@@ -74,7 +82,7 @@ const GymDetail: React.FC = () => {
 
       queryClient.invalidateQueries({ queryKey: ['auth', 'user'] });
     },
-    onError: (error: any) => {
+    onError: (error: import('axios').AxiosError<{ message?: string }>) => {
       addToast('error', error.response?.data?.message || 'Check-in failed');
       setIsModalOpen(false);
     }

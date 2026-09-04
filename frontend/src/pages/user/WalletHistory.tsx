@@ -20,8 +20,6 @@ import {
   useVerifyTopup,
   useCheckoutTopup,
 } from "../../hooks/api/useTopup";
-import { useQueryClient } from "@tanstack/react-query";
-import { useToastStore } from "../../store/toastStore";
 
 const fetchTransactions = async (): Promise<TransactionHistory[]> => {
   const response = await apiClient.get("/transactions");
@@ -42,35 +40,7 @@ const WalletHistory: React.FC = () => {
   const { mutate: checkout, isPending: isCheckingOut } = useCheckoutTopup();
   const { mutate: cancelTopup, isPending: isCancelling } = useCancelTopup();
   const { mutate: verifyTopup } = useVerifyTopup();
-  const queryClient = useQueryClient();
-  const { addToast } = useToastStore();
 
-  const handlePaymentSync = (orderId: string) => {
-    verifyTopup(
-      { orderId },
-      {
-        onSuccess: (res) => {
-          if (res.data?.status === "success" || res.user) {
-            addToast("success", "Top-up successful! Your balance has been updated.");
-          } else {
-            addToast("info", "Waiting for payment to be completed.");
-          }
-          queryClient.invalidateQueries({ queryKey: ["auth", "user"] });
-          queryClient.invalidateQueries({
-            queryKey: ["transactions", "history"],
-          });
-          setSelectedTx(null);
-        },
-        onError: () => {
-          addToast("info", "Waiting for payment to be completed.");
-          queryClient.invalidateQueries({
-            queryKey: ["transactions", "history"],
-          });
-          setSelectedTx(null);
-        },
-      },
-    );
-  };
 
   // 1. Sinkronisasi User Profile ke Zustand Global (Agar Navbar langsung update!)
   useQuery({

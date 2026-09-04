@@ -26,7 +26,7 @@ import type {
  */
 const GymManager: React.FC = () => {
   const { data: rawGymsData, isLoading } = useGyms();
-  const rawList = (rawGymsData as any)?.data || rawGymsData || [];
+  const rawList = Array.isArray(rawGymsData) ? rawGymsData : (rawGymsData as unknown as { data?: AdminGym[] })?.data || [];
   const gyms: AdminGym[] = Array.isArray(rawList) ? rawList : [];
   const { data: mitraOrgs = [] } = useMitraOrgs();
   const createGym = useCreateGym();

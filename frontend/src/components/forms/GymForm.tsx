@@ -1,7 +1,7 @@
 // filepath: frontend/src/components/forms/GymForm.tsx
 import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
-import type { SubmitHandler, UseFormRegister, FieldErrors } from 'react-hook-form';
+import type { SubmitHandler, UseFormRegister, FieldErrors, FieldValues } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { X, UserPlus, Building2, ChevronDown } from 'lucide-react';
@@ -90,13 +90,13 @@ const Tab: React.FC<TabProps> = ({ active, icon, label, sublabel, onClick }) => 
 // Shared gym detail fields
 // ---------------------------------------------------------------------------
 
-interface GymDetailFieldsProps {
+interface GymDetailFieldsProps<T extends FieldValues> {
   idPrefix: string;
-  register: UseFormRegister<any>;
-  errors: FieldErrors<any>;
+  register: UseFormRegister<T>;
+  errors: FieldErrors<T>;
 }
 
-const GymDetailFields: React.FC<GymDetailFieldsProps> = ({ idPrefix, register, errors }) => (
+const GymDetailFields = <T extends FieldValues>({ idPrefix, register, errors }: GymDetailFieldsProps<T>) => (
   <>
     <Input
       id={`${idPrefix}-name`}
@@ -257,9 +257,9 @@ const GymForm: React.FC<GymFormProps> = ({
       };
 
       if (onSubmit) {
-        onSubmit(payload as any);
+        onSubmit(payload as unknown as GymFormPayload);
       } else if (onSubmitBranch) {
-        onSubmitBranch(payload as any);
+        onSubmitBranch(payload as unknown as GymBranchPayload);
       }
       return;
     }
@@ -349,7 +349,7 @@ const GymForm: React.FC<GymFormProps> = ({
               )}
             </div>
 
-            <GymDetailFields
+            <GymDetailFields<NewMitraValues>
               idPrefix="new"
               register={newMitraForm.register}
               errors={newMitraForm.formState.errors}
@@ -505,7 +505,7 @@ const GymForm: React.FC<GymFormProps> = ({
             </div>
 
             {/* Step 3: Gym detail */}
-            <GymDetailFields
+            <GymDetailFields<BranchValues>
               idPrefix="branch"
               register={branchForm.register}
               errors={branchForm.formState.errors}
