@@ -14,6 +14,7 @@ export interface AuthUser {
   name: string;
   email: string;
   role: Role;
+  is_oauth_user?: boolean;
 }
 
 /**

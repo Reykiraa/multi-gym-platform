@@ -7,6 +7,7 @@ export interface User {
   credit_balance: number;
   pending_credits?: number;
   available_credits?: number;
+  is_oauth_user?: boolean;
   mitra_org_id?: number | null;
   tier?: string;
   total_visits?: number;

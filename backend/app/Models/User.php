@@ -29,6 +29,7 @@ class User extends Authenticatable
         'role',
         'credit_balance',
         'mitra_org_id',
+        'is_oauth_user',
     ];
 
     /**
@@ -64,6 +65,7 @@ class User extends Authenticatable
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
+            'is_oauth_user' => 'boolean',
         ];
     }
 
