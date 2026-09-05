@@ -101,10 +101,10 @@ const MitraDashboard: React.FC = () => {
             <table className="w-full text-left text-sm">
               <thead>
                 <tr className="border-b border-zinc-800 text-zinc-400 uppercase text-xs tracking-wider text-center">
-                  <th className="px-6 py-4 font-medium">Status</th>
-                  <th className="px-6 py-4 font-medium">Member Name</th>
-                  <th className="px-6 py-4 font-medium">Credit</th>
-                  <th className="px-6 py-4 font-medium">Time</th>
+                  <th className="px-6 py-4 font-medium whitespace-nowrap">Status</th>
+                  <th className="px-6 py-4 font-medium whitespace-nowrap">Member Name</th>
+                  <th className="px-6 py-4 font-medium whitespace-nowrap">Credit</th>
+                  <th className="px-6 py-4 font-medium whitespace-nowrap">Time</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-zinc-800 text-center">
@@ -165,7 +165,7 @@ const MitraDashboard: React.FC = () => {
                             )}
                           </div>
                         </td>
-                        <td className="px-6 py-4 text-zinc-400">
+                        <td className="px-6 py-4 text-zinc-400 whitespace-nowrap">
                           {entry.user?.name ?? "—"}
                         </td>
                         <td className="px-6 py-4 text-yellow-500 font-semibold whitespace-nowrap">
