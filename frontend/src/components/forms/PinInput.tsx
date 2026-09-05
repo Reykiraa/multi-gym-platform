@@ -71,7 +71,7 @@ const PinInput: React.FC<PinInputProps> = ({ value, onChange, disabled = false, 
 
   return (
     <div className="flex flex-col items-center gap-3">
-      <div className="flex gap-3 sm:gap-4">
+      <div className="flex gap-2 sm:gap-4">
         {digits.map((digit, index) => (
           <input
             key={index}
@@ -85,7 +85,7 @@ const PinInput: React.FC<PinInputProps> = ({ value, onChange, disabled = false, 
             onPaste={handlePaste}
             disabled={disabled}
             className={`
-              w-16 h-20 sm:w-20 sm:h-24 text-center text-3xl sm:text-4xl font-black font-mono
+              w-12 h-16 sm:w-20 sm:h-24 text-center text-2xl sm:text-4xl font-black font-mono
               bg-zinc-800 border-2 rounded-xl text-white caret-yellow-500
               outline-none transition-all duration-200
               focus:border-yellow-500 focus:ring-2 focus:ring-yellow-500/30 focus:bg-zinc-750
