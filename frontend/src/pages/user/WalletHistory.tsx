@@ -1,7 +1,6 @@
 // /frontend/src/pages/Wallet/WalletHistory.tsx
 import React, { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import Navbar from "../../components/shared/Navbar";
 import Card from "../../components/ui/Card";
 import {
   ArrowDownRight,
@@ -123,9 +122,7 @@ const WalletHistory: React.FC = () => {
   };
 
   return (
-    <div className="flex flex-col min-h-screen pb-16 md:pb-0 bg-zinc-950">
-      <Navbar />
-
+    <div className="flex flex-col h-full relative">
       <main className="flex-grow container mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-6">
         <div className="mb-6 md:mb-10">
           <h1 className="text-3xl font-extrabold text-white tracking-tight mb-2">
