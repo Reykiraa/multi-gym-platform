@@ -3,6 +3,7 @@ import apiClient from '../../lib/axios';
 import { AxiosError } from 'axios';
 import { useToastStore } from '../../store/toastStore';
 import { useAuthStore } from '../../store/authStore';
+import { usePaymentStore } from '../../store/paymentStore';
 import type { TopupPackage } from '../../types';
 
 export const useTopupPackages = () =>
@@ -58,19 +59,31 @@ export const useCancelTopup = () => {
 
 export const useVerifyTopup = () => {
   const queryClient = useQueryClient();
-  const { setUser } = useAuthStore.getState();
+  const { addToast } = useToastStore();
+  const { setIsVerifying } = usePaymentStore();
 
   return useMutation<{ user?: import('../../types').User, data?: { status?: string } }, Error, { orderId: string }>({
     mutationFn: async ({ orderId }) => {
+      // Nyalakan full-screen loading secara global sebelum request
+      setIsVerifying(true);
       const response = await apiClient.post(`/topups/${orderId}/verify`);
       return response.data;
     },
     onSuccess: (data) => {
-      if (data.user && setUser) {
-        setUser(data.user);
+      if (data.user) {
+        useAuthStore.getState().setUser(data.user);
       }
+      addToast('success', 'Top-up berhasil dan saldo telah bertambah!');
       queryClient.invalidateQueries({ queryKey: ['auth', 'user'] });
       queryClient.invalidateQueries({ queryKey: ['transactions', 'history'] });
-    }
+    },
+    onError: () => {
+      addToast('info', 'Menunggu pembayaran diselesaikan.');
+      queryClient.invalidateQueries({ queryKey: ['transactions', 'history'] });
+    },
+    onSettled: () => {
+      // Matikan full-screen loading setelah proses selesai (success maupun error)
+      setIsVerifying(false);
+    },
   });
 };

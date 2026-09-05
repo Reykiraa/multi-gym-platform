@@ -20,6 +20,7 @@ import {
   useVerifyTopup,
   useCheckoutTopup,
 } from "../../hooks/api/useTopup";
+import { usePaymentStore } from "../../store/paymentStore";
 
 const fetchTransactions = async (): Promise<TransactionHistory[]> => {
   const response = await apiClient.get("/transactions");
@@ -39,7 +40,8 @@ const WalletHistory: React.FC = () => {
   const [selectedTx, setSelectedTx] = useState<TransactionHistory | null>(null);
   const { mutate: checkout, isPending: isCheckingOut } = useCheckoutTopup();
   const { mutate: cancelTopup, isPending: isCancelling } = useCancelTopup();
-  const { mutate: verifyTopup, isPending: isVerifying } = useVerifyTopup();
+  const { mutate: verifyTopup } = useVerifyTopup();
+  const isVerifying = usePaymentStore((state) => state.isVerifying);
 
 
   // 1. Sinkronisasi User Profile ke Zustand Global (Agar Navbar langsung update!)
