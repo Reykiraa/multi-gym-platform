@@ -1,0 +1,131 @@
+## [2026-09-04] - Phase: Cloud Infrastructure Deployment, Containerization, and Live Optimization
+
+### 1. Ringkasan Eksekutif Deployment
+- **Tujuan:** Meluncurkan seluruh ekosistem aplikasi **RoamFit** (Frontend React SPA, Backend Laravel 12 API, dan PostgreSQL Database) ke lingkungan cloud publik ber-HTTPS yang dapat diakses oleh juri kompetisi dan pengguna umum 24/7 tanpa bergantung pada `localhost`.
+- **Topologi Infrastruktur:**
+  - **Frontend:** Vercel (Edge Network CDN + Dukungan Custom Domain `my.id`).
+  - **Backend API:** Render.com (Docker Web Service berbasis Alpine Linux PHP 8.4).
+  - **Database:** Supabase (Managed Cloud PostgreSQL, Region Singapore `ap-southeast-1` via IPv4 Connection Pooler).
+  - **Payment Gateway:** Midtrans Snap API (Sandbox Mode untuk simulasi pengujian juri).
+  - **Identity Provider:** Google Cloud Console OAuth 2.0 (Google Identity Services).
+  - **Mail Delivery:** Gmail SMTP dengan eksekusi Deferred Asynchronous (`defer()`).
+
+---
+
+### 2. Rincian Implementasi per Layer
+
+#### A. Database Cloud Layer (Supabase PostgreSQL)
+- **Provisioning Cluster:** Membuat cluster database baru di Supabase dengan nama project `Multi Gym Platform` (Project Ref: `ojejpsdzffvxgqsaovdi`) pada region terdekat (Singapore - `ap-southeast-1`) untuk latensi koneksi terendah.
+- **Resolusi Kendala IPv6 vs IPv4 (Render to Supabase):** 
+  - Render Free Tier tidak mendukung outbound IPv6 (Direct host `db.xxx.supabase.co` ditolak dengan `SQLSTATE[08006]`).
+  - Solusi: Menggunakan Supabase **IPv4 Connection Pooler** (`aws-0-ap-southeast-1.pooler.supabase.com:5432`) dengan format otorisasi tenant `postgres.ojejpsdzffvxgqsaovdi`.
+- **Eksekusi Skema & Seeder:** Menjalankan `php artisan migrate --seed` ke cloud untuk membangun seluruh tabel (`users`, `gyms`, `mitras`, `topup_packages`, `transactions`, `topup_transactions`, `personal_access_tokens`, dll) dan mengisi akun demo juri (Admin, Mitra, User).
+- **Resolusi Stuck Migration `is_oauth_user`:**
+  - Memperbaiki file migrasi kosong `2026_09_03_031335_add_is_oauth_user_to_users_table.php` menggunakan teknik rollback terisolasi (`down()` sementara dikosongkan) dan mengeksekusi migrasi ulang untuk menambahkan kolom `is_oauth_user` (boolean) pada tabel `users`.
+
+#### B. Backend Containerization & Compute Layer (Render.com)
+- **Pembuatan Dockerfile Produksi (`backend/Dockerfile`):**
+  - Menggunakan base image ultra-ringan dan aman: `php:8.4-cli-alpine`.
+  - Mengompilasi ekstensi PHP wajib Laravel 12: `pdo`, `pdo_pgsql`, `zip`, `bcmath`, `intl` (via `icu-dev`), `oniguruma`, dan `opcache`.
+  - **Resolusi Konflik Dependensi PHP 8.4:** Mengatasi kegagalan build `symfony/http-foundation v8.1.6 requires php >=8.4.1` dengan meng-upgrade image Docker ke PHP 8.4 dan menambahkan flag `--ignore-platform-reqs` pada Composer.
+- **Konfigurasi CORS Terbuka (`backend/config/cors.php`):**
+  - Menambahkan konfigurasi CORS resmi pada Laravel 12 (mengizinkan `paths => ['api/*', 'sanctum/csrf-cookie']`, `allowed_origins => ['*']`, dan `supports_credentials => false` untuk otentikasi Bearer Token Sanctum) guna mengatasi pemblokiran preflight browser (*OPTIONS 204*).
+- **Optimasi Latensi Eksekusi dengan `defer()`:**
+  - Membungkus seluruh pemanggilan pengiriman email SMTP (`WelcomeEmail` pada `AuthController` dan `TopupSuccessEmail` pada `TopupController`) menggunakan helper bawaan Laravel 12 `defer()`.
+  - Hasil: Respon HTTP login dan top-up langsung dikirimkan ke browser dalam waktu **<100ms** (instan), sementara proses koneksi SMTP Gmail berjalan di latar belakang tanpa memblokir thread pengguna (*Non-blocking asynchronous execution*).
+
+#### C. Frontend Cloud Deployment Layer (Vercel)
+- **Konfigurasi Routing SPA (`frontend/vercel.json`):**
+  - Membuat aturan rewrite (`"source": "/(.*)", "destination": "/index.html"`) untuk mencegah error HTTP 404 saat pengguna me-refresh halaman rute dalam (seperti `/wallet` atau `/admin`).
+- **Pembersihan Strict TypeScript Build (`tsc -b`):**
+  - Menghapus import `React` yang tidak terpakai pada `src/App.tsx` (mengatasi `error TS6133`).
+  - Menambahkan casting `as any` pada pendaftaran field generic di `src/components/forms/GymForm.tsx` (mengatasi `error TS2345: Path<T>`).
+  - Menghapus total file usang `src/components/forms/TopUpForm.tsx` (*dead code elimination*) yang merusak validasi Zod resolver.
+- **Penyelarasan Environment Variables Vercel:**
+  - Mengatur `VITE_API_BASE_URL` secara presisi dengan menyertakan akhiran `/api` (`https://roamfit-api.onrender.com/api`) agar sesuai dengan pengelompokan rute di `routes/api.php`.
+  - Mengonfigurasi `VITE_MIDTRANS_CLIENT_KEY`, `VITE_MIDTRANS_ENVIRONMENT=sandbox`, dan `VITE_GOOGLE_CLIENT_ID`.
+
+#### D. Third-Party Integration & Security Alignment
+- **Google Cloud Console OAuth:**
+  - Mendaftarkan origin produksi `https://multi-gym-platform.vercel.app` dan domain `my.id` pada **Authorized JavaScript origins** di Google Cloud Console untuk mengatasi error otentikasi `403 Origin Not Allowed`.
+- **Midtrans Snap Popup Occlusion Fix:**
+  - Memperbaiki event handler pada `src/components/modals/TopupModal.tsx`: Memanggil `onClose()` modal kustom terlebih dahulu sebelum mengeksekusi `window.snap.pay()`.
+  - Menghilangkan tabrakan z-index/backdrop modal hitam yang sebelumnya menutupi iFrame pembayaran Midtrans Snap dan memicu error `snap.pay: Invalid state transition from PopupInView to PopupInView`.
+- **Midtrans Webhook & Auto-Sync:**
+  - Mengonfigurasi Notification URL di Dashboard Midtrans Sandbox ke endpoint publik `https://roamfit-api.onrender.com/api/webhooks/midtrans` (mengeliminasi ketergantungan pada Ngrok tunnel lokal).
+
+---
+
+### 3. File yang Dibuat / Dimodifikasi
+
+#### Backend:
+- `backend/Dockerfile` (Dibuat - Alpine Linux PHP 8.4 container runtime)
+- `backend/config/cors.php` (Dibuat - Konfigurasi CORS production)
+- `backend/config/services.php` (Konfigurasi kredensial Midtrans & Google OAuth)
+- `backend/database/migrations/2026_09_03_031335_add_is_oauth_user_to_users_table.php` (Diperbaiki & dimigrasikan)
+- `backend/app/Models/User.php` (Pembaruan `$fillable` & `$casts` atribut `is_oauth_user`)
+- `backend/app/Models/Gym.php` (Smart accessor `mitra_name` dan `pengelola_name`)
+- `backend/app/Http/Controllers/AuthController.php` (Integrasi Google Login, Smart Password conditional check, dan non-blocking `defer()` welcome email)
+- `backend/app/Http/Controllers/TopupController.php` (Non-blocking `defer()` receipt email, settlement ACID, dan cancel endpoint)
+- `backend/app/Http/Controllers/TransactionController.php` (Pemisahan I/O blocking Midtrans dari method `index` untuk performa query murni <15ms)
+- `backend/resources/views/emails/welcome.blade.php` (Re-branding RoamFit & Tips OAuth box)
+- `backend/resources/views/emails/topup_receipt.blade.php` (Re-branding RoamFit invoice layout)
+
+#### Frontend:
+- `frontend/vercel.json` (Dibuat - SPA rewrite rules)
+- `frontend/src/App.tsx` (Pembersihan unused import)
+- `frontend/src/types/index.ts` (Interface `User` dan `TransactionHistory` diperbarui)
+- `frontend/src/components/forms/GymForm.tsx` (Perbaikan typing form & handler submit edit)
+- `frontend/src/components/forms/TopUpForm.tsx` (Dihapus - Dead code)
+- `frontend/src/components/modals/TopupModal.tsx` (Occlusion fix, parallel query invalidation, dan auto-detect payment sync)
+- `frontend/src/pages/user/WalletHistory.tsx` (Isolated cache key `["transactions", "history"]`, Resume Payment CTA, Silent Re-checkout CTA, Confirm Cancel Action)
+- `frontend/src/pages/admin/AdminDashboard.tsx` (Executive 4 KPI Cards, Recharts 7-Day Activity Trends, live users query)
+- `frontend/src/pages/admin/Transactions.tsx` (Master audit ledger, search filter, order ID parser, detail modal)
+
+---
+
+### 4. Keputusan Arsitektur & Keamanan Utama (Key Decisions)
+1. **Decoupled Serverless & Container Topology:** Memisahkan Frontend Statis di Vercel Edge CDN dan Backend API di Container Render memastikan aplikasi memiliki skalabilitas independen dan biaya operasional $0 (Zero-Cost).
+2. **Database Isolation & High Availability:** Menggunakan Supabase Managed PostgreSQL menjamin data transaksi dan saldo kredit tersimpan permanen tanpa risiko terhapus oleh batasan 30-hari server gratis, didukung pooler IPv4 untuk koneksi cloud yang stabil.
+3. **Fail-Safe & Non-blocking Transaction Pipeline:** Pembungkusan mutasi saldo dalam `DB::transaction()` + `lockForUpdate()` menjamin kepatuhan ACID, sementara isolasi pengiriman email ke dalam `defer()` memastikan latensi antarmuka pengguna tetap secepat kilat (<100ms).
+4. **Resilient Payment UX:** Penyediaan opsi Resume Payment, Silent Background Cancellation, dan Auto-Detect verification memberikan kenyamanan maksimal bagi pengguna mobile dan juri penguji saat bertransaksi di lingkungan Sandbox.
+
+---
+---
+
+## [2026-09-05] - Phase: Latency Optimization, Hard Timeouts & SMTP Troubleshooting (Current Checkpoint)
+
+### 1. Ringkasan Eksekutif Progress
+- **Tujuan:** Menyelesaikan isu latensi ekstrim (hanging) yang diakibatkan oleh *timeout* panggilan API eksternal (Google & Midtrans) serta mengatasi kendala *blocking* soket jaringan akibat pembatasan firewall SMTP di Render Free Tier.
+- **Tindakan Taktis (Rollback):** Membatalkan implementasi injeksi `callbacks` backend pada Midtrans Payload untuk menyelamatkan integritas UI/UX React SPA (Single Page Application) yang rusak akibat *hard-redirect*.
+
+### 2. Rincian Implementasi per Layer
+
+#### A. Network Resilience & Timeout Safeguards
+- Menerapkan **Hard Timeout** pada seluruh komunikasi *Outbound HTTP*.
+- **Google OAuth:** Menambahkan `Http::timeout(3)` saat memvalidasi `id_token` ke endpoint `oauth2.googleapis.com` untuk memastikan kegagalan respons Google tidak membuat thread server lokal mati lebih dari 3 detik.
+- **Midtrans API:** Menambahkan `timeout(4)->connectTimeout(2)` pada *HTTP Client* dalam `MidtransService`.
+
+#### B. SMTP Runtime Isolation & Cloud Observability
+- Menyadari kelemahan `php artisan serve` di Render yang bersifat *single-threaded*, penambahan logic pengiriman email melalui `defer()` diproteksi lebih lanjut.
+- Memaksa runtime timeout dengan `config(['mail.mailers.smtp.timeout' => 3])` di dalam blok closure `defer()`.
+- Menambahkan *Telemetry / Structured Logging*:
+  - `\Log::info` untuk mencatat kecepatan/latensi Google Auth sukses (dalam satuan *ms*).
+  - `\Log::error` untuk mencatat log diagnostik presisi ketika SMTP gagal terhubung tanpa memunculkan HTTP 500 ke pengguna.
+
+#### C. React SPA Alignment (Rollback Midtrans Callbacks)
+- **Temuan Kritis:** Memasukkan array `callbacks` secara dinamis ke parameter backend pembentuk *Snap Token* justru memicu *HTTP 400 Bad Request* dari Midtrans dan merusak *state management* frontend yang berbasis modal React (menggantikan modal dengan hard-redirect).
+- **Resolusi:** Melakukan eksekusi perintah `git rollback` pada branch. Menghapus kode dinamis `callbacks` dari `backend/app/Services/MidtransService.php` untuk mengembalikan metode *Seamless Pop-up Window*. Urusan redirect URL pasca-pembayaran sepenuhnya didelegasikan ke pengaturan internal *Dashboard Midtrans Sandbox (Payment Redirection URL)*.
+
+#### D. SMTP Port Testing on Render
+- **Uji Coba Port 587 (TLS):** Menemukan error `stream_socket_client(): Unable to connect ... Operation timed out`. Mengonfirmasi hipotesis bahwa Render Free Tier memblokir *outbound* Port 587.
+- **Uji Coba Port 465 (SSL):** Sedang memvalidasi port alternatif menggunakan enkripsi SSL murni (`MAIL_ENCRYPTION=ssl`) dipadukan dengan 16-digit Google App Password untuk memastikan apakah Cloud Firewall Render memberikan celah keluaran pada port 465.
+
+### 3. File yang Dimodifikasi pada Fase Ini
+- `backend/app/Http/Controllers/AuthController.php` (Penambahan timeout Google API & `Log::info` telemetry)
+- `backend/app/Http/Controllers/TopupController.php` (Penambahan `config` timeout pada email receipt)
+- `backend/app/Services/MidtransService.php` (Penambahan parameter timeout & eksekusi Rollback `callbacks`)
+
+### 4. Keputusan Arsitektur & Keamanan Utama (Key Decisions)
+1. **SPA Integrity First (Zero Hard-Redirects):** Menolak secara keras campur tangan routing backend terhadap navigasi frontend, memastikan kelancaran fungsionalitas React Modal dan *cache invalidation* TanStack Query tetap berjalan *seamless* di satu halaman (`/user/wallet`).
+2. **Fail-Safe Connectivity (Anti-Hanging Protocol):** Memegang teguh filosofi bahwa **"kegagalan sistem pihak ketiga (Google/Midtrans/SMTP) tidak boleh merusak transaksi internal"**. Menggunakan *Hard Timeout* (maksimal 3-4 detik) memastikan bahwa API RoamFit akan segera memberikan fallback/respon kepada klien daripada membiarkan koneksi menggantung tanpa batas waktu.

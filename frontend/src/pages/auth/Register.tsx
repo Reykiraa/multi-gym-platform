@@ -30,6 +30,7 @@ const Register: React.FC = () => {
   const { setAuth } = useAuthStore();
   const { addToast } = useToastStore();
   const [isTermsOpen, setIsTermsOpen] = useState(false);
+  const [isGoogleLoading, setIsGoogleLoading] = useState(false);
   
   const {
     register,
@@ -65,6 +66,7 @@ const Register: React.FC = () => {
   };
 
   const handleGoogleSuccess = async (credentialResponse: CredentialResponse) => {
+    setIsGoogleLoading(true);
     try {
       const response = await apiClient.post('/auth/google', {
         credential: credentialResponse.credential,
@@ -84,11 +86,22 @@ const Register: React.FC = () => {
     } catch (error) {
       const axiosError = error as AxiosError<{ message?: string }>;
       addToast('error', axiosError.response?.data?.message || 'Google Sign-In failed.');
+    } finally {
+      setIsGoogleLoading(false);
     }
   };
 
   return (
     <div className="min-h-screen flex items-center justify-center px-4 py-12">
+      {isGoogleLoading && (
+        <div className="fixed inset-0 z-50 flex flex-col items-center justify-center bg-black/80 backdrop-blur-md animate-in fade-in duration-200">
+          <div className="relative flex items-center justify-center mb-4">
+            <div className="w-16 h-16 border-4 border-yellow-500/20 border-t-yellow-500 rounded-full animate-spin"></div>
+          </div>
+          <h3 className="text-xl font-bold text-white mb-1">Menghubungkan Akun Google</h3>
+          <p className="text-sm text-zinc-400">Sedang memverifikasi data dan menyiapkan dashboard RoamFit Anda...</p>
+        </div>
+      )}
       <div className="w-full max-w-md">
         <div className="text-center mb-8">
           <Link to="/" className="text-3xl font-black text-white tracking-widest">
