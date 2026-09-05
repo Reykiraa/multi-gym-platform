@@ -17,6 +17,7 @@ export const TopupModal: React.FC<TopupModalProps> = ({ isOpen, onClose }) => {
   const [selectedPackage, setSelectedPackage] = useState<TopupPackage | null>(
     null,
   );
+  const [isVerifyingPayment, setIsVerifyingPayment] = useState(false);
 
   const queryClient = useQueryClient();
   const { addToast } = useToastStore();
@@ -24,6 +25,7 @@ export const TopupModal: React.FC<TopupModalProps> = ({ isOpen, onClose }) => {
   if (!isOpen) return null;
 
   const handlePaymentSync = (orderId: string) => {
+    setIsVerifyingPayment(true);
     verifyTopup(
       { orderId },
       {
@@ -36,11 +38,13 @@ export const TopupModal: React.FC<TopupModalProps> = ({ isOpen, onClose }) => {
             addToast('info', 'Waiting for payment to be completed.');
             queryClient.invalidateQueries({ queryKey: ['transactions', 'history'] });
           }
+          setIsVerifyingPayment(false);
           onClose();
         },
         onError: () => {
           addToast('info', 'Waiting for payment to be completed.');
           queryClient.invalidateQueries({ queryKey: ['transactions', 'history'] });
+          setIsVerifyingPayment(false);
           onClose();
         }
       }
@@ -98,7 +102,15 @@ export const TopupModal: React.FC<TopupModalProps> = ({ isOpen, onClose }) => {
 
         {/* Body */}
         <div className="p-6 overflow-y-auto">
-          {isLoading ? (
+          {isVerifyingPayment ? (
+            <div className="p-10 flex flex-col items-center justify-center text-center space-y-4">
+              <div className="w-14 h-14 border-4 border-yellow-500/20 border-t-yellow-500 rounded-full animate-spin"></div>
+              <div>
+                <h3 className="text-lg font-bold text-white">Memverifikasi Pembayaran</h3>
+                <p className="text-sm text-zinc-400 mt-1">Sedang mencocokkan status transaksi Anda dengan Midtrans...</p>
+              </div>
+            </div>
+          ) : isLoading ? (
             <div className="flex justify-center py-12">
               <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-yellow-500"></div>
             </div>

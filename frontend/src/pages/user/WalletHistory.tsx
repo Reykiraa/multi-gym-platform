@@ -39,7 +39,7 @@ const WalletHistory: React.FC = () => {
   const [selectedTx, setSelectedTx] = useState<TransactionHistory | null>(null);
   const { mutate: checkout, isPending: isCheckingOut } = useCheckoutTopup();
   const { mutate: cancelTopup, isPending: isCancelling } = useCancelTopup();
-  const { mutate: verifyTopup } = useVerifyTopup();
+  const { mutate: verifyTopup, isPending: isVerifying } = useVerifyTopup();
 
 
   // 1. Sinkronisasi User Profile ke Zustand Global (Agar Navbar langsung update!)
@@ -330,7 +330,8 @@ const WalletHistory: React.FC = () => {
                 {/* 1. Tombol Lanjutkan Pembayaran (Membuka langsung Nomor VA / QR Code yang sedang aktif) */}
                 {selectedTx.snap_token && (
                   <button
-                    className="w-full py-2.5 bg-yellow-500 hover:bg-yellow-400 text-black font-bold rounded-xl transition-all shadow-md text-sm flex items-center justify-center gap-2"
+                    disabled={isVerifying}
+                    className="w-full py-2.5 bg-yellow-500 hover:bg-yellow-400 text-black font-bold rounded-xl transition-all shadow-md text-sm flex items-center justify-center gap-2 disabled:opacity-70 disabled:cursor-not-allowed"
                     onClick={() => {
                       if (window.snap && selectedTx.snap_token) {
                         window.snap.pay(selectedTx.snap_token, {
@@ -350,14 +351,21 @@ const WalletHistory: React.FC = () => {
                       }
                     }}
                   >
-                    Continue Payment (View VA / QRIS)
+                    {isVerifying ? (
+                      <>
+                        <div className="w-4 h-4 border-2 border-black/30 border-t-black rounded-full animate-spin"></div>
+                        Memverifikasi...
+                      </>
+                    ) : (
+                      'Continue Payment (View VA / QRIS)'
+                    )}
                   </button>
                 )}
 
                 {/* 2. Tombol Ganti Metode Pembayaran (Membatalkan yang lama, lalu membuka modal paket baru) */}
                 <button
-                  disabled={isCancelling || isCheckingOut}
-                  className="w-full py-2.5 bg-zinc-800 hover:bg-zinc-700 text-white font-semibold rounded-xl border border-zinc-700 transition-colors text-sm flex items-center justify-center gap-2"
+                  disabled={isCancelling || isCheckingOut || isVerifying}
+                  className="w-full py-2.5 bg-zinc-800 hover:bg-zinc-700 text-white font-semibold rounded-xl border border-zinc-700 transition-colors text-sm flex items-center justify-center gap-2 disabled:opacity-70 disabled:cursor-not-allowed"
                   onClick={() => {
                     if (!selectedTx.topup_package_id) {
                       // Fallback jika tidak ada package id
