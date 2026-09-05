@@ -1,11 +1,11 @@
-// src/layouts/MitraLayout.tsx
+// src/layouts/UserLayout.tsx
 import React, { useState } from 'react';
 import ConfirmModal from '../components/modals/ConfirmModal';
 import { NavLink, Outlet, useNavigate } from 'react-router-dom';
 import {
-  LayoutDashboard,
-  Clock,
-  Settings,
+  Home,
+  Wallet,
+  User as UserIcon,
   LogOut,
   Menu,
   X,
@@ -19,14 +19,11 @@ interface NavItem {
 }
 
 const NAV_ITEMS: NavItem[] = [
-  { label: 'Dashboard', to: '/mitra/dashboard', icon: <LayoutDashboard size={20} /> },
-  { label: 'History', to: '/mitra/history', icon: <Clock size={20} /> },
-  { label: 'Profile Gym', to: '/mitra/gym-profile', icon: <Settings size={20} /> },
+  { label: 'Explore', to: '/user/gyms', icon: <Home size={20} /> },
+  { label: 'Wallet', to: '/user/wallet', icon: <Wallet size={20} /> },
+  { label: 'Profile', to: '/user/profile', icon: <UserIcon size={20} /> },
 ];
 
-/**
- * Generates Tailwind class string for NavLink active/inactive states.
- */
 const linkClass = ({ isActive }: { isActive: boolean }): string =>
   `flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium transition-colors ${
     isActive
@@ -34,7 +31,7 @@ const linkClass = ({ isActive }: { isActive: boolean }): string =>
       : 'text-zinc-400 hover:text-white hover:bg-zinc-800'
   }`;
 
-const MitraLayout: React.FC = () => {
+const UserLayout: React.FC = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isLogoutModalOpen, setIsLogoutModalOpen] = useState(false);
   const { user, logout } = useAuthStore();
@@ -45,15 +42,14 @@ const MitraLayout: React.FC = () => {
     navigate('/login', { replace: true });
   };
 
+  const saldo = user?.available_credits ?? user?.credit_balance ?? 0;
+
   const sidebarContent = (
     <>
-      {/* Brand */}
       <div className="px-6 py-6 border-b border-zinc-800">
         <h1 className="text-xl font-black text-white tracking-widest">ROAM<span className="text-yellow-500">FIT</span></h1>
-        <p className="text-xs text-zinc-500 mt-1">Mitra Panel</p>
       </div>
 
-      {/* Navigation */}
       <nav className="flex-1 px-4 py-6 space-y-1">
         {NAV_ITEMS.map((item) => (
           <NavLink
@@ -68,11 +64,11 @@ const MitraLayout: React.FC = () => {
         ))}
       </nav>
 
-      {/* User info & Logout */}
       <div className="px-4 py-4 border-t border-zinc-800">
         <div className="px-4 py-2 mb-2">
           <p className="text-sm font-medium text-white truncate">{user?.name}</p>
           <p className="text-xs text-zinc-500 truncate">{user?.email}</p>
+          <p className="text-xs font-bold text-yellow-500 mt-1">Saldo: {saldo} CR</p>
         </div>
         <button
           onClick={() => setIsLogoutModalOpen(true)}
@@ -87,24 +83,16 @@ const MitraLayout: React.FC = () => {
 
   return (
     <div className="flex h-screen overflow-hidden bg-zinc-950">
-      {/* ------------------------------------------------------------------ */}
-      {/* DESKTOP SIDEBAR (hidden on mobile, visible md+)                     */}
-      {/* ------------------------------------------------------------------ */}
       <aside className="hidden md:flex md:flex-col md:w-64 bg-zinc-950 border-r border-zinc-800 shrink-0">
         {sidebarContent}
       </aside>
 
-      {/* ------------------------------------------------------------------ */}
-      {/* MOBILE OVERLAY DRAWER                                               */}
-      {/* ------------------------------------------------------------------ */}
       {isMobileMenuOpen && (
         <div className="fixed inset-0 z-50 md:hidden">
-          {/* Backdrop */}
           <div
             className="absolute inset-0 bg-black/60"
             onClick={() => setIsMobileMenuOpen(false)}
           />
-          {/* Drawer */}
           <aside className="relative flex flex-col w-64 h-full bg-zinc-950 border-r border-zinc-800 shadow-2xl animate-slide-in-left">
             <button
               onClick={() => setIsMobileMenuOpen(false)}
@@ -118,11 +106,7 @@ const MitraLayout: React.FC = () => {
         </div>
       )}
 
-      {/* ------------------------------------------------------------------ */}
-      {/* MAIN CONTENT AREA                                                   */}
-      {/* ------------------------------------------------------------------ */}
       <div className="flex-1 flex flex-col overflow-hidden">
-        {/* Mobile top bar */}
         <header className="md:hidden flex items-center justify-between px-4 py-3 bg-zinc-950 border-b border-zinc-800">
           <button
             onClick={() => setIsMobileMenuOpen(true)}
@@ -132,21 +116,20 @@ const MitraLayout: React.FC = () => {
             <Menu size={24} />
           </button>
           <h1 className="text-lg font-black text-white tracking-widest">ROAMFIT</h1>
-          <div className="w-6" /> {/* Spacer for centering */}
+          <div className="w-16 text-yellow-500 text-xs font-bold text-right truncate">
+            {saldo} CR
+          </div>
         </header>
 
-        {/* Scrollable content */}
-        <main className="flex-1 overflow-y-auto p-4 md:p-8">
-          <div className="w-full max-w-7xl mx-auto">
-            <Outlet />
-          </div>
+        <main className="flex-1 overflow-y-auto p-4 md:p-8 relative">
+          <Outlet />
         </main>
       </div>
 
       <ConfirmModal
         isOpen={isLogoutModalOpen}
         title="Confirm Logout"
-        description="Are you sure you want to log out of the partner dashboard?"
+        description="Are you sure you want to log out?"
         confirmText="Yes, Logout"
         cancelText="Cancel"
         onConfirm={handleLogout}
@@ -156,4 +139,4 @@ const MitraLayout: React.FC = () => {
   );
 };
 
-export default MitraLayout;
+export default UserLayout;

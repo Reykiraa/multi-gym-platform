@@ -75,5 +75,20 @@
   - **Tabel Responsif:** Memastikan tabel "Recent Entries" pada `MitraDashboard.tsx` bisa di-_scroll_ secara horizontal pada layar _mobile_ dengan menyematkan utilitas `whitespace-nowrap` pada Header kolom (`th`) dan data Nama Member (`td`).
 - **File Dibuat/Dimodifikasi:** `src/components/forms/PinInput.tsx`, `src/layouts/MitraLayout.tsx`, dan `src/pages/mitra/MitraDashboard.tsx`.
 - **Mock Data & State Status:** Menggunakan komponen `NavLink` bawaan dari `react-router-dom` dipadukan dengan *icons* dari `lucide-react` untuk navigasi bawah, tanpa menambahkan kerumitan *state* baru.
-- **Catatan Keamanan:** 
   - Desain navigasi menggunakan kontrol tampilan CSS (*hidden md:flex* dan *md:hidden*), sehingga tetap mempertahankan otorisasi rute asli dan meminimalkan rendering tambahan.
+
+## [2026-09-05] - Phase 9: Final Layout Synchronization & UI Refinements
+- **Fitur Selesai:** 
+  - **Global Application Title:** Mengubah default `<title>` HTML di `index.html` menjadi **ROAMFIT** agar nama *tab* browser tampil profesional secara konsisten di seluruh halaman.
+  - **Layout Consistency (Sidebar & Drawer):** Merombak total `MitraLayout.tsx` dan membuat `UserLayout.tsx` baru untuk menggantikan komponen mandiri `Navbar.tsx`. Kini seluruh arsitektur *Role* (Admin, Mitra, User) 100% konsisten menggunakan desain *Sidebar Navigation* pada *desktop* dan *Hamburger Menu / Sliding Drawer* pada *mobile*.
+  - **Relokasi Fungsionalitas:** Tombol *Logout* beserta identitas (Nama, Email, dan Saldo) dipindahkan ke dalam *Sidebar* masing-masing profil, membersihkan bagian konten halaman (*Profile.tsx*) dari elemen navigasi/otorisasi yang mengganggu struktur visual.
+  - **Table Cell Padding Fix:** Menambahkan *horizontal padding* (`px-6`) pada sel "Status" di tabel *Recent Entries* (`MitraDashboard.tsx`) sehingga tata letaknya proporsional dan tidak menempel di batas layar *mobile*.
+- **File Dibuat/Dimodifikasi:** 
+  - `index.html` dan `src/App.tsx`.
+  - `src/layouts/MitraLayout.tsx` dan `src/layouts/UserLayout.tsx` (Baru).
+  - Penghapusan `src/components/shared/Navbar.tsx`.
+  - Penghapusan pemanggilan `<Navbar />` dan penyesuaian kelas *styling* di `Profile.tsx`, `GymDiscovery.tsx`, `GymDetail.tsx`, dan `WalletHistory.tsx`.
+  - Penambahan _padding_ di `MitraDashboard.tsx`.
+- **Mock Data & State Status:** Menggabungkan *state* _Saldo/Credit Balance_ langsung ke *Sidebar* (memanfaatkan global state Zustand dari `authStore`) agar bisa dipantau setiap saat tanpa mengotori ruang vertikal *header* pada *desktop*.
+- **Catatan Keamanan (Security Check):** 
+  - *React Router* (`Outlet` dan `ProtectedLayout`) diatur ulang sedemikian rupa agar `UserLayout` menjadi *child wrapper* bagi pengguna `role: user`, memastikan keamanan otorisasi tetap berlapis dan modular tanpa *side effect*.
