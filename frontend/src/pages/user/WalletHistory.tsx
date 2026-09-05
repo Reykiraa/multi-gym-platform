@@ -468,6 +468,17 @@ const WalletHistory: React.FC = () => {
         </div>
       )}
 
+      {/* Full-Screen Payment Verification Overlay */}
+      {isVerifying && (
+        <div className="fixed inset-0 z-50 flex flex-col items-center justify-center bg-black/80 backdrop-blur-md animate-in fade-in duration-200">
+          <div className="relative flex items-center justify-center mb-4">
+            <div className="w-16 h-16 border-4 border-yellow-500/20 border-t-yellow-500 rounded-full animate-spin"></div>
+          </div>
+          <h3 className="text-xl font-bold text-white mb-1">Memverifikasi Pembayaran</h3>
+          <p className="text-sm text-zinc-400">Sedang mencocokkan status transaksi dan memperbarui saldo RoamFit Anda...</p>
+        </div>
+      )}
+
       {/* Topup Modal */}
       <TopupModal isOpen={isTopupOpen} onClose={() => setIsTopupOpen(false)} />
     </div>

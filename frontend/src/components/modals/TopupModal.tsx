@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import { useQueryClient } from "@tanstack/react-query";
 import { X, CheckCircle, Zap } from "lucide-react";
 import { useTopupPackages, useCheckoutTopup, useVerifyTopup } from "../../hooks/api/useTopup";
 import { useToastStore } from "../../store/toastStore";
@@ -17,39 +16,10 @@ export const TopupModal: React.FC<TopupModalProps> = ({ isOpen, onClose }) => {
   const [selectedPackage, setSelectedPackage] = useState<TopupPackage | null>(
     null,
   );
-  const [isVerifyingPayment, setIsVerifyingPayment] = useState(false);
 
-  const queryClient = useQueryClient();
   const { addToast } = useToastStore();
 
   if (!isOpen) return null;
-
-  const handlePaymentSync = (orderId: string) => {
-    setIsVerifyingPayment(true);
-    verifyTopup(
-      { orderId },
-      {
-        onSuccess: (res) => {
-          if (res.data?.status === 'success' || res.user) {
-            addToast('success', 'Top-up successful! Your balance has been updated.');
-            queryClient.invalidateQueries({ queryKey: ['auth', 'user'] });
-            queryClient.invalidateQueries({ queryKey: ['transactions', 'history'] });
-          } else {
-            addToast('info', 'Waiting for payment to be completed.');
-            queryClient.invalidateQueries({ queryKey: ['transactions', 'history'] });
-          }
-          setIsVerifyingPayment(false);
-          onClose();
-        },
-        onError: () => {
-          addToast('info', 'Waiting for payment to be completed.');
-          queryClient.invalidateQueries({ queryKey: ['transactions', 'history'] });
-          setIsVerifyingPayment(false);
-          onClose();
-        }
-      }
-    );
-  };
 
   const handleCheckout = () => {
     if (!selectedPackage) return;
@@ -63,12 +33,23 @@ export const TopupModal: React.FC<TopupModalProps> = ({ isOpen, onClose }) => {
             onClose();
 
             // 2. MUNCULKAN POP-UP MIDTRANS SNAP SECARA BERSIH
+            // onClose() dipanggil dahulu → WalletHistory isVerifying overlay tampil
             window.snap.pay(data.snap_token, {
-              onSuccess: () => handlePaymentSync(data.order_id),
-              onPending: () => handlePaymentSync(data.order_id),
-              onClose: () => handlePaymentSync(data.order_id),
+              onSuccess: () => {
+                onClose();
+                if (data.order_id) verifyTopup({ orderId: data.order_id });
+              },
+              onPending: () => {
+                onClose();
+                if (data.order_id) verifyTopup({ orderId: data.order_id });
+              },
+              onClose: () => {
+                onClose();
+                if (data.order_id) verifyTopup({ orderId: data.order_id });
+              },
               onError: () => {
-                addToast('error', 'Payment failed.');
+                onClose();
+                addToast('error', 'Pembayaran gagal.');
               },
             });
           } else {
@@ -102,15 +83,7 @@ export const TopupModal: React.FC<TopupModalProps> = ({ isOpen, onClose }) => {
 
         {/* Body */}
         <div className="p-6 overflow-y-auto">
-          {isVerifyingPayment ? (
-            <div className="p-10 flex flex-col items-center justify-center text-center space-y-4">
-              <div className="w-14 h-14 border-4 border-yellow-500/20 border-t-yellow-500 rounded-full animate-spin"></div>
-              <div>
-                <h3 className="text-lg font-bold text-white">Memverifikasi Pembayaran</h3>
-                <p className="text-sm text-zinc-400 mt-1">Sedang mencocokkan status transaksi Anda dengan Midtrans...</p>
-              </div>
-            </div>
-          ) : isLoading ? (
+          {isLoading ? (
             <div className="flex justify-center py-12">
               <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-yellow-500"></div>
             </div>
