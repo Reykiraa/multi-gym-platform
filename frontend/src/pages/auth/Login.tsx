@@ -162,12 +162,34 @@ const Login: React.FC = () => {
             />
           </div>
 
-          <p className="text-center text-sm text-zinc-500 mt-6">
+          <p className="text-center text-sm text-zinc-500 mt-6 mb-8">
             Don't have an account?{' '}
             <Link to="/register" className="text-yellow-500 hover:underline">
               Sign up now
             </Link>
           </p>
+
+          {/* Demo Accounts Info (Inside Card Version) */}
+          <div className="bg-zinc-900/60 border border-zinc-800 rounded-xl p-4 text-sm">
+            <h4 className="text-yellow-500 font-bold mb-4 text-center uppercase tracking-wider text-xs">Demo Accounts</h4>
+            <div className="flex flex-col gap-2 text-zinc-400">
+              <div className="bg-zinc-950 px-3 py-2.5 rounded-lg border border-zinc-800 flex justify-between items-center">
+                <p className="text-white font-semibold text-xs uppercase w-14">Admin</p>
+                <p className="text-xs text-zinc-300">admin@multigym.com</p>
+                <p className="text-xs font-mono text-yellow-500">password</p>
+              </div>
+              <div className="bg-zinc-950 px-3 py-2.5 rounded-lg border border-zinc-800 flex justify-between items-center">
+                <p className="text-white font-semibold text-xs uppercase w-14">Mitra</p>
+                <p className="text-xs text-zinc-300">mitra1@gym.com</p>
+                <p className="text-xs font-mono text-yellow-500">password</p>
+              </div>
+              <div className="bg-zinc-950 px-3 py-2.5 rounded-lg border border-zinc-800 flex justify-between items-center">
+                <p className="text-white font-semibold text-xs uppercase w-14">User</p>
+                <p className="text-xs text-zinc-300">user1@member.com</p>
+                <p className="text-xs font-mono text-yellow-500">password</p>
+              </div>
+            </div>
+          </div>
         </Card>
       </div>
     </div>

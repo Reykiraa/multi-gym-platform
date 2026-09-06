@@ -83,10 +83,14 @@
   - **Layout Consistency (Sidebar & Drawer):** Merombak total `MitraLayout.tsx` dan membuat `UserLayout.tsx` baru untuk menggantikan komponen mandiri `Navbar.tsx`. Kini seluruh arsitektur *Role* (Admin, Mitra, User) 100% konsisten menggunakan desain *Sidebar Navigation* pada *desktop* dan *Hamburger Menu / Sliding Drawer* pada *mobile*.
   - **Relokasi Fungsionalitas:** Tombol *Logout* beserta identitas (Nama, Email, dan Saldo) dipindahkan ke dalam *Sidebar* masing-masing profil, membersihkan bagian konten halaman (*Profile.tsx*) dari elemen navigasi/otorisasi yang mengganggu struktur visual.
   - **Table Cell Padding Fix:** Menambahkan *horizontal padding* (`px-6`) pada sel "Status" di tabel *Recent Entries* (`MitraDashboard.tsx`) sehingga tata letaknya proporsional dan tidak menempel di batas layar *mobile*.
+  - **Gym Card Grid Uniformity:** Menambahkan properti `h-full` pada komponen `GymCard` dan *framer-motion wrapper* di `GymDiscovery.tsx` agar tinggi kartu konsisten dan seragam dalam satu baris *CSS Grid*. Hal ini mencegah kerusakan tata letak saat diperbesar (*zoom*) atau pada tampilan perangkat *mobile*.
+  - **Demo Accounts di Halaman Login:** Menambahkan daftar kredensial akun percobaan (Admin, Mitra, User) di dalam *Card Login* menggunakan susunan *flex column* (*list* menurun) sehingga penulisan email panjang tidak terpotong (tanpa tanda `...`) di layar kecil.
 - **File Dibuat/Dimodifikasi:** 
   - `index.html` dan `src/App.tsx`.
   - `src/layouts/MitraLayout.tsx` dan `src/layouts/UserLayout.tsx` (Baru).
   - Penghapusan `src/components/shared/Navbar.tsx`.
+  - Modifikasi `src/components/cards/GymCard.tsx` dan `src/pages/user/GymDiscovery.tsx`.
+  - Modifikasi `src/pages/auth/Login.tsx`.
   - Penghapusan pemanggilan `<Navbar />` dan penyesuaian kelas *styling* di `Profile.tsx`, `GymDiscovery.tsx`, `GymDetail.tsx`, dan `WalletHistory.tsx`.
   - Penambahan _padding_ di `MitraDashboard.tsx`.
 - **Mock Data & State Status:** Menggabungkan *state* _Saldo/Credit Balance_ langsung ke *Sidebar* (memanfaatkan global state Zustand dari `authStore`) agar bisa dipantau setiap saat tanpa mengotori ruang vertikal *header* pada *desktop*.
