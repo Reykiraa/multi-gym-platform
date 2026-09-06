@@ -22,41 +22,43 @@ export const TopupModal: React.FC<TopupModalProps> = ({ isOpen, onClose }) => {
   if (!isOpen) return null;
 
   const handleCheckout = () => {
-    if (!selectedPackage) return;
+    if (!selectedPackage || isPending) return;
 
     checkout(
       { topup_package_id: selectedPackage.id },
       {
         onSuccess: (data) => {
           if (data.snap_token && window.snap) {
-            // 1. TUTUP MODAL KITA DULU AGAR TIDAK MENUTUPI POP-UP MIDTRANS
+            // 1. TUTUP MODAL KITA DETIK INI JUGA AGAR TIDAK MENUTUPI POP-UP MIDTRANS!
             onClose();
 
-            // 2. MUNCULKAN POP-UP MIDTRANS SNAP SECARA BERSIH
-            // onClose() dipanggil dahulu → WalletHistory isVerifying overlay tampil
+            // 2. LUNCURKAN POP-UP MIDTRANS SNAP SECARA BERSIH
             window.snap.pay(data.snap_token, {
               onSuccess: () => {
-                onClose();
-                if (data.order_id) verifyTopup({ orderId: data.order_id, showOverlay: true });
+                if (data.order_id) {
+                  verifyTopup({ orderId: data.order_id, showOverlay: true });
+                }
               },
               onPending: () => {
-                onClose();
-                if (data.order_id) verifyTopup({ orderId: data.order_id, showOverlay: false });
+                if (data.order_id) {
+                  verifyTopup({ orderId: data.order_id, showOverlay: false });
+                }
               },
               onClose: () => {
-                onClose();
-                if (data.order_id) verifyTopup({ orderId: data.order_id, showOverlay: false });
+                // Silent check tanpa memblokir layar dengan overlay besar
+                if (data.order_id) {
+                  verifyTopup({ orderId: data.order_id, showOverlay: false });
+                }
               },
               onError: () => {
-                onClose();
                 addToast('error', 'Pembayaran gagal.');
               },
             });
           } else {
-            addToast("error", "Payment gateway is unavailable.");
+            addToast('error', 'Payment gateway tidak tersedia.');
           }
         },
-      },
+      }
     );
   };
 
