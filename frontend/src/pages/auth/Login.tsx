@@ -12,6 +12,7 @@ import { useToastStore } from '../../store/toastStore';
 import { GoogleLogin } from '@react-oauth/google';
 import type { CredentialResponse } from '@react-oauth/google';
 import { AxiosError } from 'axios';
+import Logo from '../../components/shared/Logo';
 
 const loginSchema = z.object({
   email: z.string().email('Invalid email format'),
@@ -98,10 +99,10 @@ const Login: React.FC = () => {
       )}
       <div className="w-full max-w-md">
         <div className="text-center mb-8">
-          <Link to="/" className="text-3xl font-black text-white tracking-widest">
-            ROAM<span className="text-yellow-500">FIT</span>
+          <Link to="/" className="inline-flex justify-center">
+            <Logo size="lg" />
           </Link>
-          <p className="text-zinc-400 mt-2">Sign in to your account</p>
+          <p className="text-zinc-400 mt-3">Sign in to your account</p>
         </div>
 
         <Card className="p-6 md:p-8">

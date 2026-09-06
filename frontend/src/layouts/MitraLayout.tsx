@@ -11,6 +11,7 @@ import {
   X,
 } from 'lucide-react';
 import { useAuthStore } from '../store/authStore';
+import Logo from '../components/shared/Logo';
 
 interface NavItem {
   label: string;
@@ -49,7 +50,7 @@ const MitraLayout: React.FC = () => {
     <>
       {/* Brand */}
       <div className="px-6 py-6 border-b border-zinc-800">
-        <h1 className="text-xl font-black text-white tracking-widest">ROAM<span className="text-yellow-500">FIT</span></h1>
+        <Logo size="md" />
         <p className="text-xs text-zinc-500 mt-1">Mitra Panel</p>
       </div>
 
@@ -131,7 +132,7 @@ const MitraLayout: React.FC = () => {
           >
             <Menu size={24} />
           </button>
-          <h1 className="text-lg font-black text-white tracking-widest">ROAMFIT</h1>
+          <Logo size="sm" />
           <div className="w-6" /> {/* Spacer for centering */}
         </header>
 

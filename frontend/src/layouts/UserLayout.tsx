@@ -11,6 +11,7 @@ import {
   X,
 } from 'lucide-react';
 import { useAuthStore } from '../store/authStore';
+import Logo from '../components/shared/Logo';
 
 interface NavItem {
   label: string;
@@ -47,7 +48,7 @@ const UserLayout: React.FC = () => {
   const sidebarContent = (
     <>
       <div className="px-6 py-6 border-b border-zinc-800">
-        <h1 className="text-xl font-black text-white tracking-widest">ROAM<span className="text-yellow-500">FIT</span></h1>
+        <Logo size="md" />
       </div>
 
       <nav className="flex-1 px-4 py-6 space-y-1">
@@ -115,7 +116,7 @@ const UserLayout: React.FC = () => {
           >
             <Menu size={24} />
           </button>
-          <h1 className="text-lg font-black text-white tracking-widest">ROAMFIT</h1>
+          <Logo size="sm" />
           <div className="w-16 text-yellow-500 text-xs font-bold text-right truncate">
             {saldo} CR
           </div>
