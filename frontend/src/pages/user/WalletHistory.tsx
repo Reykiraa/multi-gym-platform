@@ -1,5 +1,6 @@
 // /frontend/src/pages/Wallet/WalletHistory.tsx
 import React, { useState } from "react";
+import { useSearchParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import Card from "../../components/ui/Card";
 import {
@@ -18,6 +19,7 @@ import {
   useCancelTopup,
   useVerifyTopup,
   useCheckoutTopup,
+  useDeleteTopup,
 } from "../../hooks/api/useTopup";
 import { usePaymentStore } from "../../store/paymentStore";
 
@@ -41,7 +43,26 @@ const WalletHistory: React.FC = () => {
   const { mutate: cancelTopup, isPending: isCancelling } = useCancelTopup();
   const { mutate: verifyTopup } = useVerifyTopup();
   const isVerifying = usePaymentStore((state) => state.isVerifying);
+  const { mutate: deleteTopup } = useDeleteTopup();
+  const [searchParams, setSearchParams] = useSearchParams();
+  const redirectOrderId = searchParams.get("order_id");
 
+  // 1. Auto-verify saat user mendarat kembali dari redirect DANA / E-Wallet
+  React.useEffect(() => {
+    if (redirectOrderId) {
+      verifyTopup(
+        { orderId: redirectOrderId, showOverlay: true },
+        {
+          onSettled: () => {
+            searchParams.delete("order_id");
+            searchParams.delete("status_code");
+            searchParams.delete("transaction_status");
+            setSearchParams(searchParams, { replace: true });
+          }
+        }
+      );
+    }
+  }, [redirectOrderId]);
 
   // 1. Sinkronisasi User Profile ke Zustand Global (Agar Navbar langsung update!)
   useQuery({
@@ -336,13 +357,17 @@ const WalletHistory: React.FC = () => {
                         window.snap.pay(selectedTx.snap_token, {
                           onSuccess: () => {
                             if (selectedTx.order_id)
-                              verifyTopup({ orderId: selectedTx.order_id });
+                              verifyTopup({ orderId: selectedTx.order_id, showOverlay: true });
                             setSelectedTx(null);
                           },
-                          onPending: () => setSelectedTx(null),
+                          onPending: () => {
+                            if (selectedTx.order_id)
+                              verifyTopup({ orderId: selectedTx.order_id, showOverlay: false });
+                            setSelectedTx(null);
+                          },
                           onClose: () => {
                             if (selectedTx.order_id)
-                              verifyTopup({ orderId: selectedTx.order_id });
+                              verifyTopup({ orderId: selectedTx.order_id, showOverlay: false });
                             setSelectedTx(null);
                           },
                           onError: () => setSelectedTx(null),
@@ -376,8 +401,8 @@ const WalletHistory: React.FC = () => {
                     const oldTxId = selectedTx.id;
                     const packageId = selectedTx.topup_package_id;
 
-                    // 1. Batalkan transaksi lama secara diam-diam (tanpa toast)
-                    cancelTopup({ id: oldTxId.toString(), silent: true });
+                    // 1. Batalkan transaksi lama secara diam-diam (tanpa toast) dengan menghapus draft dari database
+                    deleteTopup({ id: oldTxId.toString() });
 
                     // 2. Langsung checkout paket yang sama & buka pop-up Snap (Gambar 3)
                     checkout(
@@ -389,15 +414,15 @@ const WalletHistory: React.FC = () => {
                             window.snap.pay(data.snap_token, {
                               onSuccess: () => {
                                 if (data.order_id)
-                                  verifyTopup({ orderId: data.order_id });
+                                  verifyTopup({ orderId: data.order_id, showOverlay: true });
                               },
                               onPending: () => {
                                 if (data.order_id)
-                                  verifyTopup({ orderId: data.order_id });
+                                  verifyTopup({ orderId: data.order_id, showOverlay: false });
                               },
                               onClose: () => {
                                 if (data.order_id)
-                                  verifyTopup({ orderId: data.order_id });
+                                  verifyTopup({ orderId: data.order_id, showOverlay: false });
                               },
                               onError: () => {},
                             });

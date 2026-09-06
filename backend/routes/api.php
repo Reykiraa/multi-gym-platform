@@ -48,6 +48,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/topups', [\App\Http\Controllers\TopupController::class, 'createTransaction']);
     Route::post('/topups/{order_id}/verify', [\App\Http\Controllers\TopupController::class, 'verifyPayment']);
     Route::post('/topups/{id}/cancel', [\App\Http\Controllers\TopupController::class, 'cancel']);
+    Route::delete('/topups/{id}', [\App\Http\Controllers\TopupController::class, 'destroy']);
 });
 
 Route::get('/topup-packages', [\App\Http\Controllers\TopupController::class, 'index']);

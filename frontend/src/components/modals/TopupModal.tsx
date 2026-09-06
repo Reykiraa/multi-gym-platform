@@ -37,15 +37,15 @@ export const TopupModal: React.FC<TopupModalProps> = ({ isOpen, onClose }) => {
             window.snap.pay(data.snap_token, {
               onSuccess: () => {
                 onClose();
-                if (data.order_id) verifyTopup({ orderId: data.order_id });
+                if (data.order_id) verifyTopup({ orderId: data.order_id, showOverlay: true });
               },
               onPending: () => {
                 onClose();
-                if (data.order_id) verifyTopup({ orderId: data.order_id });
+                if (data.order_id) verifyTopup({ orderId: data.order_id, showOverlay: false });
               },
               onClose: () => {
                 onClose();
-                if (data.order_id) verifyTopup({ orderId: data.order_id });
+                if (data.order_id) verifyTopup({ orderId: data.order_id, showOverlay: false });
               },
               onError: () => {
                 onClose();
