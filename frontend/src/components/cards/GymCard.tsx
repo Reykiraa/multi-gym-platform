@@ -12,8 +12,8 @@ const GymCard: React.FC<GymCardProps> = ({ gym }) => {
   const [isImageLoaded, setIsImageLoaded] = useState(false);
 
   return (
-    <Link to={`/user/gym/${gym.id}`} className="block transition-transform hover:scale-[1.02]">
-      <Card noPadding className="overflow-hidden flex flex-col hover:border-zinc-700 transition-colors">
+    <Link to={`/user/gym/${gym.id}`} className="block h-full transition-transform hover:scale-[1.02]">
+      <Card noPadding className="h-full overflow-hidden flex flex-col hover:border-zinc-700 transition-colors">
         {/* Image — fixed height, consistent across all cards */}
         {gym.image_url || (gym.photos && gym.photos.length > 0) ? (
           <div className="relative h-40 w-full flex-shrink-0 bg-zinc-800 overflow-hidden">
