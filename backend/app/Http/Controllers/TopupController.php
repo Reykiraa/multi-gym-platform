@@ -217,4 +217,28 @@ class TopupController extends Controller
             ], 200);
         });
     }
+
+    /**
+     * Delete a pending topup transaction (draft).
+     */
+    public function destroy(Request $request, string $id, MidtransService $midtransService): JsonResponse
+    {
+        $trx = TopupTransaction::where('id', $id)
+            ->where('user_id', $request->user()->id)
+            ->where('status', 'pending')
+            ->first();
+
+        if ($trx) {
+            try {
+                $midtransService->cancelTransaction($trx->order_id);
+            } catch (\Throwable $e) {
+                // Abaikan jika order belum terbentuk di Midtrans
+            }
+            
+            // Hapus total dari database agar tidak meninggalkan riwayat "Dibatalkan" saat ganti metode
+            $trx->delete();
+        }
+
+        return response()->json(['message' => 'Draft transaksi berhasil dihapus.'], 200);
+    }
 }

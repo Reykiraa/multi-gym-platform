@@ -57,15 +57,31 @@ export const useCancelTopup = () => {
   });
 };
 
+export const useDeleteTopup = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation<any, Error, { id: string }>({
+    mutationFn: async ({ id }) => {
+      const response = await apiClient.delete(`/topups/${id}`);
+      return response.data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['transactions', 'history'] });
+    },
+  });
+};
+
 export const useVerifyTopup = () => {
   const queryClient = useQueryClient();
   const { addToast } = useToastStore();
   const { setIsVerifying } = usePaymentStore();
 
-  return useMutation<{ user?: import('../../types').User, data?: { status?: string } }, Error, { orderId: string }>({
-    mutationFn: async ({ orderId }) => {
+  return useMutation<{ user?: import('../../types').User, data?: { status?: string } }, Error, { orderId: string; showOverlay?: boolean }>({
+    mutationFn: async ({ orderId, showOverlay = true }) => {
       // Nyalakan full-screen loading secara global sebelum request
-      setIsVerifying(true);
+      if (showOverlay) {
+        setIsVerifying(true);
+      }
       const response = await apiClient.post(`/topups/${orderId}/verify`);
       return response.data;
     },
@@ -81,9 +97,12 @@ export const useVerifyTopup = () => {
       addToast('info', 'Menunggu pembayaran diselesaikan.');
       queryClient.invalidateQueries({ queryKey: ['transactions', 'history'] });
     },
-    onSettled: () => {
+    onSettled: (_, __, variables) => {
       // Matikan full-screen loading setelah proses selesai (success maupun error)
-      setIsVerifying(false);
+      const shouldShowOverlay = variables.showOverlay !== undefined ? variables.showOverlay : true;
+      if (shouldShowOverlay) {
+        setIsVerifying(false);
+      }
     },
   });
 };
