@@ -150,8 +150,11 @@ const GymDetail: React.FC = () => {
                 {gym.photos.map((photo, idx) => (
                   <img
                     key={idx}
-                    src={photo}
+                    src={photo || "https://images.unsplash.com/photo-1534438327276-14e5300c3a48?auto=format&fit=crop&w=800&q=80"}
                     alt={`${gym.name} - foto ${idx + 1}`}
+                    onError={(e) => {
+                      (e.target as HTMLImageElement).src = "https://images.unsplash.com/photo-1534438327276-14e5300c3a48?auto=format&fit=crop&w=800&q=80";
+                    }}
                     className="absolute inset-0 w-full h-full object-cover transition-opacity duration-700"
                     style={{ opacity: idx === activePhotoIdx ? 1 : 0 }}
                   />

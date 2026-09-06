@@ -28,7 +28,7 @@ class Gym extends Model
         'credit_price',
         'maps_url',
     ];
-    protected $appends = ['mitra_name', 'pengelola_name'];
+    protected $appends = ['mitra_name', 'pengelola_name', 'image_url'];
 
     /**
      * Get the attributes that should be cast.
@@ -39,7 +39,9 @@ class Gym extends Model
     {
         return [
             'facilities' => 'array',
-            'photos' => 'array',
+            // NOTE: 'photos' is intentionally NOT cast here.
+            // The getPhotosAttribute accessor below handles JSON decoding
+            // AND applies the Dynamic Image Resolver (localhost → live URL).
         ];
     }
 
@@ -84,5 +86,65 @@ class Gym extends Model
     public function getPengelolaNameAttribute(): string
     {
         return $this->mitra?->name ?? '—';
+    }
+
+    /**
+     * Dynamic Image Resolver: Accessor untuk kolom `photos`.
+     *
+     * Memastikan foto katalog tidak rusak / blank di perangkat mobile:
+     * - URL yang masih berisi `localhost` atau `127.0.0.1` secara otomatis
+     *   diarahkan ke live backend URL (APP_URL dari .env production).
+     * - Array kosong / null akan dikembalikan sebagai 3 foto fallback Unsplash.
+     *
+     * @return array<int, string>
+     */
+    public function getPhotosAttribute(mixed $value): array
+    {
+        $photos = is_string($value)
+            ? json_decode($value, true)
+            : (array) $value;
+
+        /** @var array<int, string> $fallback */
+        $fallback = [
+            'https://images.unsplash.com/photo-1534438327276-14e5300c3a48?auto=format&fit=crop&w=800&q=80',
+            'https://images.unsplash.com/photo-1571902943202-507ec2618e8f?auto=format&fit=crop&w=800&q=80',
+            'https://images.unsplash.com/photo-1540497077202-7c8a3999166f?auto=format&fit=crop&w=800&q=80',
+        ];
+
+        if (empty($photos)) {
+            return $fallback;
+        }
+
+        // Gunakan APP_URL (production) sebagai pengganti localhost
+        $liveBackendUrl = rtrim((string) config('app.url', 'https://roamfit-api.onrender.com'), '/');
+
+        return array_values(array_map(function (mixed $photo) use ($liveBackendUrl, $fallback): string {
+            if (! is_string($photo) || $photo === '') {
+                return $fallback[0];
+            }
+
+            // Ganti URL localhost/127.0.0.1 ke live backend URL
+            if (str_contains($photo, 'localhost') || str_contains($photo, '127.0.0.1')) {
+                return str_replace(
+                    ['http://localhost:8000', 'https://localhost:8000', 'http://127.0.0.1:8000', 'https://127.0.0.1:8000'],
+                    $liveBackendUrl,
+                    $photo
+                );
+            }
+
+            return $photo;
+        }, $photos));
+    }
+
+    /**
+     * Accessor `image_url`: URL foto pertama yang telah di-resolve.
+     * Digunakan oleh GymCard di frontend untuk menampilkan thumbnail.
+     */
+    public function getImageUrlAttribute(): string
+    {
+        $photos = $this->photos;
+
+        return $photos[0]
+            ?? 'https://images.unsplash.com/photo-1534438327276-14e5300c3a48?auto=format&fit=crop&w=800&q=80';
     }
 }
