@@ -78,27 +78,37 @@ export const useVerifyTopup = () => {
 
   return useMutation<{ user?: import('../../types').User, data?: { status?: string } }, Error, { orderId: string; showOverlay?: boolean }>({
     mutationFn: async ({ orderId, showOverlay = true }) => {
-      // Nyalakan full-screen loading secara global sebelum request
       if (showOverlay) {
         setIsVerifying(true);
       }
       const response = await apiClient.post(`/topups/${orderId}/verify`);
       return response.data;
     },
-    onSuccess: (data) => {
-      if (data.user) {
-        useAuthStore.getState().setUser(data.user);
+    onSuccess: (res, variables) => {
+      const isSuccess = res.data?.status === 'success' || Boolean(res.user);
+
+      if (isSuccess) {
+        // 1. HANYA JIKA STATUS NYATA SUCCESS: Update saldo dan munculkan toast hijau
+        if (res.user) {
+          useAuthStore.getState().setUser(res.user);
+        }
+        addToast('success', 'Top-up berhasil dan saldo telah bertambah!');
+        queryClient.invalidateQueries({ queryKey: ['auth', 'user'] });
+      } else {
+        // 2. JIKA STATUS MASIH PENDING (User hanya klik silang X):
+        // JANGAN tampilkan toast sukses! Jika verifikasi manual, tampilkan info
+        if (variables.showOverlay) {
+          addToast('info', 'Menunggu pembayaran diselesaikan.');
+        }
       }
-      addToast('success', 'Top-up berhasil dan saldo telah bertambah!');
-      queryClient.invalidateQueries({ queryKey: ['auth', 'user'] });
+
+      // Selalu refresh tabel riwayat transaksi
       queryClient.invalidateQueries({ queryKey: ['transactions', 'history'] });
     },
     onError: () => {
-      addToast('info', 'Menunggu pembayaran diselesaikan.');
       queryClient.invalidateQueries({ queryKey: ['transactions', 'history'] });
     },
     onSettled: (_, __, variables) => {
-      // Matikan full-screen loading setelah proses selesai (success maupun error)
       const shouldShowOverlay = variables.showOverlay !== undefined ? variables.showOverlay : true;
       if (shouldShowOverlay) {
         setIsVerifying(false);
