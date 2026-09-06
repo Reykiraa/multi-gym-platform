@@ -134,7 +134,7 @@ const MitraDashboard: React.FC = () => {
                         key={entry.id}
                         className="hover:bg-zinc-800/50 transition-colors"
                       >
-                        <td className="py-4 font-medium text-white whitespace-nowrap">
+                        <td className="px-6 py-4 font-medium text-white whitespace-nowrap">
                           <div className="flex items-center justify-center gap-2">
                             {status === "completed" && (
                               <>

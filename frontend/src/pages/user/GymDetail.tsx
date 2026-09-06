@@ -6,7 +6,6 @@ import { motion } from 'framer-motion';
 import Button from '../../components/ui/Button';
 import Badge from '../../components/ui/Badge';
 import CheckInConfirmModal from '../../components/modals/CheckInConfirmModal';
-import Navbar from '../../components/shared/Navbar';
 import { type Gym } from '../../types';
 import apiClient from '../../lib/axios';
 import { useToastStore } from '../../store/toastStore';
@@ -133,8 +132,7 @@ const GymDetail: React.FC = () => {
   }
 
   return (
-    <div className="flex flex-col min-h-screen pb-24 md:pb-0 relative">
-      <Navbar />
+    <div className="flex flex-col h-full relative">
 
       <main className="flex-grow container mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-6">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
