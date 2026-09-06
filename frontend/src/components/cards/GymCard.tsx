@@ -15,16 +15,19 @@ const GymCard: React.FC<GymCardProps> = ({ gym }) => {
     <Link to={`/user/gym/${gym.id}`} className="block transition-transform hover:scale-[1.02]">
       <Card noPadding className="overflow-hidden flex flex-col hover:border-zinc-700 transition-colors">
         {/* Image — fixed height, consistent across all cards */}
-        {gym.photos && gym.photos.length > 0 ? (
+        {gym.image_url || (gym.photos && gym.photos.length > 0) ? (
           <div className="relative h-40 w-full flex-shrink-0 bg-zinc-800 overflow-hidden">
             {/* Skeleton Loader */}
             {!isImageLoaded && (
               <div className="absolute inset-0 bg-zinc-700/50 animate-pulse" />
             )}
             <img 
-              src={gym.photos[0]} 
+              src={gym.image_url || (Array.isArray(gym.photos) && gym.photos[0]) || "https://images.unsplash.com/photo-1534438327276-14e5300c3a48?auto=format&fit=crop&w=800&q=80"}
               alt={gym.name}
               onLoad={() => setIsImageLoaded(true)}
+              onError={(e) => {
+                (e.target as HTMLImageElement).src = "https://images.unsplash.com/photo-1534438327276-14e5300c3a48?auto=format&fit=crop&w=800&q=80";
+              }}
               className={`absolute inset-0 h-full w-full object-cover transition-opacity duration-300 ${isImageLoaded ? 'opacity-100' : 'opacity-0'}`} 
             />
           </div>

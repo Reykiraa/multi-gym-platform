@@ -24,6 +24,7 @@ export interface Gym {
   location: string;
   facilities: string[];
   photos?: string[];
+  image_url?: string;
   maps_url?: string;
   credit_price: number;
 }
